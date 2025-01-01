@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 
-// Define breakpoints inside the hook
 const breakpoints = {
   mobile: "(max-width: 600px)",
   tablet: "(max-width: 1000px)",

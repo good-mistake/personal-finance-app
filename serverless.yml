@@ -1,0 +1,24 @@
+service: personal-finance-app
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: us-east-1
+  environment:
+    MONGO_URI: ${env:MONGO_URI}
+
+functions:
+  api:
+    handler: handler.api
+    events:
+      - http:
+          path: /{proxy+}
+          method: any
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+custom:
+  webpack:
+    includeModules: true

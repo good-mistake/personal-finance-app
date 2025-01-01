@@ -1,33 +1,30 @@
 import express from "express";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
-import router from "./src/routes/routes.js";
-import potRoute from "./src/routes/potRoute.js";
-import budgetRoute from "./src/routes/budgetRoute.js";
-import transactionRoute from "./src/routes/transactionRoute.js";
+import connectToDatabase from "./db.mjs";
+import signupRoute from "./api/auth/signup.js";
+import loginRoute from "./api/auth/login.js";
+import verifyRoute from "./api/auth/verify.js";
+import refreshRoute from "./api/auth/refresh.js";
+import potRoute from "./api/auth/pots/index.js";
+import budgetRoute from "./api/auth/budgets/index.js";
+import transactionRoute from "./api/auth/transactions/index.js";
 dotenv.config();
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
-app.use("/auth", router);
-app.use("/auth/pots", potRoute);
-app.use("/auth/budgets", budgetRoute);
-app.use("/auth/transactions", transactionRoute);
-const uri =
-  process.env.MONGO_URI ||
-  "MONGO_URI=mongodb+srv://admin:5TTbUJAysMWcdzSn@cluster0.yv9sg.mongodb.net/personalFinanceApp?retryWrites=true&w=majority&appName=Cluster0";
-if (!uri) {
-  throw new Error("MONGO_URI environment variable is required");
-}
-mongoose
-  .connect(uri)
-  .then(() => {})
-  .catch((error) => {
-    console.error("Error connecting to MongoDB:", error.message);
-    process.exit(1);
-  });
+app.use("/api/auth/signup", signupRoute);
+app.use("/api/auth/login", loginRoute);
+app.use("/api/auth/verify", verifyRoute);
+app.use("/api/auth/refresh", refreshRoute);
+app.use("/api/pots", potRoute);
+app.use("/api/budgets", budgetRoute);
+app.use("/api/transactions", transactionRoute);
+
+connectToDatabase();
+
 export default app;
