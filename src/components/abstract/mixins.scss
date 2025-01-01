@@ -94,8 +94,8 @@
     max-width: 100%;
   }
   @include respond-to-max(mobile) {
-    min-width: 100%;
-    max-width: 100%;
+    overflow-y: auto;
+    transform: scale(0.75) !important;
   }
   &.open,
   &.opening {

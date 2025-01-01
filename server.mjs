@@ -24,9 +24,9 @@ mongoose
   .connect(uri)
   .then(() => {
     console.log("MongoDB connected successfully");
-    app.listen(5000, () => console.log("Server running on port 5000"));
   })
   .catch((error) => {
     console.error("Error connecting to MongoDB:", error.message);
     process.exit(1);
   });
+export default app;
