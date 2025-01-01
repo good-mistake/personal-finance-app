@@ -20,11 +20,12 @@ app.use("/auth/transactions", transactionRoute);
 const uri =
   process.env.MONGO_URI ||
   "MONGO_URI=mongodb+srv://admin:5TTbUJAysMWcdzSn@cluster0.yv9sg.mongodb.net/personalFinanceApp?retryWrites=true&w=majority&appName=Cluster0";
+if (!uri) {
+  throw new Error("MONGO_URI environment variable is required");
+}
 mongoose
   .connect(uri)
-  .then(() => {
-    console.log("connected");
-  })
+  .then(() => {})
   .catch((error) => {
     console.error("Error connecting to MongoDB:", error.message);
     process.exit(1);
