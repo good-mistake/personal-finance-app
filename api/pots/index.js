@@ -1,12 +1,12 @@
 import express from "express";
-import Budget from "../../../models/budgets";
+import Pot from "../../models/Pot";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const budgets = await Budget.find();
-    res.status(200).json(budgets);
+    const pots = await Pot.find();
+    res.status(200).json(pots);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -14,18 +14,11 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { category, maxAmount, themeColor } = req.body;
-
+  const { name, targetAmount } = req.body;
   try {
-    const newBudget = new Budget({
-      category,
-      maxAmount,
-      themeColor,
-    });
-
-    await newBudget.save();
-
-    res.status(201).json(newBudget);
+    const newPot = new Pot({ name, targetAmount });
+    await newPot.save();
+    res.status(201).json(newPot);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });

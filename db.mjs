@@ -2,31 +2,25 @@ import mongoose from "mongoose";
 
 let isConnected = false;
 
-const connectToDatabase = async () => {
+export const connectToDatabase = async () => {
   if (isConnected) {
-    console.log("Using existing MongoDB connection");
+    console.log("Reusing database connection");
     return;
   }
 
-  const uri =
-    process.env.MONGO_URI ||
-    "MONGO_URI=mongodb+srv://admin:5TTbUJAysMWcdzSn@cluster0.yv9sg.mongodb.net/personalFinanceApp?retryWrites=true&w=majority&appName=Cluster0";
-
-  if (!uri) {
-    throw new Error("MONGO_URI environment variable is required");
-  }
-
   try {
+    const uri = process.env.MONGO_URI || "<Your_Fallback_URI>";
+    if (!uri) throw new Error("MONGO_URI environment variable is required");
+
     await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+
     isConnected = true;
-    console.log("MongoDB connected");
+    console.log("Database connected");
   } catch (error) {
-    console.error("Error connecting to MongoDB:", error.message);
-    process.exit(1);
+    console.error("Database connection error:", error.message);
+    throw error;
   }
 };
-
-export default connectToDatabase;

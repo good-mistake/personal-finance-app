@@ -1,11 +1,10 @@
 import express from "express";
-import Pot from "../../../models/Pot";
+import Pot from "../../models/Pot";
 
 const router = express.Router();
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
-
   try {
     const pot = await Pot.findById(id);
     if (!pot) return res.status(404).json({ message: "Pot not found" });
@@ -19,7 +18,6 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { name, targetAmount } = req.body;
-
   try {
     const updatedPot = await Pot.findByIdAndUpdate(
       id,
@@ -36,7 +34,6 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
-
   try {
     const deletedPot = await Pot.findByIdAndDelete(id);
     if (!deletedPot) return res.status(404).json({ message: "Pot not found" });

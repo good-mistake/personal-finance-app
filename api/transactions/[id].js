@@ -1,11 +1,10 @@
-import Transaction from "../../../models/transaction";
 import express from "express";
+import Transaction from "../../models/Transaction";
 
 const router = express.Router();
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
-
   try {
     const transaction = await Transaction.findById(id);
     if (!transaction)
@@ -19,15 +18,13 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { amount, category, date, type } = req.body;
-
+  const { amount, category } = req.body;
   try {
     const updatedTransaction = await Transaction.findByIdAndUpdate(
       id,
-      { amount, category, date, type },
+      { amount, category },
       { new: true }
     );
-
     if (!updatedTransaction)
       return res.status(404).json({ message: "Transaction not found" });
     res.status(200).json(updatedTransaction);
@@ -39,7 +36,6 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
-
   try {
     const deletedTransaction = await Transaction.findByIdAndDelete(id);
     if (!deletedTransaction)
