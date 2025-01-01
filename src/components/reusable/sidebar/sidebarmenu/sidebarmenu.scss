@@ -1,0 +1,336 @@
+@import "../../../abstract/mixins.scss";
+@import "../../../abstract/variables.scss";
+.nav {
+  &--desktop {
+    transition: width 0.3s ease;
+
+    .toggleMenuContainer {
+      width: 100%;
+    }
+    img,
+    svg {
+      margin-right: $size-8;
+    }
+    .logo img {
+      transition: opacity 0.3s ease;
+    }
+    .userName {
+      @include text-preset-4;
+      color: $color-grey-300;
+      margin-top: $size-12;
+      cursor: auto;
+    }
+    .imageMinimize {
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .imageMinimize:hover {
+      transform: scale(1.1);
+    }
+    ul {
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      li {
+        span {
+          font-size: $size-16;
+          font-weight: bold;
+          line-height: 150%;
+          color: $color-grey-300;
+        }
+        .active {
+          .svgIcon {
+            .svgColor {
+              fill: $color-green !important;
+            }
+          }
+          .recurringBill {
+            background-color: $color-green;
+            .svgColor {
+              fill: #fff !important;
+            }
+          }
+        }
+      }
+    }
+    .imageMinimize {
+      transition: transform 0.3s ease;
+      width: 76px;
+      @include flex($align: center, $justify: center);
+
+      img {
+        width: 24px;
+        height: 24px;
+        transition: transform 0.3s ease;
+        &.rotate-closed {
+          transform: rotate(180deg);
+        }
+
+        &.rotate-open {
+          transform: rotate(0deg);
+        }
+      }
+
+      position: absolute;
+      bottom: 50px;
+      cursor: pointer;
+    }
+    > div {
+      &:last-child {
+        width: 100%;
+      }
+    }
+  }
+  &--desktopClose {
+    background-color: $color-grey-900;
+    width: 88px;
+    min-height: 606px;
+    position: fixed;
+    height: 100vh;
+    @include flex($align: center, $justify: flex-start, $direction: column);
+    border-radius: 0px 15px 15px 0px;
+    z-index: 999;
+
+    .logo {
+      position: absolute;
+      top: 25px;
+      cursor: pointer;
+    }
+    ul {
+      margin-top: 6rem;
+      @include flex($align: flex-start, $justify: flex-end, $direction: column);
+
+      li {
+        cursor: pointer;
+        @include flex($align: center, $justify: center);
+        width: 76px;
+        height: 54px;
+        &:not(:first-child) {
+          margin-top: $size-12;
+        }
+        img,
+        svg {
+          width: 24px;
+          height: 24px;
+        }
+      }
+    }
+  }
+  &--desktopOpen {
+    background-color: $color-grey-900;
+    width: 280px;
+    min-height: 606px;
+    border-radius: 0px 15px 15px 0px;
+    color: $color-white;
+    position: relative;
+    position: fixed;
+    height: 100vh;
+    @include flex($align: flex-start, $justify: flex-start, $direction: column);
+
+    .logo {
+      position: absolute;
+      top: 25px;
+      cursor: pointer;
+      margin-left: $size-32;
+    }
+    ul {
+      margin-top: 6rem;
+      @include flex(
+        $align: flex-start,
+        $justify: flex-start,
+        $direction: column
+      );
+
+      li {
+        cursor: pointer;
+        margin-bottom: $size-32;
+        width: 256px;
+        @include flex(
+          $align: flex-start,
+          $justify: flex-start,
+          $direction: column
+        );
+        a {
+          @include flex($align: flex-start, $justify: flex-start);
+          padding-left: $size-32;
+        }
+        img,
+        svg {
+          width: 24px;
+          height: 24px;
+          margin-right: $size-12;
+        }
+      }
+    }
+    .imageMinimize {
+      transition: transform 0.3s ease;
+      width: 256px;
+      padding-left: $size-32;
+
+      @include flex($align: center, $justify: flex-start);
+      span {
+        color: $color-grey-300;
+        margin-left: $size-12;
+        font-size: $size-16;
+        font-weight: bold;
+        line-height: 150%;
+      }
+    }
+  }
+
+  &--right {
+    right: 0;
+    grid-column: 2 / 3;
+
+    .imageMinimize {
+      img {
+        &.rotate-closed {
+          transform: rotate(0deg);
+        }
+
+        &.rotate-open {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+  &--tablet {
+    background-color: $color-grey-900;
+    width: 100%;
+    height: 70px;
+    border-radius: 15px 15px 0px 0px;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 999;
+    margin-top: $size-32;
+    .logo {
+      display: none;
+    }
+    ul {
+      @include flex($justify: space-around, $align: flex-end);
+
+      width: 100%;
+      height: 70px;
+
+      li {
+        color: $color-white;
+        @include flex($align: center, $direction: column);
+
+        a {
+          width: 90px;
+
+          @include flex($align: center, $justify: center, $direction: column);
+          span {
+            @include text-preset-5-bold;
+            color: $color-grey-500;
+          }
+          height: 60px;
+        }
+        img,
+        svg {
+          width: $size-18;
+          height: $size-18;
+          margin-bottom: $size-4;
+        }
+      }
+    }
+    .imageMinimize {
+      display: none;
+    }
+    .sidebar {
+      .content {
+        grid-column: 1 / 3;
+        transition: margin-left 0.5s ease-in-out;
+        padding: $size-32 $size-40;
+      }
+    }
+    .active {
+      background-color: $color-beige-100;
+      border-radius: $size-8 $size-8 0 0;
+      border-bottom: 4px solid $color-green;
+
+      .svgIcon {
+        .svgColor {
+          fill: $color-green !important;
+        }
+      }
+      .recurringBill {
+        background-color: $color-green;
+        .svgColor {
+          fill: #fff !important;
+        }
+      }
+      span {
+        color: $color-grey-900;
+      }
+    }
+  }
+  &--mobile {
+    background-color: $color-grey-900;
+    width: 100%;
+    height: 44px;
+    border-radius: 15px 15px 0px 0px;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 999;
+    margin-top: $size-32;
+    .logo {
+      display: none;
+    }
+    ul {
+      @include flex($justify: space-around, $align: flex-end);
+      overflow: auto;
+      width: 100%;
+      height: 44px;
+
+      li {
+        color: $color-white;
+        @include flex($align: center, $direction: column);
+        a {
+          width: 50px;
+
+          @include flex($align: center, $justify: center, $direction: column);
+          span {
+            @include text-preset-5-bold;
+            color: $color-grey-500;
+          }
+          height: 36px;
+        }
+        .active {
+          .svgIcon {
+            .svgColor {
+              fill: $color-green !important;
+            }
+          }
+          .recurringBill {
+            background-color: $color-green;
+            .svgColor {
+              fill: #fff !important;
+            }
+          }
+        }
+        img,
+        svg {
+          width: $size-18;
+          height: $size-18;
+          margin-bottom: $size-4;
+        }
+        span {
+          display: block;
+        }
+      }
+    }
+    .imageMinimize {
+      display: none;
+    }
+    .active {
+      background-color: $color-beige-100;
+      border-radius: $size-8 $size-8 0 0;
+      border-bottom: 4px solid $color-green;
+      span {
+        color: $color-grey-900;
+      }
+    }
+  }
+}

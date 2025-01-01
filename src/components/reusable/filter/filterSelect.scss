@@ -1,0 +1,86 @@
+@import "../../abstract/mixins.scss";
+@import "../../abstract/variables.scss";
+.selectWrapper {
+  position: relative;
+  cursor: pointer;
+  border: 1px solid $color-beige-500;
+  border-radius: $size-8;
+  width: 100%;
+  padding: $size-12 $size-20;
+  @include respond-to-max(tablet) {
+    padding: $size-12 $size-8;
+  }
+  @include respond-to-max(mobile) {
+    border: 0px solid $color-beige-500;
+  }
+  @include flex($align: center);
+  > span {
+    margin-right: $size-16;
+    @include text-preset-4;
+    color: $color-grey-900;
+  }
+  .selected {
+    @include text-preset-4-bold;
+  }
+  .dropdownOptions {
+    position: absolute;
+    top: 120%;
+    left: 0;
+    right: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: white;
+    color: $color-grey-900;
+    border-radius: $size-8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.3s ease forwards;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    z-index: 1;
+    @include respond-to-max(mobile) {
+      width: max-content;
+      &.default {
+        left: -90px;
+      }
+    }
+    @include text-preset-4;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    scrollbar-width: none;
+
+    &.open {
+      max-height: 300px;
+    }
+
+    .dropdownOption {
+      padding: $size-12 $size-16;
+      cursor: pointer;
+      &:hover {
+        background-color: $color-grey-100;
+      }
+    }
+  }
+  img {
+    pointer-events: none;
+    transition: transform 0.3s ease;
+    width: 16px;
+    height: 16px;
+    @include respond-to-max(mobile) {
+      width: $size-20;
+      height: $size-20;
+    }
+    &.rotate {
+      transform: rotate(180deg);
+    }
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

@@ -1,0 +1,6 @@
+@import "../../abstract/mixins.scss";
+@import "../../abstract/variables.scss";
+
+.signUpContainer {
+  @include LoginOrSingUp;
+}

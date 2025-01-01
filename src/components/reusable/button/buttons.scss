@@ -1,0 +1,62 @@
+@import "../../abstract/mixins.scss";
+@import "../../abstract/variables.scss";
+
+.btn {
+  cursor: pointer;
+  border-radius: 8px;
+  &--primary {
+    background-color: $color-grey-900;
+    color: $color-white;
+    border: none;
+
+    &:hover {
+      background-color: $color-grey-500;
+    }
+  }
+  &--secondary {
+    border: 1px solid $color-beige-100;
+    background-color: $color-beige-100;
+    color: $color-grey-900;
+    &:hover {
+      background-color: $color-white;
+      border-color: $color-grey-900;
+    }
+  }
+  &--tertiary {
+    border: none;
+    color: $color-grey-500;
+    background-color: unset;
+    @include flex($align: center);
+    height: 21px;
+    width: 102px;
+    img {
+      margin-left: $size-10;
+    }
+    &:hover {
+      color: $color-grey-900;
+    }
+  }
+  &--destroy {
+    background-color: $color-red;
+    border: none;
+    color: $color-white;
+    &:hover {
+      background-color: rgba($color-red, 0.7);
+    }
+  }
+  &--small {
+  }
+  &--large {
+    width: 129px;
+    height: 53px;
+  }
+  &--word {
+    border: none;
+    @include text-preset-4;
+    color: $color-grey-500 !important;
+    background-color: $color-white;
+    &:hover {
+      color: $color-grey-900 !important;
+    }
+  }
+}

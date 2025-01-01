@@ -1,0 +1,268 @@
+@import "../../abstract/mixins.scss";
+@import "../../abstract/variables.scss";
+.billContainer {
+  background-color: $color-beige-100;
+  @include respond-to-max(tablet) {
+    margin-bottom: 3rem;
+  }
+  h1 {
+    color: $color-grey-900;
+  }
+
+  .billContent {
+    @include flex;
+    margin-top: $size-32;
+    @include respond-to-max(tablet) {
+      display: block;
+    }
+    .left {
+      @include respond-to-max(tablet) {
+        @include flex($justify: space-between, $align: center);
+        margin-bottom: $size-24;
+      }
+      @include respond-to-max(mobile) {
+        display: block;
+      }
+      .total {
+        @include respond-to-max(tablet) {
+          width: 49%;
+          min-height: 204px;
+          min-width: auto;
+        }
+        @include respond-to-max(mobile) {
+          width: 100%;
+          @include flex($align: center);
+          margin-bottom: $size-16;
+          min-height: 118px;
+          img {
+            width: 40px;
+          }
+          > div {
+            @include respond-to-max(mobile) {
+              margin-left: $size-20;
+              word-break: break-all;
+            }
+          }
+        }
+        color: $color-white;
+        background-color: $color-grey-900;
+        min-width: 337px;
+        width: 100%;
+        border-radius: $size-12;
+        padding: $size-24;
+        @include flex(
+          $align: flex-start,
+          $direction: column,
+          $justify: space-between
+        );
+        p {
+          @include text-preset-4;
+          margin-bottom: $size-11;
+          margin-top: $size-32;
+          @include respond-to-max(mobile) {
+            margin-top: 0;
+          }
+        }
+        div {
+          @include text-preset-1;
+        }
+      }
+      .summary {
+        @include respond-to-max(tablet) {
+          width: 49%;
+          margin-top: 0;
+          min-height: 204px;
+        }
+        @include respond-to-max(mobile) {
+          width: 100%;
+        }
+        background-color: $color-white;
+        border-radius: $size-12;
+        padding: $size-20;
+        width: 337px;
+        width: 100%;
+
+        margin-top: $size-24;
+        @include flex(
+          $align: flex-start,
+          $direction: column,
+          $justify: space-between
+        );
+        > div {
+          width: 100%;
+        }
+        h3 {
+          @include text-preset-3;
+          color: $color-grey-900;
+          margin-bottom: $size-20;
+        }
+        .paid {
+          padding-bottom: $size-16;
+        }
+        .upcoming {
+          padding: $size-16 0;
+        }
+        .soon {
+          padding-top: $size-16;
+        }
+        .paid,
+        .upcoming {
+          border-bottom: 1px solid $color-grey-100;
+        }
+        .paid,
+        .upcoming,
+        .soon {
+          @include text-preset-5;
+          color: $color-grey-500;
+          width: 100%;
+          @include flex($justify: space-between);
+          span {
+            color: $color-grey-900;
+            @include text-preset-5-bold;
+          }
+        }
+        .soon {
+          color: $color-red;
+          span {
+            color: $color-red;
+          }
+        }
+      }
+    }
+    .bills {
+      background-color: $color-white;
+      color: $color-grey-900;
+      border-radius: $size-12;
+      padding: $size-32;
+      @include respond-to-max(mobile) {
+        padding: $size-32 $size-16;
+      }
+      width: 100%;
+      margin-left: $size-24;
+      @include respond-to-max(tablet) {
+        margin-left: 0;
+      }
+      .searchFilter {
+        @include flex($align: center, $justify: space-between);
+        .searchContainer {
+          width: 40%;
+          @include respond-to-max(tablet) {
+            width: 60%;
+          }
+          @include respond-to-max(mobile) {
+            width: 70%;
+          }
+          input {
+            width: 100%;
+          }
+        }
+        .filterSelect {
+          @include flex($align: center);
+
+          .selectWrapper {
+            min-width: 125px;
+            @include respond-to-max(tablet) {
+              min-width: 100px;
+            }
+
+            @include respond-to-max(mobile) {
+              min-width: 0;
+            }
+          }
+          label {
+            width: 100%;
+            margin-right: $size-8;
+          }
+        }
+      }
+      ul {
+        li {
+          @include flex($justify: space-between, $align: center);
+          @include text-preset-5;
+          color: $color-grey-900;
+          padding: $size-20 $size-16;
+          border-bottom: 1px solid $color-grey-100;
+          @include respond-to-max(mobile) {
+            padding: $size-18 $size-12;
+            @include flex($justify: space-between, $align: flex-end);
+          }
+          .nameAndImg {
+            @include flex($align: center);
+            width: 50%;
+            @include text-preset-4-bold;
+            @include respond-to-max(mobile) {
+              width: 100%;
+              @include text-preset-5-bold;
+            }
+            img,
+            .billAvatarColor {
+              width: 32px;
+              height: 32px;
+              border-radius: 50%;
+              margin-right: $size-8;
+            }
+            @include respond-to-max(mobile) {
+              display: block;
+              > div {
+                width: 100%;
+                @include flex($align: center);
+              }
+              .date {
+                width: 100%;
+                margin-top: $size-8;
+                img {
+                  width: $size-16;
+                  height: $size-16;
+                }
+              }
+            }
+          }
+          .date {
+            width: 25%;
+            @include flex($align: center);
+            text-align: left;
+            @include text-preset-5;
+            img {
+              margin-left: $size-8;
+            }
+            &.paid {
+              color: $color-green;
+            }
+          }
+          .amount {
+            width: 25%;
+            text-align: right;
+            color: $color-grey-900;
+            &.dueSoon {
+              color: $color-red;
+            }
+            @include text-preset-4-bold;
+          }
+          &:nth-child(2) {
+            padding-top: 0;
+            @include respond-to-max(mobile) {
+              padding: $size-18 $size-12;
+            }
+          }
+          &:nth-child(1) {
+            padding: 0;
+            @include respond-to-max(mobile) {
+              padding: $size-18 $size-12;
+              margin-top: $size-24;
+            }
+          }
+        }
+        .categories {
+          margin: $size-24 0;
+          padding: $size-12 $size-16 !important;
+          .nameAndImg,
+          .date,
+          .amount {
+            @include text-preset-5;
+            color: $color-grey-500;
+          }
+        }
+      }
+    }
+  }
+}

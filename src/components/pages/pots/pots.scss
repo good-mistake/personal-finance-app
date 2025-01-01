@@ -1,0 +1,118 @@
+@import "../../abstract/mixins.scss";
+@import "../../abstract/variables.scss";
+.potsContainer {
+  background-color: $color-beige-100;
+  @include respond-to-max(tablet) {
+    margin-bottom: 3rem;
+  }
+  .potsHeader {
+    @include flex($justify: space-between, $align: center);
+    h1 {
+      font-size: $size-32;
+      line-height: 120%;
+      font-weight: bold;
+      color: $color-grey-900;
+    }
+    button {
+      font-size: $size-14;
+      line-height: 150%;
+      font-weight: $font-weight-bold;
+    }
+  }
+  .pots {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: $size-32;
+    @include respond-to-max(tablet) {
+      display: block;
+    }
+    .potsInfo {
+      padding: $size-24;
+      background-color: $color-white;
+      border-radius: $size-12;
+      @include respond-to-max(tablet) {
+        margin-bottom: $size-32;
+      }
+      .potsInfoHeader {
+        @include flex($justify: space-between);
+        h5 {
+          @include flex($align: center);
+          font-size: $size-20;
+          color: $color-grey-900;
+          font-weight: $font-weight-bold;
+          span {
+            margin-right: $size-14;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+          }
+        }
+        button {
+          background-color: inherit;
+          border: none;
+        }
+      }
+      .potsInfoContent {
+        margin: $size-32 0;
+        .target,
+        .totalSaved {
+          @include flex($justify: space-between, $align: center);
+        }
+        .totalSaved {
+          margin-bottom: $size-16;
+          span {
+            @include text-preset-4;
+            color: $color-grey-500;
+          }
+          p {
+            @include text-preset-1;
+            color: $color-grey-900;
+          }
+        }
+        .target {
+          margin-top: $size-13;
+          span {
+            @include text-preset-5-bold;
+            color: $color-grey-500;
+          }
+          p {
+            @include text-preset-5;
+          }
+        }
+      }
+      .potsInfoFooter {
+        @include flex($justify: space-between);
+        flex-wrap: wrap;
+        button {
+          width: 48%;
+          @include text-preset-4-bold;
+          color: $color-grey-900;
+        }
+      }
+    }
+  }
+
+  .modalOverlay {
+    @include modal-overlay;
+    .modal {
+      @include modal;
+    }
+  }
+  .dropDownContainer {
+    @include dropDownContainer;
+    .dropdownMenu {
+      @include dropDownMenu;
+    }
+  }
+}
+@keyframes dropdownAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(-10%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

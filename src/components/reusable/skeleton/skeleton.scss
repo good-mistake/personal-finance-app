@@ -1,0 +1,442 @@
+@import "../../abstract/variables.scss";
+.skeletonPot {
+  padding: 24px;
+  background-color: $color-white;
+  border-radius: 12px;
+  animation: shimmer 1.5s infinite;
+
+  .skeletonPotHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .circle {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: $color-grey-100;
+    }
+
+    .title {
+      flex: 1;
+      height: 20px;
+      margin-left: 14px;
+      background: $color-grey-100;
+      border-radius: 4px;
+    }
+  }
+
+  .skeletonPotContent {
+    margin: 32px 0;
+
+    .totalSaved {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      .label,
+      .amount {
+        height: 16px;
+        background: $color-grey-100;
+        border-radius: 4px;
+      }
+
+      .label {
+        width: 50%;
+      }
+
+      .amount {
+        width: 30%;
+      }
+    }
+
+    .progressBar {
+      width: 100%;
+      height: 12px;
+      background: $color-grey-100;
+      border-radius: 6px;
+    }
+  }
+
+  .skeletonPotFooter {
+    display: flex;
+    justify-content: space-between;
+
+    .button {
+      width: 48%;
+      height: 40px;
+      background: $color-grey-100;
+      border-radius: 8px;
+    }
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+.transactionContainer {
+  background-color: var(--color-beige-100);
+
+  .skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    &-heading,
+    &-button,
+    &-search,
+    &-filter,
+    &-name,
+    &-category,
+    &-date,
+    &-amount,
+    &-pagination {
+      background: linear-gradient(
+        90deg,
+        var(--color-grey-100) 25%,
+        var(--color-grey-200) 50%,
+        var(--color-grey-100) 75%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    &-heading {
+      width: 30%;
+      height: 1.5rem;
+    }
+
+    &-button {
+      width: 10rem;
+      height: 2.5rem;
+      border-radius: 8px;
+    }
+
+    &-search {
+      width: 40%;
+      height: 2.5rem;
+      border-radius: 8px;
+    }
+
+    &-filter {
+      width: 20%;
+      height: 2.5rem;
+      border-radius: 8px;
+
+      &:not(:last-child) {
+        margin-right: 1rem;
+      }
+    }
+
+    &-transaction {
+      display: flex;
+      gap: 1rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--color-grey-100);
+
+      .skeleton-name {
+        width: 40%;
+        height: 2rem;
+      }
+
+      .skeleton-category,
+      .skeleton-date {
+        width: 15%;
+        height: 1.5rem;
+      }
+
+      .skeleton-amount {
+        width: 20%;
+        height: 1.5rem;
+      }
+    }
+
+    &-pagination {
+      width: 100%;
+      height: 2rem;
+      border-radius: 8px;
+    }
+  }
+
+  .shimmer {
+    animation: shimmer 1.5s infinite;
+    background: linear-gradient(
+      90deg,
+      var(--color-grey-100) 25%,
+      var(--color-grey-200) 50%,
+      var(--color-grey-100) 75%
+    );
+    background-size: 200% 100%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.budgetContainerSkeleton {
+  background-color: $color-beige-100;
+  .budgetHeaderSkeleton,
+  .budgetContentSkeleton {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: $size-8;
+    }
+  }
+
+  .budgetHeaderSkeleton {
+    .headerSkeleton {
+      height: $size-32;
+      width: 40%;
+    }
+    .buttonSkeleton {
+      height: $size-40;
+      width: 20%;
+    }
+  }
+
+  .budgetContentSkeleton {
+    margin-top: $size-32;
+
+    .leftSkeleton,
+    .rightSkeleton {
+      padding: $size-32;
+      background-color: $color-white;
+      border-radius: $size-12;
+    }
+
+    .leftSkeleton {
+      width: 35%;
+      .pieChartSkeleton {
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+        margin: 0 auto;
+      }
+      .summarySkeleton {
+        margin-top: $size-32;
+        .summaryLine {
+          height: $size-16;
+          margin-bottom: $size-16;
+          width: 80%;
+        }
+      }
+    }
+
+    .rightSkeleton {
+      width: 60%;
+      gap: 1rem;
+      display: flex;
+      flex-direction: column;
+
+      .categorySkeleton {
+        margin-bottom: $size-24;
+
+        .headerSkeleton {
+          height: $size-32;
+          margin-bottom: $size-16;
+        }
+        .lineSkeleton {
+          height: $size-24;
+          width: 100%;
+          border-radius: $size-4;
+          margin: $size-16 0;
+        }
+        .spentRemainSkeleton {
+          display: flex;
+          justify-content: space-between;
+          .themeSkeleton {
+            width: 15%;
+            height: $size-24;
+            margin-right: $size-16;
+          }
+          .textSkeleton {
+            height: $size-16;
+            width: 40%;
+          }
+        }
+      }
+      .transactionListSkeleton {
+        .transactionSkeleton {
+          margin-top: $size-20;
+          height: $size-32;
+        }
+      }
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
+}
+
+.skeletonBill {
+  .billRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+
+    .label {
+      width: 70%;
+      height: 16px;
+      background: $color-grey-100;
+      border-radius: 4px;
+    }
+
+    .status {
+      width: 20%;
+      height: 16px;
+      background: $color-grey-100;
+      border-radius: 4px;
+    }
+  }
+}
+.skeletonReccontainer {
+  .skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  .skeletonHeader {
+    margin-bottom: 16px;
+  }
+
+  .skeletonTitle {
+    height: 20px;
+    width: 150px;
+    margin-bottom: 8px;
+  }
+
+  .skeletonSubtitle {
+    height: 16px;
+    width: 100px;
+  }
+
+  .skeletonBills {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .skeletonBill {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #f0f0f0;
+    border-radius: 6px;
+  }
+
+  .skeletonName {
+    height: 14px;
+    width: 120px;
+  }
+
+  .skeletonDate {
+    height: 14px;
+    width: 90px;
+  }
+
+  .skeletonAmount {
+    height: 14px;
+    width: 60px;
+  }
+}
+.skeleton-home {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+
+  .shimmer {
+    animation: shimmer 1.5s infinite;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+  }
+
+  .skeleton-header {
+    width: 50%;
+    height: 2rem;
+    border-radius: 0.5rem;
+  }
+
+  .skeleton-top-section {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+
+    .skeleton-card {
+      flex: 1;
+      height: 6rem;
+      border-radius: 0.5rem;
+    }
+  }
+
+  .skeleton-bottom-section {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+
+    .skeleton-left,
+    .skeleton-right {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      flex: 1;
+
+      .skeleton-box {
+        height: 10rem;
+        border-radius: 0.5rem;
+      }
+    }
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}

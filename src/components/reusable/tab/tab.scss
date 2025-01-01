@@ -1,0 +1,27 @@
+@import "../../abstract/mixins.scss";
+@import "../../abstract/variables.scss";
+.tab {
+  width: 145px;
+  height: 61px;
+  @include flex($align: center, $justify: center);
+  cursor: pointer;
+  img {
+    width: 16px;
+    height: 16px;
+    margin-right: $size-8;
+  }
+  border-bottom: 3px solid $color-white;
+
+  color: $color-grey-500;
+  &:hover {
+    color: $color-grey-900;
+    border-bottom: 3px solid $color-grey-900;
+  }
+  &:active {
+    background-color: $color-grey-900;
+    color: $color-white;
+    img {
+      content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAATElEQVR4nO3UsQkAIRAF0S1Psf8G9PoYE0EwvINTYV66yWeDiZBOAxTgARqQdwxoTHW5fXbFgDxGVCC9eqN0NQwRhkjaDEOEIZLiVx27dkqcH3m9qgAAAABJRU5ErkJggg==");
+    }
+  }
+}

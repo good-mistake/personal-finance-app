@@ -1,0 +1,27 @@
+@import "../../abstract/mixins.scss";
+@import "../../abstract/variables.scss";
+
+.searchContainer {
+  position: relative;
+  input {
+    padding: $size-12 $size-20;
+    border-radius: $size-8;
+    width: 100%;
+    outline: none;
+    border: 1px solid $color-grey-500;
+    @include text-preset-4;
+    color: $color-grey-900;
+    @include respond-to-max(tablet) {
+      padding: $size-12 $size-8;
+    }
+  }
+  img {
+    position: absolute;
+    top: 50%;
+    right: $size-20;
+    width: 16px;
+    transform: translateY(-50%);
+
+    height: 16px;
+  }
+}

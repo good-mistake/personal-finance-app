@@ -1,0 +1,100 @@
+@import "../../abstract/mixins.scss";
+@import "../../abstract/variables.scss";
+.pagination {
+  @include flex($align: center, $justify: space-between);
+  padding-top: $size-24;
+  margin-top: $size-24;
+  button {
+    cursor: pointer;
+    justify-content: center;
+  }
+  .prev {
+    button {
+      @include flex(
+        $direction: row-reverse,
+        $align: center,
+        $justify: space-between
+      );
+      height: 40px;
+      @include respond-to-max(mobile) {
+        justify-content: center;
+        height: 35px;
+        width: 40px;
+        > span {
+          display: none;
+        }
+      }
+      img {
+        rotate: 180deg;
+        margin-right: $size-16;
+        @include respond-to-max(mobile) {
+          margin-right: 0;
+          margin-left: 0;
+        }
+      }
+    }
+  }
+  .next {
+    button {
+      height: 40px;
+      width: 100px;
+
+      @include flex($direction: row, $align: center, $justify: space-between);
+
+      @include respond-to-max(mobile) {
+        justify-content: center;
+        height: 35px;
+        width: 40px;
+        > span {
+          display: none;
+        }
+      }
+      img {
+        margin-left: $size-16;
+        @include respond-to-max(mobile) {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+  button {
+    padding: $size-16 $size-16;
+    border-radius: $size-8;
+    color: $color-grey-900;
+    border: 1px solid $color-beige-500;
+    @include text-preset-4;
+  }
+  .pages {
+    @include flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    button {
+      width: 40px;
+      height: 40px;
+      @include respond-to-max(mobile) {
+        width: 35px;
+        height: 35px;
+      }
+      img {
+        display: none;
+      }
+      &:not(:first-child) {
+        margin-left: $size-8;
+        @include respond-to-max(mobile) {
+          margin-left: 5px;
+        }
+      }
+      &:hover {
+        background-color: $color-grey-500;
+        color: $color-white;
+      }
+    }
+    .sm {
+      width: 20px;
+    }
+  }
+  .active {
+    background-color: $color-grey-900;
+    color: $color-white;
+  }
+}

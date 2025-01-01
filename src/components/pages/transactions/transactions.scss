@@ -1,0 +1,214 @@
+@import "../../abstract/mixins.scss";
+@import "../../abstract/variables.scss";
+
+.transactionContainer {
+  background-color: $color-beige-100;
+  @include respond-to-max(tablet) {
+    margin-bottom: 4rem;
+  }
+  @include respond-to-max(mobile) {
+    margin-bottom: 2rem;
+  }
+  .modalOverlay {
+    @include modal-overlay;
+    .modal {
+      @include modal;
+      .categorySpan {
+        display: none !important;
+      }
+      > p {
+        text-align: left;
+        width: 100%;
+      }
+    }
+  }
+  h1 {
+    color: $color-grey-900;
+    @include respond-to-max(mobile) {
+      margin-top: 2rem;
+    }
+  }
+  .transactionHeader {
+    @include flex($justify: space-between);
+    @include respond-to-max(mobile) {
+      justify-content: flex-end;
+    }
+    h1 {
+      @include text-preset-1;
+      color: $color-grey-900;
+    }
+    button {
+      @include text-preset-4-bold;
+      width: 155px;
+    }
+  }
+  .transactions {
+    background-color: $color-white;
+    border-radius: $size-12;
+    padding: $size-32;
+    margin-top: $size-32;
+    @include respond-to-max(tablet) {
+      padding: $size-32 $size-20;
+    }
+    @include respond-to-max(mobile) {
+      padding: $size-24 $size-14;
+    }
+    .searchAndFilters {
+      @include flex($justify: space-between, $align: center);
+      .search {
+        width: 40%;
+        @include respond-to-max(tablet) {
+          width: 25%;
+        }
+        @include respond-to-max(mobile) {
+          width: 80%;
+        }
+      }
+      .filters {
+        width: 60%;
+        @include respond-to-max(tablet) {
+          width: 80%;
+        }
+        @include flex($justify: flex-end);
+        .filterSelect {
+          @include flex($align: center);
+          label {
+            @include text-preset-4;
+            color: $color-grey-500;
+            margin-right: $size-8;
+          }
+        }
+        > div {
+          &:first-child {
+            margin-right: $size-24;
+            @include respond-to-max(tablet) {
+              margin-right: $size-16;
+            }
+          }
+        }
+      }
+    }
+    .details {
+      ul {
+        li {
+          @include flex($justify: space-between, $align: center);
+          padding: $size-16 $size-16;
+          border-bottom: 1px solid $color-grey-100;
+          position: relative;
+          @include respond-to-max(mobile) {
+            padding: $size-12 0;
+          }
+          .nameAndImg {
+            width: 40%;
+            @include flex($align: center);
+            text-align: left;
+            cursor: pointer;
+
+            h3 {
+              @include text-preset-4-bold;
+              color: $color-grey-900;
+              margin-left: $size-12;
+              &:first-child {
+                margin-left: 0;
+              }
+            }
+            .transactionAvatarColor {
+              border-radius: 50%;
+              width: $size-32;
+              height: $size-32;
+              opacity: 0.9;
+            }
+            .nameAndCategoryMobile {
+              h3,
+              .category {
+                width: 100%;
+                margin-left: $size-12;
+              }
+            }
+            img {
+              border-radius: 50%;
+              width: 40px;
+              height: 40px;
+            }
+            @include respond-to-max(mobile) {
+              width: 70%;
+            }
+          }
+          .dropDownTransaction {
+            position: absolute !important;
+            left: 75px;
+            top: 25px;
+            z-index: 1;
+            @include dropDownContainer;
+            button {
+              background-color: inherit;
+              border: none;
+            }
+            .dropdownMenu {
+              @include dropDownMenu;
+              min-width: 140px;
+              top: 25px;
+              left: 0;
+              right: unset;
+            }
+          }
+
+          .dateAndAmountMobile {
+            .date,
+            .amount {
+              width: 100%;
+              text-align: right;
+            }
+            @include flex($direction: column, $justify: flex-end);
+          }
+          .category,
+          .date {
+            width: 15%;
+            text-align: left;
+            @include text-preset-5;
+            color: $color-grey-500;
+            @include flex($justify: space-between);
+          }
+
+          .amount {
+            width: 20%;
+            text-align: right;
+            @include text-preset-4-bold;
+            &.positive {
+              color: $color-green;
+            }
+            &.negative {
+              color: $color-grey-900;
+            }
+          }
+          &:first-child {
+            margin: $size-24 0;
+            .nameAndImg {
+              h3 {
+                @include text-preset-5;
+                color: $color-grey-500;
+                @include respond-to-max(mobile) {
+                  @include text-preset-4-bold;
+                  color: $color-grey-900;
+                }
+              }
+            }
+            .amount {
+              @include text-preset-5;
+              color: $color-grey-500;
+              @include respond-to-max(mobile) {
+                @include text-preset-4-bold;
+                &.negative {
+                  color: $color-grey-900;
+                }
+                &.positive {
+                  color: $color-green;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

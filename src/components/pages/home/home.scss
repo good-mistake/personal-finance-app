@@ -1,0 +1,314 @@
+@import "../../abstract/mixins.scss";
+@import "../../abstract/variables.scss";
+.homeContainer {
+  background-color: $color-beige-100;
+
+  .content {
+    @include respond-to-max(tablet) {
+      margin-bottom: $size-24;
+    }
+    h1 {
+      @include text-preset-1;
+      color: $color-grey-900;
+    }
+    .topSection {
+      margin: $size-32 0;
+      @include flex($justify: space-between);
+
+      @include respond-to-max(tablet) {
+        flex-wrap: wrap;
+      }
+      @include respond-to-max(mobile) {
+        display: block;
+      }
+      > div {
+        background-color: $color-white;
+        padding: $size-24;
+        border-radius: $size-12;
+        width: 32%;
+        @include respond-to-max(mobile) {
+          width: 100%;
+          margin-bottom: $size-12;
+          padding: $size-24 $size-20;
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+        h5 {
+          @include text-preset-4;
+          color: $color-grey-500;
+        }
+        h3 {
+          @include text-preset-1;
+          color: $color-grey-900;
+          margin-top: $size-12;
+          word-break: break-word;
+        }
+        &:first-child {
+          background-color: $color-grey-900;
+          h5 {
+            color: $color-white;
+          }
+          h3 {
+            color: $color-white;
+          }
+        }
+      }
+    }
+    .bottomSection {
+      @include flex($justify: space-between);
+      .left {
+        width: 60%;
+        margin-right: $size-24;
+        @include respond-to-max(tablet) {
+          width: 100%;
+        }
+        .potsSummary {
+          margin-bottom: $size-24;
+          .potsSummaryContent {
+            @include flex;
+            @include respond-to-max(mobile) {
+              display: block;
+            }
+            .totalSaved {
+              width: 50%;
+              height: 110px;
+              margin-right: $size-20;
+              background-color: $color-beige-100;
+              padding: $size-16;
+              border-radius: $size-12;
+              @include flex($align: center);
+              @include respond-to-max(mobile) {
+                width: 100%;
+                margin-bottom: $size-20;
+              }
+              p {
+                margin-left: $size-16;
+                @include text-preset-4;
+                span {
+                  display: block;
+                  @include text-preset-1;
+                  color: $color-grey-900;
+                }
+              }
+            }
+            .potsPreview {
+              width: 50%;
+              @include flex($align: center);
+              flex-wrap: wrap;
+              @include respond-to-max(mobile) {
+                width: 100%;
+              }
+              .potCard {
+                @include flex;
+                width: 50%;
+                &:nth-child(1),
+                &:nth-child(2) {
+                  margin-bottom: $size-16;
+                }
+                > div {
+                  border-left: 4px solid;
+                  border-radius: 8px;
+                  margin-right: 16px;
+                }
+
+                p {
+                  @include text-preset-5;
+                  color: $color-grey-500;
+                  span {
+                    @include text-preset-4-bold;
+                    color: $color-grey-900;
+                    display: block;
+                    margin-top: $size-4;
+                  }
+                }
+              }
+            }
+          }
+        }
+        .transactionSummary {
+          ul {
+            li {
+              @include flex($justify: space-between);
+              padding: $size-20 0;
+
+              .nameAndImg {
+                width: 40%;
+                @include flex($align: center);
+                text-align: left;
+                cursor: pointer;
+
+                h3 {
+                  @include text-preset-4-bold;
+                  color: $color-grey-900;
+                  margin-left: $size-12;
+                  &:first-child {
+                    margin-left: 0;
+                  }
+                }
+                .transactionAvatarColor {
+                  border-radius: 50%;
+                  width: $size-32;
+                  height: $size-32;
+                  opacity: 0.9;
+                }
+                img {
+                  border-radius: 50%;
+                  width: 40px;
+                  height: 40px;
+                }
+                h4 {
+                  @include text-preset-4-bold;
+                  color: $color-grey-900;
+                  margin-left: $size-14;
+                }
+              }
+              .amountAndDate {
+                text-align: right;
+                p {
+                  @include text-preset-5;
+                  &.positive {
+                    @include text-preset-4-bold;
+                    color: $color-green;
+                    margin-bottom: $size-4;
+                  }
+                  &.negative {
+                    @include text-preset-4-bold;
+                    color: $color-grey-900;
+                    margin-bottom: $size-4;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      .right {
+        width: 40%;
+        @include respond-to-max(tablet) {
+          width: 100%;
+          margin-top: $size-24;
+          margin-bottom: $size-32;
+        }
+        @include flex($direction: column, $justify: space-between);
+        .budgetsSummary {
+          margin-bottom: $size-24;
+
+          .budgetSummaryContent {
+            @include flex($align: center, $justify: center);
+            flex-wrap: wrap;
+            @include respond-to-max(tablet) {
+              @include flex($align: center, $justify: space-around);
+            }
+            .pieChartContainer {
+              .pieChart {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                min-width: 240px;
+                min-height: 240px;
+                border-radius: 50%;
+                outline: 1px solid #ccc;
+                box-sizing: border-box;
+
+                p {
+                  position: absolute;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  @include text-preset-5;
+                  color: $color-grey-500;
+                  span {
+                    display: block;
+                    text-align: center;
+                    @include text-preset-1;
+                    color: $color-grey-900;
+                    margin-bottom: $size-8;
+                  }
+                }
+              }
+            }
+
+            ul {
+              margin-left: $size-16;
+              margin-top: $size-20;
+              li {
+                @include flex;
+                margin-bottom: $size-16;
+                @include text-preset-5;
+
+                div {
+                  border-left: 4px solid;
+                  border-radius: 8px;
+                  margin-right: 16px;
+                }
+                span {
+                  display: block;
+                  @include text-preset-4-bold;
+                  color: $color-grey-900;
+                  margin-top: $size-4;
+                }
+              }
+            }
+          }
+        }
+        .recurringBillsSummary {
+          .summaryContent {
+            p {
+              @include flex($justify: space-between);
+              padding: $size-20 $size-16;
+              background-color: $color-beige-100;
+              margin-bottom: $size-12;
+              border-radius: $size-8;
+              @include text-preset-4;
+              color: $color-grey-500;
+
+              span {
+                @include text-preset-4-bold;
+                color: $color-grey-900;
+              }
+              &.paid {
+                border-left: 5px solid $color-green;
+              }
+              &.upcoming {
+                border-left: 5px solid $color-yellow;
+              }
+              &.soon {
+                border-left: 5px solid $color-cyan;
+              }
+            }
+          }
+        }
+      }
+
+      .potsSummary,
+      .transactionSummary,
+      .budgetsSummary,
+      .recurringBillsSummary {
+        background-color: $color-white;
+        padding: $size-32;
+        border-radius: $size-12;
+        @include respond-to-max(mobile) {
+          padding: $size-24 $size-20;
+        }
+      }
+      .summaryHeader {
+        @include flex($align: center, $justify: space-between);
+        margin-bottom: $size-20;
+        h3 {
+          color: $color-grey-900;
+          @include text-preset-2;
+        }
+        button {
+          color: $color-grey-500;
+          @include text-preset-4;
+          @include flex($align: center, $justify: flex-end);
+        }
+      }
+      @include respond-to-max(tablet) {
+        display: block;
+        width: 100%;
+      }
+    }
+  }
+}

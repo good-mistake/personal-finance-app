@@ -1,0 +1,61 @@
+@import "../../../abstract/mixins.scss";
+@import "../../../abstract/variables.scss";
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background-color: $color-beige-100;
+  border-radius: 4px;
+  margin: 0 auto;
+
+  &--current {
+    background-color: $color-grey-900;
+    height: 8px;
+    border-radius: 4px;
+  }
+  &--future {
+    border-radius: 0 4px 4px 0;
+    margin-left: 3px;
+    height: 8px;
+  }
+  > div {
+    @include flex;
+
+    .openModal {
+      border-radius: 4px 0 0 4px;
+    }
+  }
+}
+.progressBarContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+
+  span {
+    font-size: 14px;
+    margin-top: 5px;
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .targetAndAmount {
+    @include flex($align: center);
+    width: 100%;
+    margin-top: $size-13;
+    span {
+      &:first-child {
+        text-align: left;
+        @include text-preset-5-bold;
+        color: $color-grey-500;
+      }
+      &:nth-child(2) {
+        text-align: right;
+        @include text-preset-5;
+        color: $color-grey-500;
+      }
+    }
+  }
+}

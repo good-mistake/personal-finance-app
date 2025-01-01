@@ -1,0 +1,518 @@
+@mixin flex($direction: row, $justify: flex-start, $align: stretch) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+}
+@mixin respond-min($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+@mixin text-preset-1 {
+  font-size: $size-32;
+  line-height: 120%;
+  letter-spacing: 0;
+  font-weight: $font-weight-bold;
+}
+@mixin text-preset-2 {
+  font-size: $size-20;
+  line-height: 120%;
+  letter-spacing: 0;
+  font-weight: $font-weight-bold;
+}
+@mixin text-preset-3 {
+  font-size: $size-16;
+  line-height: 150%;
+  letter-spacing: 0;
+  font-weight: $font-weight-bold;
+}
+@mixin text-preset-4 {
+  font-size: $size-14;
+  line-height: 150%;
+  letter-spacing: 0;
+  font-weight: $font-weight-regular;
+}
+@mixin text-preset-4-bold {
+  font-size: $size-14;
+  line-height: 150%;
+  letter-spacing: 0;
+  font-weight: $font-weight-bold;
+}
+@mixin text-preset-5 {
+  font-size: $size-12;
+  line-height: 150%;
+  letter-spacing: 0;
+  font-weight: $font-weight-regular;
+}
+@mixin text-preset-5-bold {
+  font-size: $size-12;
+  line-height: 150%;
+  letter-spacing: 0;
+  font-weight: $font-weight-bold;
+}
+@mixin modal-overlay($z-index: 999, $background-color: rgba(0, 0, 0, 0.5)) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: $background-color;
+  @include flex($align: center, $justify: center);
+  z-index: $z-index;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+
+  &.open,
+  &.opening {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  &.closing {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+@mixin modal {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 400px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 580px;
+  width: 100%;
+  gap: 0.45rem;
+  margin-top: 2%;
+  opacity: 0;
+  @include respond-to-max(tablet) {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  @include respond-to-max(mobile) {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  &.open,
+  &.opening {
+    opacity: 1;
+    transform: scale(0.85);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  &.closing {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  .modalHeader {
+    @include flex;
+    img {
+      cursor: pointer;
+    }
+  }
+  h2 {
+    @include text-preset-1;
+    text-align: left;
+    width: 100%;
+  }
+  p,
+  .addItemName > div {
+    @include text-preset-4;
+    color: $color-grey-500;
+  }
+  .addItemName {
+    @include flex($direction: column);
+    > div {
+      margin-top: $size-4;
+      align-self: flex-end;
+    }
+  }
+  .transactionButton {
+    width: 14%;
+    border: none;
+    height: 51px;
+    color: $color-white;
+    background-color: $color-grey-900;
+    font-size: $size-12;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .transactionButton:hover {
+    background-color: #e6e6e6;
+  }
+
+  .transactionButton.active {
+    background-color: #4caf50;
+    color: white;
+    border-color: #4caf50;
+  }
+
+  .transactionButton.active.send {
+    background-color: #f44336;
+    border-color: #f44336;
+  }
+  .addAmount {
+    .amountInputWrapper {
+      @include flex($align: center, $justify: space-between);
+      position: relative;
+      background-color: #f9f9f9;
+      input {
+        padding-left: 16%;
+      }
+      .receiveBtn {
+        margin: 0;
+        top: 0px;
+        left: 0px;
+        border-radius: 8px 0px 0px 8px;
+        position: absolute;
+      }
+      .sentBtn {
+        margin: 0;
+        top: 0px;
+        right: 0;
+        position: absolute;
+        border-radius: 0px 8px 8px 0px;
+      }
+    }
+  }
+  .dateAndCategory {
+    @include flex($align: center, $justify: space-between);
+    input {
+      padding: 9px 24px;
+    }
+    .colorOptions {
+      width: 35%;
+    }
+    .addDate {
+      width: 60%;
+    }
+  }
+  .newAmount {
+    width: 100%;
+    margin: $size-14 0;
+    @include flex($align: center, $justify: space-between);
+    span {
+      @include text-preset-4;
+    }
+    h2 {
+      width: 50%;
+      text-align: right;
+    }
+  }
+  .amountContainer,
+  .addTarget {
+    width: 100%;
+    position: relative;
+    input {
+      padding: $size-12 $size-32;
+    }
+    span {
+      &::after {
+        content: "$";
+        position: absolute;
+        @include text-preset-4;
+        color: $color-grey-500;
+        top: 50%;
+        left: $size-16;
+      }
+    }
+  }
+  > div {
+    width: 100%;
+  }
+  label,
+  .theme {
+    @include text-preset-5-bold;
+    color: $color-grey-500;
+    display: block;
+    margin-bottom: $size-4;
+    cursor: pointer;
+  }
+  input,
+  select {
+    padding: $size-12 $size-24;
+    outline: none;
+    border-radius: 8px;
+    width: 100%;
+    border: 1px solid $color-grey-500;
+    &[type="number"]::-webkit-outer-spin-button,
+    &[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+  button {
+    width: 100%;
+    color: $color-white;
+    @include text-preset-4-bold;
+    border-radius: 8px;
+    height: 53px;
+    cursor: pointer;
+    margin-top: $size-13;
+  }
+
+  .colorOptions {
+    .customSelect {
+      position: relative;
+      &.closed {
+        display: none;
+      }
+
+      &.open {
+        display: block;
+      }
+    }
+    .selectedColor {
+      cursor: pointer;
+      padding: $size-12 $size-24;
+      border: 1px solid $color-grey-500;
+      border-radius: 8px;
+      @include text-preset-4;
+      color: $color-grey-900;
+    }
+    .colorAndName {
+      @include flex($align: center);
+    }
+    .options {
+      position: absolute;
+      top: 80px;
+      left: 0;
+      right: 0;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      z-index: 1;
+      border-radius: 8px;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+      overflow-y: auto;
+
+      &.open {
+        max-height: 200px;
+        opacity: 1;
+        overflow-y: auto;
+      }
+      .option {
+        transition: background-color 0.2s;
+        @include flex($align: center, $justify: space-between);
+        padding: $size-12 $size-20;
+        color: $color-grey-900;
+        border-bottom: 1px solid $color-grey-100;
+        @include text-preset-4;
+        .colorAndName {
+          @include flex($align: center, $justify: space-between);
+        }
+      }
+    }
+  }
+}
+@mixin dropDownContainer {
+  position: relative;
+  display: inline-block;
+  > button {
+    cursor: pointer;
+  }
+}
+
+@mixin dropDownMenu {
+  position: absolute;
+  top: 80%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  animation: dropdownAnimation 0.5s ease;
+  min-width: 125px;
+  border-radius: 8px;
+  padding: 0 $size-20;
+  button {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    padding: $size-14 0;
+    border-radius: 8px;
+    @include text-preset-4;
+    &:nth-child(1) {
+      color: $color-grey-900;
+      border-bottom: 1px solid $color-grey-100;
+    }
+    &:nth-child(2) {
+      color: $color-red;
+    }
+  }
+}
+@mixin LoginOrSingUp {
+  @include flex($align: center);
+  background-color: $color-beige-100;
+  @include respond-to-max(tablet) {
+    height: 954px;
+    @include flex($align: center, $justify: center);
+    .tabletLogo {
+      background-color: $color-grey-900;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  @include respond-to-max(mobile) {
+    height: 825px;
+  }
+  .left {
+    background: url("../../../public/images/illustration-authentication.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 920px;
+    height: 120vh;
+    width: 40%;
+    margin: $size-20;
+    border-radius: $size-12;
+    color: $color-white;
+    @include flex($align: flex-end);
+    > div {
+      margin: $size-40;
+      h2 {
+        @include text-preset-1;
+        margin-bottom: $size-24;
+      }
+      p {
+        @include text-preset-4;
+      }
+    }
+    @include respond-to-max(tablet) {
+      display: none;
+    }
+  }
+  .right {
+    @include flex($justify: center);
+    width: 60%;
+    form {
+      background-color: $color-white;
+      border-radius: $size-12;
+      padding: $size-32;
+      width: 70%;
+      h1 {
+        @include text-preset-1;
+        color: $color-grey-900;
+        margin-bottom: $size-32;
+      }
+      label {
+        p {
+          @include text-preset-5-bold;
+          color: $color-grey-500;
+          margin-bottom: 5px;
+        }
+        input {
+          width: 100%;
+          border-radius: $size-8;
+          padding: $size-12 $size-20;
+          outline: none;
+          border: 0.5px solid $color-grey-500;
+        }
+        &:nth-child(1) {
+          input {
+            margin-bottom: $size-24;
+          }
+        }
+      }
+      .pass {
+        position: relative;
+        img {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          right: 15px;
+          cursor: pointer;
+          width: 20px;
+          height: 20px;
+        }
+      }
+      .login {
+        padding: $size-12 $size-20;
+        width: 100%;
+        margin: $size-32 0;
+      }
+      .loading {
+        animation: fade 1.4s infinite;
+      }
+      .signUpLink {
+        text-align: center;
+        @include text-preset-4;
+        color: $color-grey-500;
+        button {
+          background: inherit;
+          border: none;
+          text-decoration: underline;
+          @include text-preset-4-bold;
+          margin-left: $size-4;
+        }
+      }
+      .success,
+      .error {
+        text-align: center;
+        margin-top: $size-32;
+        @include text-preset-4-bold;
+      }
+      .success {
+        color: $color-green;
+        animation: fade-2 1.4s infinite;
+      }
+      .error {
+        color: $color-red;
+      }
+    }
+
+    @include respond-to-max(tablet) {
+      width: 75%;
+      form {
+        width: 100%;
+      }
+    }
+    @include respond-to-max(mobile) {
+      width: 95%;
+    }
+  }
+  @keyframes fade {
+    0% {
+      opacity: 1;
+      background-color: $color-grey-900;
+    }
+    25% {
+      opacity: 1;
+      background-color: $color-grey-500;
+    }
+    75% {
+      opacity: 1;
+      background-color: $color-grey-300;
+    }
+    100% {
+      opacity: 1;
+      background-color: $color-grey-100;
+    }
+  }
+  @keyframes fade-2 {
+    0% {
+      opacity: 1;
+    }
+    25% {
+      opacity: 0.75;
+    }
+    75% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 0.25;
+    }
+  }
+}

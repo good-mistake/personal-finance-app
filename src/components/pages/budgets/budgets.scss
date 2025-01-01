@@ -1,0 +1,307 @@
+@import "../../abstract/mixins.scss";
+@import "../../abstract/variables.scss";
+
+.budgetContainer {
+  background-color: $color-beige-100;
+  @include respond-to-max(tablet) {
+    margin-bottom: 3rem;
+  }
+  .modalOverlay {
+    @include modal-overlay;
+    .modal {
+      @include modal;
+      .categorySpan {
+        display: none !important;
+      }
+      > p {
+        text-align: left;
+        width: 100%;
+      }
+    }
+  }
+  .dropDownContainer {
+    @include dropDownContainer;
+    button {
+      background-color: inherit;
+      border: none;
+    }
+    .dropdownMenu {
+      @include dropDownMenu;
+      min-width: 140px;
+      top: 25px;
+    }
+  }
+  .budgetHeader {
+    @include flex($justify: space-between, $align: center);
+    h3 {
+      @include text-preset-1;
+      color: $color-grey-900;
+      > span {
+        display: block;
+        @include text-preset-5;
+      }
+    }
+    button {
+      @include text-preset-4-bold;
+      width: 155px;
+    }
+  }
+  .budgetContent {
+    @include flex($justify: space-between, $align: flex-start);
+    margin-top: $size-32;
+    @include respond-to-max(tablet) {
+      display: block;
+    }
+    .left {
+      background-color: $color-white;
+      border-radius: $size-12;
+      padding: 28px;
+      width: 35%;
+      @include respond-to-max(tablet) {
+        width: 100%;
+        @include flex($justify: space-between, $align: flex-start);
+        margin-bottom: $size-24;
+        padding: $size-32 $size-24;
+      }
+      @include respond-to-max(mobile) {
+        @include flex(
+          $justify: space-between,
+          $align: center,
+          $direction: column
+        );
+      }
+      .pieChart {
+        position: relative;
+        width: 240px;
+        height: 240px;
+        margin: 0 auto;
+        border-radius: 50%;
+        outline: 1px solid #ccc;
+        p {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          @include text-preset-5;
+          color: $color-grey-500;
+          span {
+            display: block;
+            text-align: center;
+            @include text-preset-1;
+            color: $color-grey-900;
+            margin-bottom: $size-8;
+          }
+        }
+        @include respond-to-max(tablet) {
+          margin: 0;
+        }
+      }
+      .budgetSummaryInfo {
+        margin-top: $size-32;
+        @include respond-to-max(tablet) {
+          width: 50%;
+        }
+        @include respond-to-max(mobile) {
+          width: 100%;
+        }
+        h3 {
+          @include text-preset-2;
+          color: $color-grey-900;
+          margin-bottom: $size-24;
+        }
+        .budgetSummaryInfoContent {
+          @include flex($align: center, $justify: space-between);
+          border-left: 4px solid;
+          margin: $size-16 0;
+
+          .name {
+            padding-left: $size-16;
+            color: $color-grey-500;
+            @include text-preset-4;
+          }
+          .amounts {
+            @include text-preset-5;
+            span {
+              @include text-preset-3;
+              color: $color-grey-900;
+            }
+          }
+          &:nth-child(1) {
+            margin-top: 0;
+          }
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+    .right {
+      width: 60%;
+      @include respond-to-max(tablet) {
+        width: 100%;
+      }
+      .categoryTransactions {
+        background-color: $color-white;
+        margin-bottom: $size-24;
+        border-radius: $size-12;
+        padding: $size-32;
+        @include respond-to-max(mobile) {
+          padding: $size-32 $size-20;
+        }
+        .categoryHeader {
+          @include text-preset-2;
+          color: $color-grey-900;
+          @include flex($align: center, $justify: space-between);
+          .nameAndColor {
+            @include flex($align: center);
+            > div {
+              width: 16px;
+              border-radius: 50%;
+              height: 16px;
+              margin-right: $size-16;
+            }
+          }
+        }
+        .categorySpent {
+          margin: $size-16 0;
+          .max {
+            @include text-preset-4;
+            color: $color-grey-500;
+          }
+          .line {
+            height: $size-32;
+            width: 100%;
+            border-radius: $size-4;
+            background-color: $color-beige-100;
+            margin: $size-16 0;
+            @include flex;
+            > div {
+              height: $size-24;
+              align-self: center;
+              border-radius: $size-4;
+              margin-left: $size-4;
+            }
+          }
+          .spentAndRemain {
+            @include flex($justify: space-between, $align: center);
+            .spent,
+            .remain {
+              width: 100%;
+              @include flex;
+              .theme {
+                border-left: 4px solid;
+                border-radius: $size-8;
+                margin-right: $size-16;
+              }
+              .title {
+                @include text-preset-5;
+                color: $color-grey-500;
+                margin-bottom: $size-4;
+              }
+              .amount {
+                @include text-preset-4-bold;
+                color: $color-grey-900;
+              }
+            }
+            .remain {
+              .themeRemain {
+                border-left: 4px solid $color-beige-100;
+                border-radius: $size-8;
+                margin-right: $size-16;
+              }
+            }
+          }
+        }
+      }
+      .transactionList {
+        background-color: $color-beige-100;
+        border-radius: $size-20;
+        padding: $size-20;
+        margin-top: $size-20;
+        .listHeader {
+          @include flex($justify: space-between);
+          margin-bottom: $size-12;
+          h4 {
+            color: $color-grey-900;
+            @include text-preset-3;
+          }
+          button {
+            justify-content: flex-end;
+          }
+        }
+        .transactionItem {
+          padding: $size-12 0;
+
+          .transactionInfo {
+            @include flex($justify: space-between);
+            .nameAndPic {
+              @include flex($align: center);
+              img,
+              .transactionAvatarColor {
+                width: $size-32;
+                height: $size-32;
+                border-radius: 50%;
+                @include respond-to-max(mobile) {
+                  display: none;
+                }
+              }
+              .transactionAvatarColor {
+                opacity: 0.8;
+              }
+              p {
+                @include text-preset-5-bold;
+                color: $color-grey-900;
+                margin-left: $size-16;
+                @include respond-to-max(mobile) {
+                  text-align: left;
+                  margin-left: 0;
+                }
+              }
+            }
+            .dateAndAmount {
+              @include flex($direction: column, $align: flex-end);
+              span {
+                &:first-child {
+                  @include text-preset-5-bold;
+                  color: $color-grey-900;
+                }
+                &:last-child {
+                  @include text-preset-5;
+                  color: $color-grey-500;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .pie-chart h2 {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  .pie-chart figcaption {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    font-size: 0.9rem;
+    text-align: right;
+
+    div {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .pie-chart cite {
+    position: absolute;
+    bottom: 0;
+    left: 1rem;
+    font-size: 0.8rem;
+    color: gray;
+  }
+}
