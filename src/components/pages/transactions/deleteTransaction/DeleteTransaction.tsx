@@ -12,14 +12,12 @@ const DeleteTransaction: React.FC = () => {
   const selectedTransaction = useSelector(
     (state: RootState) => state.transaction.selectedTransaction
   );
-  console.log("Deleting from backend:", selectedTransaction?.id);
 
   const isAuthenticated = useSelector(
     (state: RootState) => state.user.isAuthenticated
   );
 
   const handleDelete = async () => {
-    console.log("Delete button clicked");
     if (!selectedTransaction || !selectedTransaction.id) {
       console.error("No selected pot or pot ID");
       return;

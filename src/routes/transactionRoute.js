@@ -20,7 +20,6 @@ router.get("/", authenticateToken, async (req, res) => {
 
 router.post("/", authenticateToken, async (req, res) => {
   const { category, amount, date, name, recurring, theme } = req.body;
-  console.log("Request body:", req.body);
   if (!category || !amount || !date || !name || !theme) {
     return res.status(400).json({ error: "Missing required fields" });
   }

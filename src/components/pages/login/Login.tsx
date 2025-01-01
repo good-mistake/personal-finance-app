@@ -99,6 +99,7 @@ const Login = () => {
                 name="email"
                 placeholder="Email"
                 onChange={handleChange}
+                autoComplete="email"
               />
             </label>
           </div>
@@ -111,7 +112,7 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 onChange={handleChange}
-                autoComplete="current-password"
+                autoComplete="new-password"
               />
               <img
                 src="/images/icon-show-password.svg"

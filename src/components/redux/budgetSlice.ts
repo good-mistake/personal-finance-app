@@ -75,7 +75,6 @@ const budgetsSlice = createSlice({
           (budget) =>
             budget.id === action.payload || budget._id === action.payload
         ) || null;
-      console.log("Selected budget ID set to:", action.payload);
     },
     openModal: (state, action) => {
       state.activeModal = action.payload;
@@ -106,7 +105,6 @@ const budgetsSlice = createSlice({
       }
 
       state.budgets[index] = updatedBudget;
-      console.log("Updated budget:", updatedBudget);
     },
     resetSelectedBudget: (state) => {
       state.selectedBudget = null;

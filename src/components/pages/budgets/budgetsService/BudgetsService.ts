@@ -56,9 +56,7 @@ export const deleteBudgetAction = (budgetId: string, token: string | null) => {
       }
       return response.json();
     })
-    .then((data) => {
-      console.log("Budget deleted successfully:", data);
-    })
+    .then((data) => {})
     .catch((error) => {
       console.error("Error deleting budget:", error);
     });

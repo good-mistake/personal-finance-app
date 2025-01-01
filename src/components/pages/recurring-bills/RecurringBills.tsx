@@ -33,8 +33,6 @@ const RecurringBills = () => {
   const { isAuthenticated, user, authLoading } = useSelector(
     (state: RootState) => state.user
   );
-  console.log(user);
-  console.log(user?.transactions);
   const transactions =
     isAuthenticated && user && user.transactions
       ? user.transactions
@@ -77,7 +75,6 @@ const RecurringBills = () => {
       }
       return uniqueBills;
     }, []);
-  console.log("Recurring Bills:", recurringBills);
 
   const filteredTransactions = recurringBills
     .filter((transaction) => {

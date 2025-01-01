@@ -11,7 +11,6 @@ const AddMoney = ({ onClose }) => {
   const [amount, setAmount] = useState<string | number>("");
   const selectedPot = useSelector((state: RootState) => state.pots.selectedPot);
   const { isAuthenticated } = useSelector((state: RootState) => state.user);
-  console.log(selectedPot);
 
   const handleConfirmAddition = async () => {
     const token = isAuthenticated ? localStorage.getItem("token") : null;

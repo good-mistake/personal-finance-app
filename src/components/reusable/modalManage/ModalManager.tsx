@@ -28,7 +28,6 @@ const ModalManager: React.FC<ModalManagerProps> = ({
   }, [activeModal, isFirstLoad]);
 
   const handleClose = () => {
-    console.log(activeModal);
     switch (activeModal) {
       case "editPot":
         dispatch(resetSelectedPot());

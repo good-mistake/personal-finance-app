@@ -17,7 +17,6 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 router.post("/", authenticateToken, async (req, res) => {
   const { category, maximum, theme } = req.body;
-  console.log("Request body:", req.body);
   if (!category || !maximum || !theme) {
     return res.status(400).json({ error: "Missing required fields" });
   }
@@ -28,7 +27,6 @@ router.post("/", authenticateToken, async (req, res) => {
       theme,
       user: req.user.id,
     });
-    console.log("Budget to be saved:", newBudget);
 
     await newBudget.save();
 
@@ -60,7 +58,6 @@ router.delete("/:id", authenticateToken, async (req, res) => {
 router.put("/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { category, maximum, theme } = req.body;
-  console.log(id);
   try {
     const updatedBudget = await Budgets.findByIdAndUpdate(
       id,

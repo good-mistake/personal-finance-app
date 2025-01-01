@@ -79,8 +79,6 @@ const Home: React.FC = () => {
   let dueSoonCount = 0;
   let upcomingCount = 0;
 
-  console.log(pots);
-  console.log(transactions);
   transactions.transaction
     .filter((e) => e.recurring)
     .forEach((bill) => {

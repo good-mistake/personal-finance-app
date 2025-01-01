@@ -64,9 +64,7 @@ export const deleteTransactionAction = (
       }
       return response.json();
     })
-    .then((data) => {
-      console.log("Transaction deleted successfully:", data);
-    })
+    .then((data) => {})
     .catch((error) => {
       console.error("Error deleting transaction:", error);
     });

@@ -8,7 +8,6 @@ const router = express.Router();
 router.get("/", authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate("pots");
-    console.log(user);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -19,7 +18,6 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 router.post("/", authenticateToken, async (req, res) => {
   const { name, target, total, theme } = req.body;
-  console.log("Request body:", req.body);
 
   try {
     const newPot = new Pot({
@@ -29,7 +27,6 @@ router.post("/", authenticateToken, async (req, res) => {
       theme,
       user: req.user.id,
     });
-    console.log("Pot to be saved:", newPot);
 
     await newPot.save();
 

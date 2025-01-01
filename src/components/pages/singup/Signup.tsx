@@ -96,6 +96,7 @@ const Signup = () => {
                 id="name"
                 placeholder="Name"
                 onChange={handleChange}
+                autoComplete="username"
               />
             </label>
           </div>
@@ -107,7 +108,7 @@ const Signup = () => {
                 name="email"
                 placeholder="Email"
                 onChange={handleChange}
-                autoComplete="current-email"
+                autoComplete="email"
               />
             </label>
           </div>
@@ -120,7 +121,7 @@ const Signup = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 onChange={handleChange}
-                autoComplete="current-password"
+                autoComplete="new-password"
               />
               <img
                 src="/images/icon-show-password.svg"

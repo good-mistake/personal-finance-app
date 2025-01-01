@@ -37,7 +37,6 @@ const BudgetSummary = ({ budgets, transactions }) => {
     budgets
   );
   const total = isAuthenticated ? totalSpentInBudgets || 0 : fallbackTotal;
-  console.log(transactions);
   return (
     <div className="summary">
       <div className="summaryHeader">

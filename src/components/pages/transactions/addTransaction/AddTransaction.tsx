@@ -46,7 +46,6 @@ const AddTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     } else {
       dispatch(addTransaction(newTransaction));
     }
-    console.log("New Transaction before saving:", newTransaction);
   };
   const categoryOptions = [
     "Entertainment",
