@@ -21,16 +21,17 @@ import {
   fetchBudgets,
   fetchTransactionsFromBackend,
 } from "./budgetsService/BudgetsService.ts";
+import { useCallback } from "react";
 import SkeletonBudget from "../../reusable/skeleton/skeletonBudget/SkeletonBudget.tsx";
 import { setAuthLoading } from "../../redux/userSlice.ts";
 import useMediaQuery from "../../../utils/useMediaQuery.tsx";
 const Budgets: React.FC = () => {
   const dispatch = useDispatch();
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
   const isMobile = useMediaQuery("mobile");
-  const isMobileSm = useMediaQuery("mobilesm");
   const isTablet = useMediaQuery("tablet");
   const sidebarVariant = isMobile ? "mobile" : isTablet ? "tablet" : "desktop";
   const august2024Month = 7;
@@ -45,7 +46,7 @@ const Budgets: React.FC = () => {
   const budgets = useSelector((state: RootState) => state.budgets.budgets);
   const loading = useSelector((state: RootState) => state.budgets.loading);
 
-  const fetchTransactions = async (): Promise<any[]> => {
+  const fetchTransactions = useCallback(async (): Promise<any[]> => {
     if (!isAuthenticated) {
       return datas.transactions.filter((transaction) => {
         const transactionDate = new Date(transaction.date);
@@ -72,7 +73,8 @@ const Budgets: React.FC = () => {
       console.error("Error fetching transactions:", error);
       return [];
     }
-  };
+  }, [isAuthenticated, currentMonth, currentYear]); // Add dependencies for the variables used in this function.
+
   useEffect(() => {
     const fetchAllData = async () => {
       dispatch(setLoading(true));
@@ -89,7 +91,19 @@ const Budgets: React.FC = () => {
 
             const transactions = await fetchTransactions();
             setCurrentMonthTransactions(transactions);
-            dispatch(setTotalSpentInBudgets(totalSpentInBudgets));
+
+            const totalSpent = budgetsData.reduce((acc, budget) => {
+              const spent = transactions
+                .filter(
+                  (transaction) => transaction.category === budget.category
+                )
+                .reduce(
+                  (sum, transaction) => sum + Math.abs(transaction.amount),
+                  0
+                );
+              return acc + spent;
+            }, 0);
+            dispatch(setTotalSpentInBudgets(totalSpent));
           } else {
             dispatch(setAuthLoading(false));
 
@@ -106,7 +120,7 @@ const Budgets: React.FC = () => {
           }
         }
       } catch (err) {
-        console.error("Error fetching data:", err);
+        setError("Error fetching data");
       } finally {
         dispatch(setLoading(false));
         dispatch(setAuthLoading(false));
@@ -114,7 +128,7 @@ const Budgets: React.FC = () => {
     };
 
     fetchAllData();
-  }, [dispatch, isAuthenticated, authLoading]);
+  }, [dispatch, isAuthenticated, authLoading, fetchTransactions]);
 
   const categorySpendingCurrentMonth = currentMonthTransactions.reduce(
     (acc, transaction) => {
@@ -208,6 +222,7 @@ const Budgets: React.FC = () => {
                 + Add New Budget
               </Buttons>
             </div>
+            <p>{error}</p>
 
             <div className="budgetContent">
               <div className="left">
