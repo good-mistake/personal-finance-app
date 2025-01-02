@@ -64,6 +64,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/chroma-js": "^2.4.4",
     "@types/express": "^4.17.21",
     "@types/lodash": "^4.17.13",
