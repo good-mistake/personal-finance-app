@@ -28,7 +28,7 @@ const PieChart: React.FC<PieChartProps> = ({ total, page }) => {
     window.addEventListener("resize", updateSize);
 
     return () => window.removeEventListener("resize", updateSize);
-  }, []);
+  }, [page]);
   let accumulatedPercentage = 0;
   const totalMaximumBudget = budgets.reduce(
     (sum, budget) => sum + budget.maximum,

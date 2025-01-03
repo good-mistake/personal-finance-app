@@ -1,11 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store.ts";
-import {
-  editPot,
-  closeModal,
-  resetSelectedPot,
-} from "../../../redux/potsSlice.ts";
+import { editPot, closeModal } from "../../../redux/potsSlice.ts";
 import EditModal from "../../../reusable/editModal/EditModal.tsx";
 import { generateColorList } from "../../../../utils/utils.ts";
 import { editPotAction } from "../potService/PotService.ts";
@@ -44,10 +40,7 @@ const EditPotModal: React.FC = () => {
     }
     dispatch(closeModal());
   };
-  const handleCancel = () => {
-    dispatch(resetSelectedPot());
-    dispatch(closeModal());
-  };
+
   return selectedPot ? (
     <EditModal
       initialData={{

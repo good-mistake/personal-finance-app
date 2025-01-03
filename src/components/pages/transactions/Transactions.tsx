@@ -129,25 +129,24 @@ const Transactions: React.FC = () => {
     };
   }, [openDropdownId]);
 
-  const handleOutsideClick = (e: MouseEvent) => {
-    const clickedElement = e.target as Node;
-
-    if (!openDropdownId) {
-      return;
-    }
-
-    const currentDropdown = dropdownRefs.current.get(openDropdownId);
-
-    if (!currentDropdown) {
-      return;
-    }
-
-    if (!currentDropdown.contains(clickedElement)) {
-      setOpenDropdownId(null);
-    }
-  };
-
   useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const clickedElement = e.target as Node;
+
+      if (!openDropdownId) {
+        return;
+      }
+
+      const currentDropdown = dropdownRefs.current.get(openDropdownId);
+
+      if (!currentDropdown) {
+        return;
+      }
+
+      if (!currentDropdown.contains(clickedElement)) {
+        setOpenDropdownId(null);
+      }
+    };
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
