@@ -10,71 +10,89 @@ functions:
     handler: auth.handler
     events:
       - http:
-          path: /auth/login
+          path: auth/login
           method: post
+          cors: true
       - http:
-          path: /auth/signup
+          path: auth/signup
           method: post
+          cors: true
       - http:
-          path: /auth/verify
+          path: auth/verify
           method: post
+          cors: true
 
   budgets:
     handler: budgets.handler
     events:
       - http:
-          path: /budgets
+          path: budgets
           method: get
+          cors: true
       - http:
-          path: /budgets/{id}
+          path: budgets/{id}
           method: get
+          cors: true
       - http:
-          path: /budgets
+          path: budgets
           method: post
+          cors: true
       - http:
-          path: /budgets/{id}
+          path: budgets/{id}
           method: put
+          cors: true
       - http:
-          path: /budgets/{id}
+          path: budgets/{id}
           method: delete
+          cors: true
 
   transactions:
     handler: transactions.handler
     events:
       - http:
-          path: /transactions
+          path: transactions
           method: get
+          cors: true
       - http:
-          path: /transactions/{id}
+          path: transactions/{id}
           method: get
+          cors: true
       - http:
-          path: /transactions
+          path: transactions
           method: post
+          cors: true
       - http:
-          path: /transactions/{id}
+          path: transactions/{id}
           method: put
+          cors: true
       - http:
-          path: /transactions/{id}
+          path: transactions/{id}
           method: delete
+          cors: true
 
   pots:
     handler: pots.handler
     events:
       - http:
-          path: /pots
+          path: pots
           method: get
+          cors: true
       - http:
-          path: /pots/{id}
+          path: pots/{id}
           method: get
+          cors: true
       - http:
-          path: /pots
+          path: pots
           method: post
+          cors: true
       - http:
-          path: /pots/{id}
+          path: pots/{id}
           method: put
+          cors: true
       - http:
-          path: /pots/{id}
+          path: pots/{id}
           method: delete
+          cors: true
 
 plugins:
   - serverless-webpack
