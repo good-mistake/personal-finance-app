@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/auth/pots";
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}api/pots`;
 
 export const fetchPots = (token: string | null) => {
   return fetch(API_URL, {

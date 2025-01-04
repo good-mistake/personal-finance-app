@@ -19,39 +19,39 @@ module.exports = {
     auth: {
       handler: "auth.handler",
       events: [
-        { http: { path: "/auth/login", method: "post" } },
-        { http: { path: "/auth/signup", method: "post" } },
-        { http: { path: "/auth/verify", method: "post" } },
+        { http: { path: "/api/auth/login", method: "post" } },
+        { http: { path: "/api/auth/signup", method: "post" } },
+        { http: { path: "/api/auth/verify", method: "post" } },
       ],
     },
     budgets: {
       handler: "budgets.handler",
       events: [
-        { http: { path: "/budgets", method: "get" } },
-        { http: { path: "/budgets/{id}", method: "get" } },
-        { http: { path: "/budgets", method: "post" } },
-        { http: { path: "/budgets/{id}", method: "put" } },
-        { http: { path: "/budgets/{id}", method: "delete" } },
+        -{ http: { path: "/api/budgets", method: "get" } } -
+          { http: { path: "/api/budgets/{id}", method: "get" } } -
+          { http: { path: "/api/budgets", method: "post" } } -
+          { http: { path: "/api/budgets/{id}", method: "put" } } -
+          { http: { path: "/api/budgets/{id}", method: "delete" } },
       ],
     },
     transactions: {
       handler: "transactions.handler",
       events: [
-        { http: { path: "/transactions", method: "get" } },
-        { http: { path: "/transactions/{id}", method: "get" } },
-        { http: { path: "/transactions", method: "post" } },
-        { http: { path: "/transactions/{id}", method: "put" } },
-        { http: { path: "/transactions/{id}", method: "delete" } },
+        -{ http: { path: "/api/transactions", method: "get" } } -
+          { http: { path: "/api/transactions/{id}", method: "get" } } -
+          { http: { path: "/api/transactions", method: "post" } } -
+          { http: { path: "/api/transactions/{id}", method: "put" } } -
+          { http: { path: "/api/transactions/{id}", method: "delete" } },
       ],
     },
     pots: {
       handler: "pots.handler",
       events: [
-        { http: { path: "/pots", method: "get" } },
-        { http: { path: "/pots/{id}", method: "get" } },
-        { http: { path: "/pots", method: "post" } },
-        { http: { path: "/pots/{id}", method: "put" } },
-        { http: { path: "/pots/{id}", method: "delete" } },
+        -{ http: { path: "/api/pots", method: "get" } } -
+          { http: { path: "/api/pots/{id}", method: "get" } } -
+          { http: { path: "/api/pots", method: "post" } } -
+          { http: { path: "/api/pots/{id}", method: "put" } } -
+          { http: { path: "/api/pots/{id}", method: "delete" } },
       ],
     },
   },

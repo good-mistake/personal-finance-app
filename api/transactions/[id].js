@@ -12,7 +12,7 @@ router.get("/:id", async (req, res) => {
     res.status(200).json(transaction);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
@@ -30,7 +30,7 @@ router.put("/:id", async (req, res) => {
     res.status(200).json(updatedTransaction);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
@@ -43,7 +43,7 @@ router.delete("/:id", async (req, res) => {
     res.status(200).json({ message: "Transaction deleted" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 

@@ -9,7 +9,7 @@ router.get("/", async (req, res) => {
     res.status(200).json(transactions);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
@@ -21,7 +21,7 @@ router.post("/", async (req, res) => {
     res.status(201).json(newTransaction);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 

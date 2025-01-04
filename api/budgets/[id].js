@@ -11,7 +11,7 @@ router.get("/:id", async (req, res) => {
     res.status(200).json(budget);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
@@ -29,7 +29,7 @@ router.put("/:id", async (req, res) => {
     res.status(200).json(updatedBudget);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
@@ -42,7 +42,7 @@ router.delete("/:id", async (req, res) => {
     res.status(200).json({ message: "Budget deleted" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
