@@ -18,9 +18,9 @@ const connectDB = async () => {
 export default async function handler(req, res) {
   await connectDB();
 
-  const { method, url } = req;
+  const { method } = req;
 
-  if (method === "POST" && url === "/api/auth/signup") {
+  if (method === "POST") {
     const { username, email, password } = req.body;
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
     }
   }
 
-  if (method === "POST" && url === "/api/auth/login") {
+  if (method === "POST") {
     const { email, password } = req.body;
     try {
       const user = await User.findOne({ email });
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
     }
   }
 
-  if (method === "GET" && url === "/api/auth/verify") {
+  if (method === "GET") {
     const token = req.headers["authorization"];
     if (!token) return res.status(403).json({ message: "No token provided" });
 
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
     }
   }
 
-  if (method === "POST" && url === "/api/auth/refresh") {
+  if (method === "POST") {
     const { refreshToken } = req.body;
     if (!refreshToken)
       return res.status(403).json({ message: "No token provided" });
@@ -83,7 +83,6 @@ export default async function handler(req, res) {
     }
   }
 
-  // Method not allowed
   res.setHeader("Allow", ["POST", "GET"]);
   return res.status(405).json({ message: `Method ${method} not allowed` });
 }
