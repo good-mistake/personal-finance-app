@@ -4,93 +4,98 @@ provider:
   name: aws
   runtime: nodejs16.x
   region: us-east-1
+  environment:
+    MONGO_URI: ${env:MONGO_URI}
+    JWT_SECRET: ${env:JWT_SECRET}
+    JWT_REFRESH_SECRET: ${env:REFRESH_SECRET}
+    JWT_EXPIRES_IN: ${env:JWT_EXPIRES_IN}
 
 functions:
   auth:
-    handler: auth.handler
+    handler: api/auth/index.handler
     events:
       - http:
-          path: auth/login
+          path: api/auth/signup
           method: post
           cors: true
       - http:
-          path: auth/signup
+          path: api/auth/login
           method: post
           cors: true
       - http:
-          path: auth/verify
+          path: api/auth/verify
           method: post
           cors: true
 
   budgets:
-    handler: budgets.handler
+    handler: api/budgets/index.handler
     events:
       - http:
-          path: budgets
+          path: api/budgets
           method: get
           cors: true
       - http:
-          path: budgets/{id}
-          method: get
-          cors: true
-      - http:
-          path: budgets
+          path: api/budgets
           method: post
           cors: true
       - http:
-          path: budgets/{id}
+          path: api/budgets/{id}
+          method: get
+          cors: true
+      - http:
+          path: api/budgets/{id}
           method: put
           cors: true
       - http:
-          path: budgets/{id}
+          path: api/budgets/{id}
           method: delete
           cors: true
 
   transactions:
-    handler: transactions.handler
+    handler: api/transactions/index.handler
     events:
       - http:
-          path: transactions
+          path: api/transactions
           method: get
           cors: true
       - http:
-          path: transactions/{id}
-          method: get
-          cors: true
-      - http:
-          path: transactions
+          path: api/transactions
           method: post
           cors: true
       - http:
-          path: transactions/{id}
+          path: api/transactions/{id}
+          method: get
+          cors: true
+      - http:
+          path: api/transactions/{id}
           method: put
           cors: true
       - http:
-          path: transactions/{id}
+          path: api/transactions/{id}
           method: delete
           cors: true
 
   pots:
-    handler: pots.handler
+    handler: api/pots/index.handler
     events:
       - http:
-          path: pots
+          path: api/pots
           method: get
           cors: true
       - http:
-          path: pots/{id}
-          method: get
-          cors: true
-      - http:
-          path: pots
+          path: api/pots
           method: post
           cors: true
       - http:
-          path: pots/{id}
+          path: api/pots/{id}
+          method: get
+          cors: true
+      - http:
+          path: api/pots/{id}
           method: put
           cors: true
       - http:
-          path: pots/{id}
+          path: api/pots/{id}
           method: delete
           cors: true
 

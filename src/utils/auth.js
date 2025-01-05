@@ -3,27 +3,18 @@ import bcrypt from "bcryptjs";
 import { connectToDatabase } from "../../db.mjs";
 import User from "../../models/models";
 
-export const generateToken = (user) => {
-  return jwt.sign(
-    { id: user._id, username: user.username, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
-};
+const generateToken = (user) =>
+  jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-export const verifyToken = (token) => {
-  try {
-    return jwt.verify(token, process.env.JWT_SECRET);
-  } catch (err) {
-    return null;
-  }
-};
-
-export const generateRefreshToken = (user) => {
-  return jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, {
+const generateRefreshToken = (user) =>
+  jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, {
     expiresIn: "7d",
   });
-};
+
+const verifyToken = (token) =>
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) =>
+    err ? null : decoded
+  );
 
 export const handler = async (event) => {
   const headers = {
@@ -33,115 +24,93 @@ export const handler = async (event) => {
   };
 
   if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ message: "CORS preflight" }),
-    };
+    return { statusCode: 200, headers, body: "Preflight Check Passed" };
   }
 
   await connectToDatabase();
 
-  if (event.httpMethod === "POST" && event.path === "/api/auth/signup") {
-    const { username, email, password } = JSON.parse(event.body);
+  try {
+    const body = JSON.parse(event.body);
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: "User already exists" }),
-      };
-    }
+    if (event.path === "/api/auth/signup") {
+      const { username, email, password } = body;
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: "User already exists" }),
+        };
+      }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    const user = new User({
-      username,
-      email,
-      password: hashedPassword,
-    });
-
-    try {
-      await user.save();
-      const token = generateToken(user);
-      const refreshToken = generateRefreshToken(user);
+      const hashedPassword = await bcrypt.hash(password, 12);
+      const newUser = await new User({
+        username,
+        email,
+        password: hashedPassword,
+      }).save();
 
       return {
         statusCode: 201,
         headers,
         body: JSON.stringify({
-          message: "User created successfully",
-          token,
-          refreshToken,
+          message: "User created",
+          token: generateToken(newUser),
+          refreshToken: generateRefreshToken(newUser),
         }),
       };
-    } catch (err) {
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({ error: "Error during signup" }),
-      };
-    }
-  }
-
-  if (event.httpMethod === "POST" && event.path === "/api/auth/login") {
-    const { email, password } = JSON.parse(event.body);
-
-    const user = await User.findOne({ email });
-    if (!user) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: "Invalid credentials" }),
-      };
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    if (event.path === "/api/auth/login") {
+      const { email, password } = body;
+      const user = await User.findOne({ email });
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        return {
+          statusCode: 401,
+          headers,
+          body: JSON.stringify({ error: "Invalid credentials" }),
+        };
+      }
+
       return {
-        statusCode: 400,
+        statusCode: 200,
         headers,
-        body: JSON.stringify({ error: "Invalid credentials" }),
+        body: JSON.stringify({
+          message: "Login successful",
+          token: generateToken(user),
+          refreshToken: generateRefreshToken(user),
+        }),
       };
     }
 
-    const token = generateToken(user);
-    const refreshToken = generateRefreshToken(user);
+    if (event.path === "/api/auth/verify") {
+      const { token } = body;
+      const decoded = verifyToken(token);
+      if (!decoded) {
+        return {
+          statusCode: 401,
+          headers,
+          body: JSON.stringify({ error: "Token invalid/expired" }),
+        };
+      }
 
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        message: "Login successful",
-        token,
-        refreshToken,
-      }),
-    };
-  }
-
-  if (event.httpMethod === "POST" && event.path === "/api/auth/verify") {
-    const { token } = JSON.parse(event.body);
-
-    const decoded = verifyToken(token);
-    if (!decoded) {
       return {
-        statusCode: 400,
+        statusCode: 200,
         headers,
-        body: JSON.stringify({ error: "Invalid or expired token" }),
+        body: JSON.stringify({ message: "Token valid", decoded }),
       };
     }
 
     return {
-      statusCode: 200,
+      statusCode: 404,
       headers,
-      body: JSON.stringify({ message: "Token is valid", decoded }),
+      body: JSON.stringify({ error: "Route not found" }),
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: "Internal Server Error" }),
     };
   }
-
-  return {
-    statusCode: 404,
-    headers,
-    body: JSON.stringify({ error: "Not Found" }),
-  };
 };
