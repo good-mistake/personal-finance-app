@@ -18,22 +18,34 @@ const connectDB = async () => {
 export default async function handler(req, res) {
   await connectDB();
 
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   const { method } = req;
 
-  if (method === "POST") {
+  if (method === "POST" && req.url.includes("/signup")) {
     const { username, email, password } = req.body;
     try {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists" });
+      }
+
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = new User({ username, email, password: hashedPassword });
       await newUser.save();
+
       return res.status(201).json({ message: "User registered successfully" });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Server error" });
     }
-  }
-
-  if (method === "POST") {
+  } else if (method === "POST" && req.url.includes("/login")) {
     const { email, password } = req.body;
     try {
       const user = await User.findOne({ email });
@@ -44,16 +56,15 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: "Invalid credentials" });
 
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
+        expiresIn: process.env.JWT_EXPIRES_IN || "1h",
       });
+
       return res.status(200).json({ token });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Server error" });
     }
-  }
-
-  if (method === "GET") {
+  } else if (method === "POST" && req.url.includes("/verify")) {
     const token = req.headers["authorization"];
     if (!token) return res.status(403).json({ message: "No token provided" });
 
@@ -64,25 +75,8 @@ export default async function handler(req, res) {
       console.error(err);
       return res.status(401).json({ message: "Token is invalid or expired" });
     }
+  } else {
+    res.setHeader("Allow", ["POST", "GET"]);
+    return res.status(405).json({ message: `Method ${method} not allowed` });
   }
-
-  if (method === "POST") {
-    const { refreshToken } = req.body;
-    if (!refreshToken)
-      return res.status(403).json({ message: "No token provided" });
-
-    try {
-      const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-      const newToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
-      return res.status(200).json({ token: newToken });
-    } catch (err) {
-      console.error(err);
-      return res.status(401).json({ message: "Token is invalid or expired" });
-    }
-  }
-
-  res.setHeader("Allow", ["POST", "GET"]);
-  return res.status(405).json({ message: `Method ${method} not allowed` });
 }
