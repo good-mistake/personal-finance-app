@@ -1,28 +1,30 @@
-import express from "express";
-import Budget from "../../models/budgets";
+import Budget from "../../../models/budgets";
+import { connectToDatabase } from "../../../db.js";
 
-const router = express.Router();
+export default async function handler(req, res) {
+  await connectToDatabase();
 
-router.get("/", async (req, res) => {
+  const { method } = req;
+
   try {
-    const budgets = await Budget.find();
-    res.status(200).json(budgets);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+    if (method === "GET") {
+      const budgets = await Budget.find();
+      return res.status(200).json(budgets);
+    }
 
-router.post("/", async (req, res) => {
-  const { category, maxAmount, themeColor } = req.body;
-  try {
-    const newBudget = new Budget({ category, maxAmount, themeColor });
-    await newBudget.save();
-    res.status(201).json(newBudget);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+    if (method === "POST") {
+      const { category, maxAmount, themeColor } = req.body;
+      const newBudget = new Budget({ category, maxAmount, themeColor });
+      await newBudget.save();
+      return res.status(201).json(newBudget);
+    }
 
-export default router;
+    res.setHeader("Allow", ["GET", "POST"]);
+    return res.status(405).json({ message: `Method ${method} Not Allowed` });
+  } catch (error) {
+    console.error("Server error:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+}

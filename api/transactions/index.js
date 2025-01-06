@@ -1,28 +1,30 @@
-import express from "express";
-import Transaction from "../../models/Transaction";
+import Transaction from "../../../models/Transaction";
+import { connectToDatabase } from "../../../db.js";
 
-const router = express.Router();
+export default async function handler(req, res) {
+  await connectToDatabase();
 
-router.get("/", async (req, res) => {
+  const { method } = req;
+
   try {
-    const transactions = await Transaction.find();
-    res.status(200).json(transactions);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+    if (method === "GET") {
+      const transactions = await Transaction.find();
+      return res.status(200).json(transactions);
+    }
 
-router.post("/", async (req, res) => {
-  const { amount, category } = req.body;
-  try {
-    const newTransaction = new Transaction({ amount, category });
-    await newTransaction.save();
-    res.status(201).json(newTransaction);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+    if (method === "POST") {
+      const { amount, category } = req.body;
+      const newTransaction = new Transaction({ amount, category });
+      await newTransaction.save();
+      return res.status(201).json(newTransaction);
+    }
 
-export default router;
+    res.setHeader("Allow", ["GET", "POST"]);
+    return res.status(405).json({ message: `Method ${method} Not Allowed` });
+  } catch (error) {
+    console.error("Server error:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+}

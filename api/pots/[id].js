@@ -1,47 +1,44 @@
-import express from "express";
-import Pot from "../../models/Pot";
+import Pot from "../../../models/Pot";
+import { connectToDatabase } from "../../../db.js";
 
-const router = express.Router();
+export default async function handler(req, res) {
+  await connectToDatabase();
 
-router.get("/:id", async (req, res) => {
-  const { id } = req.params;
+  const { method } = req;
+  const { id } = req.query;
+
   try {
-    const pot = await Pot.findById(id);
-    if (!pot) return res.status(404).json({ message: "Pot not found" });
-    res.status(200).json(pot);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+    if (method === "GET") {
+      const pot = await Pot.findById(id);
+      if (!pot) return res.status(404).json({ message: "Pot not found" });
+      return res.status(200).json(pot);
+    }
 
-router.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { name, targetAmount } = req.body;
-  try {
-    const updatedPot = await Pot.findByIdAndUpdate(
-      id,
-      { name, targetAmount },
-      { new: true }
-    );
-    if (!updatedPot) return res.status(404).json({ message: "Pot not found" });
-    res.status(200).json(updatedPot);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+    if (method === "PUT") {
+      const { name, targetAmount } = req.body;
+      const updatedPot = await Pot.findByIdAndUpdate(
+        id,
+        { name, targetAmount },
+        { new: true }
+      );
+      if (!updatedPot)
+        return res.status(404).json({ message: "Pot not found" });
+      return res.status(200).json(updatedPot);
+    }
 
-router.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const deletedPot = await Pot.findByIdAndDelete(id);
-    if (!deletedPot) return res.status(404).json({ message: "Pot not found" });
-    res.status(200).json({ message: "Pot deleted" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+    if (method === "DELETE") {
+      const deletedPot = await Pot.findByIdAndDelete(id);
+      if (!deletedPot)
+        return res.status(404).json({ message: "Pot not found" });
+      return res.status(200).json({ message: "Pot deleted" });
+    }
 
-export default router;
+    res.setHeader("Allow", ["GET", "PUT", "DELETE"]);
+    return res.status(405).json({ message: `Method ${method} Not Allowed` });
+  } catch (error) {
+    console.error("Server error:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+}

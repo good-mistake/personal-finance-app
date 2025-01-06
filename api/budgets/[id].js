@@ -1,49 +1,44 @@
-import express from "express";
-import Budget from "../../models/budgets";
+import Budget from "../../../models/budgets";
+import { connectToDatabase } from "../../../db.js";
 
-const router = express.Router();
+export default async function handler(req, res) {
+  await connectToDatabase();
 
-router.get("/:id", async (req, res) => {
-  const { id } = req.params;
+  const { method } = req;
+  const { id } = req.query;
+
   try {
-    const budget = await Budget.findById(id);
-    if (!budget) return res.status(404).json({ message: "Budget not found" });
-    res.status(200).json(budget);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+    if (method === "GET") {
+      const budget = await Budget.findById(id);
+      if (!budget) return res.status(404).json({ message: "Budget not found" });
+      return res.status(200).json(budget);
+    }
 
-router.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { category, maxAmount, themeColor } = req.body;
-  try {
-    const updatedBudget = await Budget.findByIdAndUpdate(
-      id,
-      { category, maxAmount, themeColor },
-      { new: true }
-    );
-    if (!updatedBudget)
-      return res.status(404).json({ message: "Budget not found" });
-    res.status(200).json(updatedBudget);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+    if (method === "PUT") {
+      const { category, maxAmount, themeColor } = req.body;
+      const updatedBudget = await Budget.findByIdAndUpdate(
+        id,
+        { category, maxAmount, themeColor },
+        { new: true }
+      );
+      if (!updatedBudget)
+        return res.status(404).json({ message: "Budget not found" });
+      return res.status(200).json(updatedBudget);
+    }
 
-router.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const deletedBudget = await Budget.findByIdAndDelete(id);
-    if (!deletedBudget)
-      return res.status(404).json({ message: "Budget not found" });
-    res.status(200).json({ message: "Budget deleted" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-});
+    if (method === "DELETE") {
+      const deletedBudget = await Budget.findByIdAndDelete(id);
+      if (!deletedBudget)
+        return res.status(404).json({ message: "Budget not found" });
+      return res.status(200).json({ message: "Budget deleted" });
+    }
 
-export default router;
+    res.setHeader("Allow", ["GET", "PUT", "DELETE"]);
+    return res.status(405).json({ message: `Method ${method} Not Allowed` });
+  } catch (error) {
+    console.error("Server error:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+}

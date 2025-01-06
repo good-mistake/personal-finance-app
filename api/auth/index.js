@@ -1,14 +1,22 @@
-import User from "../../models/models";
-import { connectToDatabase } from "../../db.js";
+import { connectToDatabase } from "../../../db.js";
+import { loginHandler } from "../../../handlers/login.js";
 
 export default async function handler(req, res) {
   await connectToDatabase();
 
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://personal-finance-app-nu.vercel.app"
-  );
-  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+  const allowedOrigins = [
+    "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
+    "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
+  ];
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+  }
+
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
@@ -17,16 +25,10 @@ export default async function handler(req, res) {
 
   const { method } = req;
 
-  if (method === "GET") {
-    try {
-      const users = await User.find({});
-      return res.status(200).json(users);
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Server error" });
-    }
+  if (method === "POST") {
+    return await loginHandler(req, res);
   }
 
-  res.setHeader("Allow", ["GET", "POST"]);
+  res.setHeader("Allow", ["POST"]);
   return res.status(405).json({ message: `Method ${method} not allowed` });
 }
