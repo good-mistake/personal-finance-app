@@ -5,10 +5,19 @@ import jwt from "jsonwebtoken";
 
 export default async function handler(req, res) {
   await connectToDatabase();
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://personal-finance-app-nu.vercel.app"
-  );
+
+  const allowedOrigins = [
+    "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
+    "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
+  ];
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+  }
+
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
@@ -18,6 +27,7 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     const { name, email, password } = req.body;
+
     try {
       const existingUser = await User.findOne({ email });
       if (existingUser) {
@@ -25,11 +35,13 @@ export default async function handler(req, res) {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
+
       const newUser = new User({
-        username: name,
+        name,
         email,
         password: hashedPassword,
       });
+
       await newUser.save();
 
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
@@ -40,8 +52,8 @@ export default async function handler(req, res) {
         message: "User registered successfully",
         token,
       });
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Server error:", error);
       return res.status(500).json({ message: "Server error" });
     }
   }
