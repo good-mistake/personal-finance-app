@@ -1,8 +1,8 @@
 import User from "../../models/models";
-import connectDB from "../../utils/connectDB";
+import { connectToDatabase } from "../../db.js";
 
 export default async function handler(req, res) {
-  await connectDB();
+  await connectToDatabase();
 
   res.setHeader(
     "Access-Control-Allow-Origin",
