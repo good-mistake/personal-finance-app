@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./signup.scss";
 import Buttons from "../../reusable/button/Buttons";
 import useMediaQuery from "../../../utils/useMediaQuery";
+
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -14,8 +15,7 @@ const Signup = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const isTablet = useMediaQuery("tablet");
-  const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+  const API_BASE_URL = "https://personal-finance-app-nu.vercel.app";
 
   const navigate = useNavigate();
 
@@ -44,9 +44,9 @@ const Signup = () => {
         setError(resError.message);
         return;
       }
+
       const data = await response.json();
       localStorage.setItem("token", data.token);
-      localStorage.setItem("refreshToken", data.refreshToken);
 
       setSuccess(true);
       setTimeout(() => {
@@ -54,20 +54,7 @@ const Signup = () => {
       }, 500);
     } catch (e) {
       setLoading(false);
-
-      if (e.response) {
-        if (e.response.status === 400) {
-          setError(
-            "User already exists. Please log in or use a different email."
-          );
-        } else {
-          setError(
-            e.response.data.message || "An error occurred. Please try again."
-          );
-        }
-      } else {
-        setError(e.message || "Something went wrong. Please try again.");
-      }
+      setError(e.message || "Something went wrong. Please try again.");
     }
   };
 
@@ -77,7 +64,7 @@ const Signup = () => {
         <div className="tabletLogo">
           <img src="/images/logo-large.svg" alt="Logo" />
         </div>
-      )}{" "}
+      )}
       <div className="left">
         <div>
           <h2>Keep track of your money and save for your future</h2>
@@ -104,7 +91,7 @@ const Signup = () => {
           </div>
           <div>
             <label htmlFor="email">
-              <p>Email</p>{" "}
+              <p>Email</p>
               <input
                 id="email"
                 name="email"
@@ -115,7 +102,7 @@ const Signup = () => {
             </label>
           </div>
           <label htmlFor="password">
-            <p> Create Password</p>
+            <p>Create Password</p>
             <div className="pass">
               <input
                 name="password"
@@ -141,14 +128,14 @@ const Signup = () => {
             className={`login ${loading ? "loading" : ""}`}
             disabled={loading}
           >
-            {loading ? "Singing up..." : "Sing up"}
+            {loading ? "Signing up..." : "Sign up"}
           </Buttons>
           <div className="signUpLink">
             Already have an account?
             <button onClick={() => navigate("/login")}>Login</button>
           </div>
           {success ? (
-            <div className="success">Sing up Successful! Redirecting...</div>
+            <div className="success">Sign up Successful! Redirecting...</div>
           ) : (
             <div className="error">{error}</div>
           )}
