@@ -1,19 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../../models/models";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const connectDB = async () => {
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-  }
-};
+import connectDB from "../../utils/connectDB";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -31,35 +19,16 @@ export default async function handler(req, res) {
 
   const { method } = req;
 
-  if (method === "POST" && req.url.includes("/signup")) {
-    const { name, email, password } = req.body; // Use 'name' instead of 'username'
+  if (method === "GET") {
     try {
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = new User({
-        username: name,
-        email,
-        password: hashedPassword,
-      });
-      await newUser.save();
-
-      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN || "1h",
-      });
-
-      return res
-        .status(201)
-        .json({ message: "User registered successfully", token });
+      const users = await User.find({});
+      return res.status(200).json(users);
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Server error" });
     }
-  } else {
-    res.setHeader("Allow", ["POST", "GET"]);
-    return res.status(405).json({ message: `Method ${method} not allowed` });
   }
+
+  res.setHeader("Allow", ["GET", "POST"]);
+  return res.status(405).json({ message: `Method ${method} not allowed` });
 }
