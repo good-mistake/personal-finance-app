@@ -1,4 +1,4 @@
-import User from "../../../models/models";
+import User from "../../../models/models.js";
 import { connectToDatabase } from "../../../db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
