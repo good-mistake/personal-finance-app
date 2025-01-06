@@ -1,29 +1,10 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    },
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*)", "destination": "/index.html" },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
+  "builds": [{ "src": "api/**/*.js", "use": "@vercel/node" }],
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api/$1" }],
   "env": {
-    "MONGO_URI": "mongodb+srv://admin:5TTbUJAysMWcdzSn@cluster0.yv9sg.mongodb.net/personalFinanceApp?retryWrites=true&w=majority&appName=Cluster0",
-    "JWT_SECRET": "1s3qdg4t312cas1h5fqws3421",
-    "NODE_ENV": "production"
+    "MONGO_URI": "your-mongo-uri",
+    "JWT_SECRET": "your-jwt-secret",
+    "JWT_EXPIRES_IN": "1h"
   }
 }

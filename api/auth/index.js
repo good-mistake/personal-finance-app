@@ -1,5 +1,3 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import User from "../../models/models";
 import connectDB from "../../utils/connectDB";
 

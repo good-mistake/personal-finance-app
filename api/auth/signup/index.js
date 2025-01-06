@@ -1,7 +1,7 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import User from "../../../models/models";
 import connectDB from "../../../utils/connectDB";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export default async function handler(req, res) {
   await connectDB();
@@ -37,14 +37,15 @@ export default async function handler(req, res) {
         expiresIn: process.env.JWT_EXPIRES_IN || "1h",
       });
 
-      return res
-        .status(201)
-        .json({ message: "User registered successfully", token });
+      return res.status(201).json({
+        message: "User registered successfully",
+        token,
+      });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Server error" });
     }
-  } else {
-    return res.status(405).json({ message: "Method Not Allowed" });
   }
+
+  return res.status(405).json({ message: "Method Not Allowed" });
 }
