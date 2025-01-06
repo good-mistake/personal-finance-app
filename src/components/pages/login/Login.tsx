@@ -17,6 +17,8 @@ const Login = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  const API_BASE_URL = "https://personal-finance-app-nu.vercel.app";
+
   const isTablet = useMediaQuery("tablet");
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +29,10 @@ const Login = () => {
     setLoading(true);
     setError("");
     try {
-      const { data } = await api.post("/api/auth/login", formData);
+      const { data } = await api.post(
+        `${API_BASE_URL}/api/auth/login`,
+        formData
+      );
 
       setLoading(false);
       localStorage.setItem("token", data.token);
