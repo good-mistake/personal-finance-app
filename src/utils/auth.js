@@ -16,9 +16,19 @@ const verifyToken = (token) =>
     err ? null : decoded
   );
 
+const setCorsHeaders = (response) => {
+  response.headers = {
+    ...response.headers,
+    "Access-Control-Allow-Origin": "https://personal-finance-app-nu.vercel.app",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
+  return response;
+};
+
 export const handler = async (event) => {
   const headers = {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": "https://personal-finance-app-nu.vercel.app",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Methods": "OPTIONS, POST",
   };
@@ -36,11 +46,10 @@ export const handler = async (event) => {
       const { username, email, password } = body;
       const existingUser = await User.findOne({ email });
       if (existingUser) {
-        return {
+        return setCorsHeaders({
           statusCode: 400,
-          headers,
           body: JSON.stringify({ error: "User already exists" }),
-        };
+        });
       }
 
       const hashedPassword = await bcrypt.hash(password, 12);
@@ -50,67 +59,60 @@ export const handler = async (event) => {
         password: hashedPassword,
       }).save();
 
-      return {
+      return setCorsHeaders({
         statusCode: 201,
-        headers,
         body: JSON.stringify({
           message: "User created",
           token: generateToken(newUser),
           refreshToken: generateRefreshToken(newUser),
         }),
-      };
+      });
     }
 
     if (event.path === "/api/auth/login") {
       const { email, password } = body;
       const user = await User.findOne({ email });
       if (!user || !(await bcrypt.compare(password, user.password))) {
-        return {
+        return setCorsHeaders({
           statusCode: 401,
-          headers,
           body: JSON.stringify({ error: "Invalid credentials" }),
-        };
+        });
       }
 
-      return {
+      return setCorsHeaders({
         statusCode: 200,
-        headers,
         body: JSON.stringify({
           message: "Login successful",
           token: generateToken(user),
           refreshToken: generateRefreshToken(user),
         }),
-      };
+      });
     }
 
     if (event.path === "/api/auth/verify") {
       const { token } = body;
       const decoded = verifyToken(token);
       if (!decoded) {
-        return {
+        return setCorsHeaders({
           statusCode: 401,
-          headers,
           body: JSON.stringify({ error: "Token invalid/expired" }),
-        };
+        });
       }
 
-      return {
+      return setCorsHeaders({
         statusCode: 200,
-        headers,
         body: JSON.stringify({ message: "Token valid", decoded }),
-      };
+      });
     }
 
-    return {
+    return setCorsHeaders({
       statusCode: 404,
-      headers,
       body: JSON.stringify({ error: "Route not found" }),
-    };
+    });
   } catch (error) {
-    return {
+    return setCorsHeaders({
       statusCode: 500,
-      headers,
       body: JSON.stringify({ error: "Internal Server Error" }),
-    };
+    });
   }
 };
