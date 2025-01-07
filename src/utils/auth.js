@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { connectToDatabase } from "../../db.mjs";
-import User from "../../models/models";
+import { connectToDatabase } from "../../db.js";
+import User from "../../models/models.js";
 
 const generateToken = (user) =>
   jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });

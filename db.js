@@ -9,20 +9,19 @@ export const connectToDatabase = async () => {
   }
 
   try {
-    const uri =
-      process.env.MONGO_URI ||
-      "mongodb+srv://admin:5TTbUJAysMWcdzSn@cluster0.yv9sg.mongodb.net/personalFinanceApp?retryWrites=true&w=majority&appName=Cluster0";
+    const uri = process.env.MONGO_URI;
     if (!uri) throw new Error("MONGO_URI environment variable is required");
 
-    await mongoose.connect(uri, {
+    const db = await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
 
-    isConnected = true;
+    isConnected = db.connections[0].readyState === 1;
     console.log("Database connected");
   } catch (error) {
     console.error("Database connection error:", error.message);
+    isConnected = false;
     throw error;
   }
 };
