@@ -1,4 +1,4 @@
-const API_URL = `${process.env.REACT_APP_API_BASE_URL}api/transactions`;
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/transactions`;
 
 export const fetchTransaction = (token: string | null) => {
   return fetch(API_URL, {
