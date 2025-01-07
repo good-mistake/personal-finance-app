@@ -1,26 +1,39 @@
-import Budget from "../../../models/budgets";
-import { connectToDatabase } from "../../../db.js";
-
+import { connectToDatabase } from "../../db.js";
+import Budget from "../../models/models.js";
 export default async function handler(req, res) {
   await connectToDatabase();
 
   const { method } = req;
 
   try {
-    if (method === "GET") {
-      const budgets = await Budget.find();
-      return res.status(200).json(budgets);
-    }
+    switch (method) {
+      case "GET": {
+        const budgets = await Budget.find();
+        return res.status(200).json(budgets);
+      }
 
-    if (method === "POST") {
-      const { category, maxAmount, themeColor } = req.body;
-      const newBudget = new Budget({ category, maxAmount, themeColor });
-      await newBudget.save();
-      return res.status(201).json(newBudget);
-    }
+      case "POST": {
+        const { category, maxAmount, themeColor } = req.body;
 
-    res.setHeader("Allow", ["GET", "POST"]);
-    return res.status(405).json({ message: `Method ${method} Not Allowed` });
+        if (!category || !maxAmount || !themeColor) {
+          return res.status(400).json({
+            message: "Category, maxAmount, and themeColor are required.",
+          });
+        }
+
+        const newBudget = new Budget({ category, maxAmount, themeColor });
+        await newBudget.save();
+
+        return res.status(201).json(newBudget);
+      }
+
+      default: {
+        res.setHeader("Allow", ["GET", "POST"]);
+        return res
+          .status(405)
+          .json({ message: `Method ${method} Not Allowed` });
+      }
+    }
   } catch (error) {
     console.error("Server error:", error);
     return res

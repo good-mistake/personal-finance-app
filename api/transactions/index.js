@@ -1,5 +1,5 @@
-import Transaction from "../../../models/Transaction";
-import { connectToDatabase } from "../../../db.js";
+import Transaction from "../../models/transaction.js";
+import { connectToDatabase } from "../../db.js";
 
 export default async function handler(req, res) {
   await connectToDatabase();
@@ -14,8 +14,16 @@ export default async function handler(req, res) {
 
     if (method === "POST") {
       const { amount, category } = req.body;
+
+      if (amount === undefined || !category) {
+        return res
+          .status(400)
+          .json({ message: "Amount and category are required" });
+      }
+
       const newTransaction = new Transaction({ amount, category });
       await newTransaction.save();
+
       return res.status(201).json(newTransaction);
     }
 

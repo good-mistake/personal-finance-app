@@ -1,5 +1,5 @@
-import Pot from "../../../models/Pot";
-import { connectToDatabase } from "../../../db.js";
+import Pot from "../../models/Pot.js";
+import { connectToDatabase } from "../../db.js";
 
 export default async function handler(req, res) {
   await connectToDatabase();
@@ -7,20 +7,34 @@ export default async function handler(req, res) {
   const { method } = req;
 
   try {
-    if (method === "GET") {
-      const pots = await Pot.find();
-      return res.status(200).json(pots);
-    }
+    switch (method) {
+      case "GET": {
+        const pots = await Pot.find();
+        return res.status(200).json(pots);
+      }
 
-    if (method === "POST") {
-      const { name, targetAmount } = req.body;
-      const newPot = new Pot({ name, targetAmount });
-      await newPot.save();
-      return res.status(201).json(newPot);
-    }
+      case "POST": {
+        const { name, targetAmount } = req.body;
 
-    res.setHeader("Allow", ["GET", "POST"]);
-    return res.status(405).json({ message: `Method ${method} Not Allowed` });
+        if (!name || !targetAmount) {
+          return res
+            .status(400)
+            .json({ message: "Name and targetAmount are required." });
+        }
+
+        const newPot = new Pot({ name, targetAmount });
+        await newPot.save();
+
+        return res.status(201).json(newPot);
+      }
+
+      default: {
+        res.setHeader("Allow", ["GET", "POST"]);
+        return res
+          .status(405)
+          .json({ message: `Method ${method} Not Allowed` });
+      }
+    }
   } catch (error) {
     console.error("Server error:", error);
     return res
