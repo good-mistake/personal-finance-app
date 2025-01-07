@@ -1,99 +1,154 @@
 import React, { useState } from "react";
+import { login } from "../../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import axios from "axios";
-import { login } from "../../redux/userSlice";
-import Buttons from "../../reusable/button/Buttons.tsx";
-
+import "./login.scss";
+import Buttons from "../../reusable/button/Buttons";
+import api from "../../../utils/Interceptor";
+import useMediaQuery from "../../../utils/useMediaQuery";
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
-
-  const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL ||
-    "https://personal-finance-app-nu.vercel.app/";
-
-  const handleInputChange = (e) => {
+  const navigate = useNavigate();
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  const API_BASE_URL = "https://personal-finance-app-nu.vercel.app";
 
+  const isTablet = useMediaQuery("tablet");
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.email || !formData.password) {
+      setError("Both fields are required");
+      return;
+    }
     setLoading(true);
     setError("");
-
     try {
-      const { data } = await axios.post(
+      const { data } = await api.post(
         `${API_BASE_URL}/api/auth/login`,
         formData
       );
 
+      setLoading(false);
       localStorage.setItem("token", data.token);
       localStorage.setItem("refreshToken", data.refreshToken);
+      if (data.result) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("refreshToken", data.refreshToken);
+        dispatch(
+          login({
+            name: data.result.name,
+            email: data.result.email,
+            pots: data.result.pots || [],
+            budgets: data.result.budgets || [],
+            transactions: data.result.transactions || [],
+          })
+        );
+        setSuccess(true);
+        setTimeout(() => {
+          navigate("/");
+        }, 500);
+      } else {
+        setError("User data is not available.");
+      }
+    } catch (e) {
+      setLoading(false);
 
-      dispatch(
-        login({
-          name: data.result.name,
-          email: data.result.email,
-          pots: data.result.pots || [],
-          budgets: data.result.budgets || [],
-          transactions: data.result.transactions || [],
-        })
-      );
-
-      navigate("/");
-    } catch (error) {
-      if (error.response) {
-        if (error.response.status === 404) {
-          setError("Email not registered. Please sign up.");
-        } else if (error.response.status === 400) {
-          setError("Incorrect password. Please try again.");
+      if (e.response) {
+        if (e.response.status === 404) {
+          setError(
+            `User not found. Please check your email and password or sign up.`
+          );
+        } else if (e.response.status === 400) {
+          setError("Invalid credentials. Please try again.");
         } else {
           setError(
-            error.response.data.message ||
-              "An error occurred. Please try again."
+            e.response.data.message || "An error occurred. Please try again."
           );
         }
       } else {
-        setError(error.message || "Network error. Please try again.");
+        setError(e.message || "Something went wrong. Please try again.");
       }
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <form onSubmit={handleSubmit}>
-        <h2>Login</h2>
-        {error && <p className="error">{error}</p>}
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleInputChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleInputChange}
-          required
-        />
-        <Buttons
-          type="submit"
-          className={`login ${loading ? "loading" : ""}`}
-          disabled={loading}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </Buttons>
-      </form>
+    <div className="loginContainer">
+      {isTablet && (
+        <div className="tabletLogo">
+          <img src="/images/logo-large.svg" alt="Logo" />
+        </div>
+      )}
+      <div className="left">
+        <div>
+          <h2>Keep track of your money and save for your future</h2>
+          <p>
+            Personal finance app puts you in control of your spending. Track
+            transactions, set budgets, and add to savings pots easily.
+          </p>
+        </div>
+      </div>
+      <div className="right">
+        <form onSubmit={handleSubmit}>
+          <h1>Login</h1>
+          <div>
+            <label htmlFor="email">
+              <p> Email</p>
+              <input
+                id="email"
+                name="email"
+                placeholder="Email"
+                onChange={handleChange}
+                autoComplete="email"
+              />
+            </label>
+          </div>
+          <label htmlFor="password">
+            <p> Password</p>
+            <div className="pass">
+              <input
+                name="password"
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                onChange={handleChange}
+                autoComplete="new-password"
+              />
+              <img
+                src="/images/icon-show-password.svg"
+                onMouseDown={() => setShowPassword(true)}
+                onMouseUp={() => setShowPassword(false)}
+                onMouseLeave={() => setShowPassword(false)}
+                onTouchStart={() => setShowPassword(true)}
+                onTouchEnd={() => setShowPassword(false)}
+                alt=""
+              />
+            </div>
+          </label>
+          <Buttons
+            type="submit"
+            className={`login ${loading ? "loading" : ""}`}
+            variant="primary"
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </Buttons>
+          <div className="signUpLink">
+            Need to create an account?
+            <button onClick={() => navigate("/signup")}>Sign Up </button>
+          </div>
+          {success ? (
+            <div className="success">Login Successful! Redirecting...</div>
+          ) : (
+            <div className="error">{error}</div>
+          )}
+        </form>
+      </div>
     </div>
   );
 };
