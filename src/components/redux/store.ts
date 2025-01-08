@@ -9,9 +9,15 @@ import budgetsReducer from "./budgetSlice";
 import transactionReducer from "./transactionSlice";
 
 const persistConfig = {
-  key: "root", // Key in localStorage
-  storage, // Storage type (localStorage)
-  whitelist: ["user", "pots", "budgets", "transaction"], // State slices to persist
+  key: "root",
+  storage,
+  transforms: [
+    {
+      out: (state: any) => state,
+      in: (state: any) =>
+        typeof state === "string" ? JSON.parse(state) : state,
+    },
+  ],
 };
 const rootReducer = combineReducers({
   user: userReducer,
