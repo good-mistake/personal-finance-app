@@ -12,13 +12,8 @@ interface UserState {
   authLoading: boolean;
 }
 const initialState: UserState = {
-  user: {
-    name: "",
-    email: "",
-    pots: [],
-    budgets: [],
-    transactions: [],
-  },
+  user: null,
+
   isAuthenticated: false,
   authLoading: true,
 };

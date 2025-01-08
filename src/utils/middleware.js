@@ -13,6 +13,11 @@ export const authenticateToken = (req, res, next) => {
     req.user = { id: decoded.id };
     next();
   } catch (error) {
-    return res.status(403).json({ message: "Invalid or expired token" });
+    if (error.name === "TokenExpiredError") {
+      return res
+        .status(403)
+        .json({ message: "Token has expired, please log in again." });
+    }
+    return res.status(403).json({ message: "Invalid token, access denied." });
   }
 };

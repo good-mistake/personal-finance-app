@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { connectToDatabase } from "../../db.js";
 import User from "../../models/models.js";
 
+// Token generation utilities
 const generateToken = (user) =>
   jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
@@ -16,23 +17,25 @@ const verifyToken = (token) =>
     err ? null : decoded
   );
 
-const setCorsHeaders = (response) => {
-  response.headers = {
+// Set CORS headers
+const setCorsHeaders = (response) => ({
+  ...response,
+  headers: {
     ...response.headers,
     "Access-Control-Allow-Origin": "https://personal-finance-app-nu.vercel.app",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Methods": "OPTIONS, GET, POST",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  };
-  return response;
-};
+  },
+});
 
 export const handler = async (event) => {
   const headers = {
     "Access-Control-Allow-Origin": "https://personal-finance-app-nu.vercel.app",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Methods": "OPTIONS, POST",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
   };
 
+  // Preflight Check
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 200, headers, body: "Preflight Check Passed" };
   }
@@ -40,11 +43,12 @@ export const handler = async (event) => {
   await connectToDatabase();
 
   try {
-    const body = JSON.parse(event.body);
+    const body = JSON.parse(event.body || "{}");
 
-    if (event.path === "/api/auth/signup") {
+    if (event.path.endsWith("/auth/signup")) {
       const { username, email, password } = body;
       const existingUser = await User.findOne({ email });
+
       if (existingUser) {
         return setCorsHeaders({
           statusCode: 400,
@@ -69,9 +73,10 @@ export const handler = async (event) => {
       });
     }
 
-    if (event.path === "/api/auth/login") {
+    if (event.path.endsWith("/auth/login")) {
       const { email, password } = body;
       const user = await User.findOne({ email });
+
       if (!user || !(await bcrypt.compare(password, user.password))) {
         return setCorsHeaders({
           statusCode: 401,
@@ -89,9 +94,10 @@ export const handler = async (event) => {
       });
     }
 
-    if (event.path === "/api/auth/verify") {
+    if (event.path.endsWith("/auth/verify")) {
       const { token } = body;
       const decoded = verifyToken(token);
+
       if (!decoded) {
         return setCorsHeaders({
           statusCode: 401,
@@ -110,6 +116,8 @@ export const handler = async (event) => {
       body: JSON.stringify({ error: "Route not found" }),
     });
   } catch (error) {
+    console.error("Error handling request:", error);
+
     return setCorsHeaders({
       statusCode: 500,
       body: JSON.stringify({ error: "Internal Server Error" }),
