@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { connectToDatabase } from "../../../db.js";
+import User from "../../../models/models.js";
 
 export default async function handler(req, res) {
   await connectToDatabase();
@@ -31,7 +32,24 @@ export default async function handler(req, res) {
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      return res.status(200).json({ valid: true, userId: decoded.id });
+
+      // Fetch user data
+      const user = await User.findById(decoded.id).select("-password");
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      return res.status(200).json({
+        valid: true,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          pots: user.pots || [],
+          budgets: user.budgets || [],
+          transactions: user.transactions || [],
+        },
+      });
     } catch (error) {
       console.error("Error verifying token:", error);
       return res.status(401).json({ message: "Token is invalid or expired" });
