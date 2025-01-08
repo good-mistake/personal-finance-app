@@ -11,6 +11,7 @@ import transactionReducer from "./transactionSlice";
 const persistConfig = {
   key: "root",
   storage,
+  whitelist: ["auth"],
   transforms: [
     {
       out: (state: any) => state,

@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import { connectToDatabase } from "../../db.js";
 import User from "../../models/models.js";
 
-// Token generation utilities
 const generateToken = (user) =>
   jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
@@ -17,7 +16,6 @@ const verifyToken = (token) =>
     err ? null : decoded
   );
 
-// Set CORS headers
 const setCorsHeaders = (response) => ({
   ...response,
   headers: {
