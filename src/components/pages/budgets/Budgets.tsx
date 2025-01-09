@@ -73,7 +73,7 @@ const Budgets: React.FC = () => {
       console.error("Error fetching transactions:", error);
       return [];
     }
-  }, [isAuthenticated, currentMonth, currentYear]); // Add dependencies for the variables used in this function.
+  }, [isAuthenticated, currentMonth, currentYear]);
 
   useEffect(() => {
     const fetchAllData = async () => {

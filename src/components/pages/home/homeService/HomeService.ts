@@ -6,21 +6,21 @@ const axiosInstance = axios.create({
 });
 
 export const fetchBudgets = async (token: string) => {
-  const response = await axiosInstance.get("/api/budgets", {
+  const response = await axiosInstance.get("/api/auth/budgets", {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
 };
 
 export const fetchTransactions = async (token: string) => {
-  const response = await axiosInstance.get("/api/transactions", {
+  const response = await axiosInstance.get("/api/auth/transactions", {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
 };
 
 export const fetchPots = async (token: string) => {
-  const response = await axiosInstance.get("/api/pots", {
+  const response = await axiosInstance.get("/api/auth/pots", {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;

@@ -1,5 +1,6 @@
 import { connectToDatabase } from "../../db.js";
-import Budget from "../../models/models.js";
+import Budget from "../../models/budgets.js";
+
 export default async function handler(req, res) {
   await connectToDatabase();
 
@@ -19,7 +20,6 @@ export default async function handler(req, res) {
       case "PUT": {
         const { category, maxAmount, themeColor } = req.body;
 
-        // Validate input
         if (!category || !maxAmount || !themeColor) {
           return res.status(400).json({
             message: "Category, maxAmount, and themeColor are required.",

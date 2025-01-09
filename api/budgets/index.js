@@ -1,5 +1,5 @@
 import { connectToDatabase } from "../../db.js";
-import Budget from "../../models/models.js";
+import Budget from "../../models/budgets.js";
 export default async function handler(req, res) {
   await connectToDatabase();
 
