@@ -7,6 +7,8 @@ export default async function handler(req, res) {
   await connectToDatabase();
 
   const allowedOrigins = [
+    "https://personal-finance-app-nu.vercel.app",
+
     "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
     "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
   ];
