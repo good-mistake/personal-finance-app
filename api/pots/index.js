@@ -4,37 +4,54 @@ import { connectToDatabase } from "../../db.js";
 export default async function handler(req, res) {
   await connectToDatabase();
 
+  const allowedOrigins = [
+    "https://personal-finance-app-nu.vercel.app",
+    "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
+    "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
+  ];
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+  }
+
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Requested-With"
+  );
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   const { method } = req;
 
   try {
-    switch (method) {
-      case "GET": {
-        const pots = await Pot.find();
-        return res.status(200).json(pots);
-      }
-
-      case "POST": {
-        const { name, targetAmount } = req.body;
-
-        if (!name || !targetAmount) {
-          return res
-            .status(400)
-            .json({ message: "Name and targetAmount are required." });
-        }
-
-        const newPot = new Pot({ name, targetAmount });
-        await newPot.save();
-
-        return res.status(201).json(newPot);
-      }
-
-      default: {
-        res.setHeader("Allow", ["GET", "POST"]);
-        return res
-          .status(405)
-          .json({ message: `Method ${method} Not Allowed` });
-      }
+    if (method === "GET") {
+      const pots = await Pot.find();
+      return res.status(200).json(pots);
     }
+
+    if (method === "POST") {
+      const { amount, category } = req.body;
+
+      if (amount === undefined || !category) {
+        return res
+          .status(400)
+          .json({ message: "Amount and category are required" });
+      }
+
+      const newPot = new Pot({ amount, category });
+      await newPot.save();
+
+      return res.status(201).json(newPot);
+    }
+
+    res.setHeader("Allow", ["GET", "POST"]);
+    return res.status(405).json({ message: `Method ${method} Not Allowed` });
   } catch (error) {
     console.error("Server error:", error);
     return res
