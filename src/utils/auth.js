@@ -16,24 +16,22 @@ const verifyToken = (token) =>
     err ? null : decoded
   );
 
-const setCorsHeaders = (response) => ({
+const setCorsHeaders = (
+  response,
+  allowedMethods = ["OPTIONS", "GET", "POST"]
+) => ({
   ...response,
   headers: {
     ...response.headers,
     "Access-Control-Allow-Origin": "https://personal-finance-app-nu.vercel.app",
-    "Access-Control-Allow-Methods": "OPTIONS, GET, POST",
+    "Access-Control-Allow-Methods": allowedMethods.join(", "),
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
   },
 });
 
 export const handler = async (event) => {
-  const headers = {
-    "Access-Control-Allow-Origin": "https://personal-finance-app-nu.vercel.app",
-    "Access-Control-Allow-Methods": "OPTIONS, POST",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  };
+  const headers = setCorsHeaders({}, ["OPTIONS", "POST"]);
 
-  // Preflight Check
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 200, headers, body: "Preflight Check Passed" };
   }
