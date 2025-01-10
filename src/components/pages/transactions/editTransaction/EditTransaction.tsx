@@ -8,7 +8,7 @@ import {
 } from "../../../redux/transactionSlice.ts";
 import EditModal from "../../../reusable/editModal/EditModal.tsx";
 import { generateColorList } from "../../../../utils/utils.ts";
-import { editTransactionAction } from "../transactionsService/TransactionService.ts";
+import { editTransactionAction } from "../../../../../api/transactions/transactions.js";
 interface UpdatedData {
   category: string;
   name: string;

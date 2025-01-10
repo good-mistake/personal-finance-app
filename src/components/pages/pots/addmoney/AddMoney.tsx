@@ -4,8 +4,8 @@ import { updatePotTotal } from "../../../redux/potsSlice";
 import { RootState } from "../../../redux/store.ts";
 import ProgressBar from "../progressbar/ProgressBar.tsx";
 import Buttons from "../../../reusable/button/Buttons.tsx";
-import { addMoneyAction } from "../potService/PotService.ts";
 import { formatCurrency } from "../../../../utils/utils.ts";
+import { addMoneyAction } from "../../../../../api/pots/pots.js";
 const AddMoney = ({ onClose }) => {
   const dispatch = useDispatch();
   const [amount, setAmount] = useState<string | number>("");

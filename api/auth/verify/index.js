@@ -7,7 +7,6 @@ export default async function handler(req, res) {
 
   const allowedOrigins = [
     "https://personal-finance-app-nu.vercel.app",
-
     "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
     "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
   ];
@@ -23,30 +22,25 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET, POST, OPTIONS, PUT, DELETE"
-    );
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
-    );
     return res.status(200).end();
   }
 
   if (req.method === "GET") {
+    console.log("Request Headers:", req.headers);
+
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
+      console.warn("No token provided in the request");
       return res.status(403).json({ message: "No token provided" });
     }
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log("Decoded Token:", decoded);
 
-      // Fetch user data
       const user = await User.findById(decoded.id).select("-password");
       if (!user) {
+        console.warn("User not found for ID:", decoded.id);
         return res.status(404).json({ message: "User not found" });
       }
 
@@ -62,10 +56,11 @@ export default async function handler(req, res) {
         },
       });
     } catch (error) {
-      console.error("Error verifying token:", error);
+      console.error("Error verifying token:", error.message);
       return res.status(401).json({ message: "Token is invalid or expired" });
     }
   }
 
+  console.warn(`Method ${req.method} not allowed`);
   return res.status(405).json({ message: `Method ${req.method} not allowed` });
 }

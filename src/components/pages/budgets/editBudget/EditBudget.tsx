@@ -8,7 +8,7 @@ import {
 } from "../../../redux/budgetSlice.ts";
 import EditModal from "../../../reusable/editModal/EditModal.tsx";
 import { generateColorList } from "../../../../utils/utils.ts";
-import { editBudgetAction } from "../budgetsService/BudgetsService.ts";
+import { editBudgetAction } from "../../../../../api/budgets/budgets.js";
 interface UpdatedData {
   category: string;
   maximum: number;

@@ -17,7 +17,7 @@ import {
 } from "../../redux/transactionSlice.ts";
 import { setAuthLoading } from "../../redux/userSlice.ts";
 import TransactionModalManager from "./transactionModalManager/TransactionModalManager.tsx";
-import { fetchTransaction } from "./transactionsService/TransactionService.ts";
+import { fetchTransaction } from "../../../../api/transactions/transactions.js";
 import DropDownTransaction from "./transactiondropdown/TransactionDropdown.tsx";
 import { v4 as uuidv4 } from "uuid";
 import SkeletonTransaction from "../../reusable/skeleton/skeletonTransaction/SkeletonTransaction.tsx";

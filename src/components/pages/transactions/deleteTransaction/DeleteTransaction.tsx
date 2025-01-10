@@ -6,7 +6,7 @@ import {
   closeModal,
 } from "../../../redux/transactionSlice.ts";
 import DeleteModal from "../../../reusable/deleteModal/DeleteModal.tsx";
-import { deleteTransactionAction } from "../transactionsService/TransactionService.ts";
+import { deleteTransactionAction } from "../../../../../api/transactions/transactions.js";
 const DeleteTransaction: React.FC = () => {
   const dispatch = useDispatch();
   const selectedTransaction = useSelector(

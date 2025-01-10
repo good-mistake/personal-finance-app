@@ -4,7 +4,7 @@ import { RootState } from "../../../redux/store.ts";
 import { editPot, closeModal } from "../../../redux/potsSlice.ts";
 import EditModal from "../../../reusable/editModal/EditModal.tsx";
 import { generateColorList } from "../../../../utils/utils.ts";
-import { editPotAction } from "../potService/PotService.ts";
+import { editPotAction } from "../../../../../api/pots/pots.js";
 const EditPotModal: React.FC = () => {
   const dispatch = useDispatch();
   const selectedPot = useSelector((state: RootState) => state.pots.selectedPot);

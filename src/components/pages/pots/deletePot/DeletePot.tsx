@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store.ts";
 import { deletePot, closeModal } from "../../../redux/potsSlice.ts";
 import DeleteModal from "../../../reusable/deleteModal/DeleteModal.tsx";
-import { deletePotAction } from "../potService/PotService.ts";
+import { deletePotAction } from "../../../../../api/pots/pots.js";
 const DeletePot: React.FC = () => {
   const dispatch = useDispatch();
   const selectedPot = useSelector((state: RootState) => state.pots.selectedPot);
