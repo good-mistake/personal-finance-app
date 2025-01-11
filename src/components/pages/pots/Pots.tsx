@@ -16,7 +16,7 @@ import {
 import { setPots, setLoading } from "../../redux/potsSlice.ts";
 import DropDownPot from "./dropdownPot/DropDownPot.tsx";
 import PotsModalManager from "./potsModalManager/PotsModalManager.tsx";
-import { fetchPots } from "../../../../api/pots/pots.js";
+import { fetchPots } from "../../services/pots.js";
 import { setAuthLoading } from "../../redux/userSlice.ts";
 import useMediaQuery from "../../../utils/useMediaQuery.tsx";
 
