@@ -38,7 +38,7 @@ const TransactionSummary = ({ transactions }) => {
                   }}
                 ></div>
               )}
-              <h4>{transaction.name}</h4>
+              <h4>{transaction.name || "Unnamed Transaction"}</h4>
             </div>
             <div className="amountAndDate">
               <p
@@ -46,10 +46,17 @@ const TransactionSummary = ({ transactions }) => {
                   transaction.amount < 0 ? "negative" : "positive"
                 }`}
               >
-                {transaction.amount > 0 && "+"}
-                {formatCurrency(transaction.amount)}
+                {transaction.amount !== undefined
+                  ? `${transaction.amount > 0 ? "+" : ""}${formatCurrency(
+                      transaction.amount
+                    )}`
+                  : "$0"}
               </p>
-              <p>{formatDate(transaction.date)}</p>
+              <p>
+                {transaction.date
+                  ? formatDate(transaction.date)
+                  : "Unknown Date"}
+              </p>
             </div>
           </li>
         ))}
