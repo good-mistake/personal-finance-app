@@ -20,7 +20,7 @@ import PieChart from "../../reusable/pieChart/PieChart.tsx";
 import {
   fetchBudgets,
   fetchTransactionsFromBackend,
-} from "../../../../api/budgets/budgets.js";
+} from "../../services/budgets.js";
 import { useCallback } from "react";
 import SkeletonBudget from "../../reusable/skeleton/skeletonBudget/SkeletonBudget.tsx";
 import { setAuthLoading } from "../../redux/userSlice.ts";
