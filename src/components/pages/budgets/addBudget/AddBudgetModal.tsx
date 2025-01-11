@@ -10,12 +10,13 @@ const AddBudgetModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.user.isAuthenticated
   );
+  const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/budgets`;
 
   const handleSave = async (newBudget) => {
     if (isAuthenticated) {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:5000/auth/budgets", {
+        const response = await fetch(API_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

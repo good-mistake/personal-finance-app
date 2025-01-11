@@ -10,29 +10,27 @@ const AddTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.user.isAuthenticated
   );
+  const API_URL = `${process.env.REACT_APP_API_BASE_URL}/apitransactions`;
 
   const handleSave = async (newTransaction) => {
     if (isAuthenticated) {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          "http://localhost:5000/auth/transactions",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              category: newTransaction.category,
-              amount: newTransaction.amount,
-              theme: newTransaction.theme,
-              name: newTransaction.name,
-              date: newTransaction.date,
-              recurring: newTransaction.recurring,
-            }),
-          }
-        );
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            category: newTransaction.category,
+            amount: newTransaction.amount,
+            theme: newTransaction.theme,
+            name: newTransaction.name,
+            date: newTransaction.date,
+            recurring: newTransaction.recurring,
+          }),
+        });
 
         if (!response.ok) {
           throw new Error("Failed to save Transaction");

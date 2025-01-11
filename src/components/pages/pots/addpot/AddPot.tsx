@@ -10,12 +10,13 @@ const AddPot: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.user.isAuthenticated
   );
+  const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/pots`;
 
   const handleSave = async (newPot) => {
     if (isAuthenticated) {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:5000/auth/pots", {
+        const response = await fetch(API_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
