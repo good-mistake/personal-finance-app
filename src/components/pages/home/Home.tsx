@@ -11,13 +11,12 @@ import TransactionSummary from "./transactionSummary/TransactionSummary.tsx";
 import RecurringBillsSummary from "./recurringBillSummary/BillsSummary.tsx";
 import SkeletonHome from "../../reusable/skeleton/skeletonHome/SkeletonHome.tsx";
 import { setLoading, setPots } from "../../redux/potsSlice";
-import { fetchPots } from "../pots/potService/PotService.ts";
 import { setBudgets } from "../../redux/budgetSlice";
 import { setTransactionsSlice } from "../../redux/transactionSlice.ts";
-import { fetchBudgets } from "../budgets/budgetsService/BudgetsService.ts";
-import { fetchTransaction } from "../transactions/transactionsService/TransactionService.ts";
 import useMediaQuery from "../../../utils/useMediaQuery.tsx";
-
+import { fetchTransaction } from "../../services/transactions.js";
+import { fetchBudgets } from "../../services/budgets.js";
+import { fetchPots } from "../../services/pots.js";
 const Home: React.FC = () => {
   const dispatch = useDispatch();
   const today = new Date();
