@@ -66,13 +66,16 @@ export const deleteBudgetAction = async (budgetId, token) => {
 };
 
 export const fetchTransactionsFromBackend = async (token) => {
-  const response = await fetch("http://localhost:5000/auth/transactions", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await fetch(
+    `${process.env.REACT_APP_API_BASE_URL}/api/transactions`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   if (!response.ok) {
     throw new Error("Failed to fetch transactions");
