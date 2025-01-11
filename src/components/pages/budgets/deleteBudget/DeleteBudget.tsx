@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store.ts";
 import { deleteBudget, closeModal } from "../../../redux/budgetSlice.ts";
 import DeleteModal from "../../../reusable/deleteModal/DeleteModal.tsx";
-import { deleteBudgetAction } from "../../../../../api/budgets/budgets.js";
+import { deleteBudgetAction } from "../../../services/budgets.js";
 const DeleteBudget: React.FC = () => {
   const dispatch = useDispatch();
   const selectedBudget = useSelector(

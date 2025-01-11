@@ -5,7 +5,7 @@ import { RootState } from "../../../redux/store.ts";
 import ProgressBar from "../progressbar/ProgressBar.tsx";
 import Buttons from "../../../reusable/button/Buttons.tsx";
 import { formatCurrency } from "../../../../utils/utils.ts";
-import { addMoneyAction } from "../../../../../api/pots/pots.js";
+import { addMoneyAction } from "../../../services/pots.js";
 const AddMoney = ({ onClose }) => {
   const dispatch = useDispatch();
   const [amount, setAmount] = useState<string | number>("");

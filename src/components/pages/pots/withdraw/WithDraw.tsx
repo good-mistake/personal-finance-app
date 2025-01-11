@@ -5,7 +5,7 @@ import { RootState } from "../../../redux/store.ts";
 import ProgressBar from "../progressbar/ProgressBar";
 import { formatCurrency } from "../../../../utils/utils.ts";
 import Buttons from "../../../reusable/button/Buttons.tsx";
-import { withdrawAction } from "../../../../../api/pots/pots.js";
+import { withdrawAction } from "../../../services/pots.js";
 
 const WithDraw = ({ onClose }) => {
   const dispatch = useDispatch();
