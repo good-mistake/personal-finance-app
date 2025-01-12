@@ -4,12 +4,37 @@ import { connectToDatabase } from "../../db";
 export default async function handler(req, res) {
   await connectToDatabase();
 
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://personal-finance-app-nu.vercel.app"
-  );
+  const allowedOrigins = [
+    "https://personal-finance-app-nu.vercel.app",
+    "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
+    "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
+  ];
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+  }
+
   res.setHeader("Access-Control-Allow-Methods", "GET, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Requested-With"
+  );
+
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, OPTIONS, PUT, DELETE"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization"
+    );
+    return res.status(200).end();
+  }
 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
