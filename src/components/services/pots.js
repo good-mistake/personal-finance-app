@@ -1,118 +1,100 @@
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/pots`;
 
 export const fetchPots = async (token) => {
-  try {
-    const response = await fetch(API_URL, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
+  const response = await fetch(API_URL, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      console.error("Error fetching pots:", errorMessage);
-      throw new Error("Failed to fetch pots");
-    }
-
-    const potsData = await response.json();
-    return potsData.map((pot) => ({
-      ...pot,
-      id: pot._id,
-      _id: undefined,
-    }));
-  } catch (error) {
-    console.error("Error fetching pots:", error.message);
-    throw error;
+  if (!response.ok) {
+    throw new Error("Failed to fetch pots");
   }
+
+  return response.json();
 };
 
-export const withdrawAction = async (token, withdrawalData) => {
-  if (!token) throw new Error("Authorization token is required");
+export const addPotAction = async (token, newPot) => {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(newPot),
+  });
 
-  try {
-    const response = await fetch(`${API_URL}/withdraw/${withdrawalData.id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ amount: withdrawalData.amount }),
-    });
-
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(errorMessage || "Failed to withdraw money from pot");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error in withdrawAction:", error.message);
-    throw error;
+  if (!response.ok) {
+    throw new Error("Failed to add pot");
   }
-};
 
-export const addMoneyAction = async (token, addMoneyData) => {
-  if (!token) throw new Error("Authorization token is required");
-
-  try {
-    const response = await fetch(`${API_URL}/add-money/${addMoneyData.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ amount: addMoneyData.amount }),
-    });
-
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      console.error("Failed to update pot:", errorMessage);
-      throw new Error(errorMessage || "Failed to update pot");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error in addMoneyAction:", error.message);
-    throw error;
-  }
+  return response.json();
 };
 
 export const editPotAction = async (token, updatedPot) => {
-  if (!token) throw new Error("Authorization token is required");
+  const response = await fetch(`${API_URL}/${updatedPot.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(updatedPot),
+  });
 
-  try {
-    const response = await fetch(`${API_URL}/${updatedPot.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(updatedPot),
-    });
-
-    if (!response.ok) throw new Error("Failed to update pot");
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error in editPotAction:", error.message);
-    throw error;
+  if (!response.ok) {
+    throw new Error("Failed to update pot");
   }
+
+  return response.json();
 };
 
 export const deletePotAction = async (potId, token) => {
-  try {
-    const response = await fetch(`${API_URL}/${potId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+  const response = await fetch(`${API_URL}/${potId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(`Failed to delete pot: ${errorMessage}`);
-    }
-  } catch (error) {
-    console.error("Error in deletePotAction:", error.message);
-    throw error;
+  if (!response.ok) {
+    throw new Error("Failed to delete pot");
   }
+
+  return response.json();
+};
+export const addMoneyAction = async (token, addMoneyData) => {
+  if (!token) throw new Error("Authorization token is required");
+
+  const response = await fetch(`${API_URL}/${addMoneyData.id}/add-money`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ amount: addMoneyData.amount }),
+  });
+
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(`Failed to update pot: ${errorMessage}`);
+  }
+
+  return response.json();
+};
+export const withdrawAction = async (token, withdrawData) => {
+  if (!token) throw new Error("Authorization token is required");
+
+  const response = await fetch(`${API_URL}/${withdrawData.id}/withdraw-money`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ amount: withdrawData.amount }),
+  });
+
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(`Failed to withdraw money: ${errorMessage}`);
+  }
+
+  return response.json();
 };
