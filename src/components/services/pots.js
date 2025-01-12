@@ -18,7 +18,6 @@ export const fetchPots = async (token) => {
 
     return potData.map((pot) => ({
       id: pot._id,
-      _id: undefined,
       name: pot.name,
       target: pot.target,
       total: pot.total,
@@ -104,8 +103,7 @@ export const addMoneyAction = async (token, addMoneyData) => {
     });
 
     if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(`Failed to add money: ${errorMessage}`);
+      throw new Error(`Failed to add money: ${await response.text()}`);
     }
 
     return response.json();
@@ -130,8 +128,7 @@ export const withdrawAction = async (token, withdrawData) => {
     );
 
     if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(`Failed to withdraw money: ${errorMessage}`);
+      throw new Error(`Failed to withdraw money: ${await response.text()}`);
     }
 
     return response.json();
