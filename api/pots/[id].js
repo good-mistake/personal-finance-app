@@ -4,7 +4,10 @@ import { connectToDatabase } from "../../db";
 export default async function handler(req, res) {
   await connectToDatabase();
 
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://personal-finance-app-nu.vercel.app"
+  );
   res.setHeader("Access-Control-Allow-Methods", "GET, PUT, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
@@ -26,13 +29,13 @@ export default async function handler(req, res) {
       const { amount } = req.body;
       const { addMoney, withdrawMoney } = req.query;
 
+      const pot = await Pot.findById(id);
+      if (!pot) return res.status(404).json({ message: "Pot not found" });
+
       if (addMoney) {
         if (amount === undefined) {
           return res.status(400).json({ message: "Amount is required" });
         }
-
-        const pot = await Pot.findById(id);
-        if (!pot) return res.status(404).json({ message: "Pot not found" });
 
         pot.total += amount;
         await pot.save();
@@ -44,9 +47,6 @@ export default async function handler(req, res) {
         if (amount === undefined) {
           return res.status(400).json({ message: "Amount is required" });
         }
-
-        const pot = await Pot.findById(id);
-        if (!pot) return res.status(404).json({ message: "Pot not found" });
 
         pot.total -= amount;
         await pot.save();
