@@ -13,10 +13,7 @@ export default async function handler(req, res) {
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
-  } else {
-    res.setHeader("Access-Control-Allow-Origin", "*");
   }
-
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS"
@@ -27,15 +24,21 @@ export default async function handler(req, res) {
   );
 
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    return res.status(204).end();
   }
 
   const { method } = req;
+  const { id } = req.query;
 
   try {
     if (method === "GET") {
-      const pots = await Pot.find();
-      return res.status(200).json(pots);
+      if (!id) {
+        const pots = await Pot.find();
+        return res.status(200).json(pots);
+      }
+      const pot = await Pot.findById(id);
+      if (!pot) return res.status(404).json({ message: "Pot not found" });
+      return res.status(200).json(pot);
     }
 
     if (method === "POST") {
@@ -50,6 +53,41 @@ export default async function handler(req, res) {
       const newPot = new Pot({ name, target, total, theme });
       await newPot.save();
       return res.status(201).json(newPot);
+    }
+
+    if (method === "PUT") {
+      const { amount } = req.body;
+      const { addMoney, withdrawMoney } = req.query;
+
+      const pot = await Pot.findById(id);
+      if (!pot) return res.status(404).json({ message: "Pot not found" });
+
+      if (addMoney) {
+        if (amount === undefined) {
+          return res.status(400).json({ message: "Amount is required" });
+        }
+
+        pot.total += amount;
+      } else if (withdrawMoney) {
+        if (amount === undefined) {
+          return res.status(400).json({ message: "Amount is required" });
+        }
+
+        pot.total -= amount;
+      } else {
+        return res.status(400).json({ message: "Invalid action specified" });
+      }
+
+      await pot.save();
+      return res.status(200).json(pot);
+    }
+
+    if (method === "DELETE") {
+      const deletedPot = await Pot.findByIdAndDelete(id);
+      if (!deletedPot)
+        return res.status(404).json({ message: "Pot not found" });
+
+      return res.status(200).json({ message: "Pot deleted successfully" });
     }
 
     return res.status(405).json({ message: `Method ${method} Not Allowed` });
