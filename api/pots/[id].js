@@ -36,10 +36,6 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
   const { method } = req;
   const { id } = req.query;
 
