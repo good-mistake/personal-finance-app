@@ -79,3 +79,22 @@ export const addMoneyAction = async (token, addMoneyData) => {
 
   return response.json();
 };
+export const withdrawMoneyAction = async (token, withdrawData) => {
+  if (!token) throw new Error("Authorization token is required");
+
+  const response = await fetch(`${API_URL}/${withdrawData.id}/withdraw-money`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ amount: withdrawData.amount }),
+  });
+
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(`Failed to withdraw money: ${errorMessage}`);
+  }
+
+  return response.json();
+};
