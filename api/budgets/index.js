@@ -1,5 +1,5 @@
-import { connectToDatabase } from "../../db.js";
 import Budget from "../../models/budgets.js";
+import { connectToDatabase } from "../../db.js";
 
 export default async function handler(req, res) {
   await connectToDatabase();
@@ -17,22 +17,16 @@ export default async function handler(req, res) {
     res.setHeader("Access-Control-Allow-Origin", "*");
   }
 
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization, X-Requested-With"
   );
 
   if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET, POST, OPTIONS, PUT, DELETE"
-    );
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
-    );
     return res.status(200).end();
   }
 
@@ -56,12 +50,50 @@ export default async function handler(req, res) {
 
         const newBudget = new Budget({ category, maxAmount, themeColor });
         await newBudget.save();
-
         return res.status(201).json(newBudget);
       }
 
+      case "PUT": {
+        const { id } = req.query;
+        const { category, maxAmount, themeColor } = req.body;
+
+        if (!id || !category || !maxAmount || !themeColor) {
+          return res.status(400).json({
+            message: "ID, category, maxAmount, and themeColor are required.",
+          });
+        }
+
+        const updatedBudget = await Budget.findByIdAndUpdate(
+          id,
+          { category, maxAmount, themeColor },
+          { new: true }
+        );
+
+        if (!updatedBudget) {
+          return res.status(404).json({ message: "Budget not found" });
+        }
+
+        return res.status(200).json(updatedBudget);
+      }
+
+      case "DELETE": {
+        const { id } = req.query;
+
+        if (!id) {
+          return res.status(400).json({ message: "ID is required" });
+        }
+
+        const deletedBudget = await Budget.findByIdAndDelete(id);
+
+        if (!deletedBudget) {
+          return res.status(404).json({ message: "Budget not found" });
+        }
+
+        return res.status(200).json({ message: "Budget deleted successfully" });
+      }
+
       default: {
-        res.setHeader("Allow", ["GET", "POST"]);
+        res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
         return res
           .status(405)
           .json({ message: `Method ${method} Not Allowed` });

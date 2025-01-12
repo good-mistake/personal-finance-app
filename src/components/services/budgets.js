@@ -9,26 +9,27 @@ export const fetchBudgets = async (token) => {
     throw new Error("Failed to fetch budgets");
   }
 
-  const budgetsData = await response.json();
+  return response.json();
+};
 
-  if (!Array.isArray(budgetsData)) {
-    throw new Error("Invalid data format received from API");
+export const addBudgetAction = async (token, newBudget) => {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(newBudget),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to add budget");
   }
 
-  return budgetsData.map((budget) => ({
-    id: budget._id,
-    _id: undefined,
-    category: budget.category,
-    maximum: budget.maximum,
-    theme: budget.theme,
-  }));
+  return response.json();
 };
 
 export const editBudgetAction = async (token, updatedBudget) => {
-  if (!token) {
-    throw new Error("Authorization token is required");
-  }
-
   const response = await fetch(`${API_URL}/${updatedBudget.id}`, {
     method: "PUT",
     headers: {
@@ -46,39 +47,15 @@ export const editBudgetAction = async (token, updatedBudget) => {
 };
 
 export const deleteBudgetAction = async (budgetId, token) => {
-  if (!token) {
-    throw new Error("Authorization token is required");
-  }
-
   const response = await fetch(`${API_URL}/${budgetId}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
     },
   });
 
   if (!response.ok) {
     throw new Error("Failed to delete budget");
-  }
-
-  return response.json();
-};
-
-export const fetchTransactionsFromBackend = async (token) => {
-  const response = await fetch(
-    `${process.env.REACT_APP_API_BASE_URL}/api/transactions`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch transactions");
   }
 
   return response.json();
