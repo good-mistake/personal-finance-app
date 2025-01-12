@@ -22,7 +22,7 @@ export const fetchPots = async (token) => {
       name: pot.name,
       target: pot.target,
       total: pot.total,
-      theme: pot.theme || "default-theme", // Provide a default value if `theme` is missing
+      theme: pot.theme || "default-theme",
     }));
   } catch (error) {
     console.error("Error fetching pots:", error.message);
