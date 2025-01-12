@@ -93,14 +93,17 @@ export const deletePotAction = async (potId, token) => {
 
 export const addMoneyAction = async (token, addMoneyData) => {
   try {
-    const response = await fetch(`${API_URL}/${addMoneyData.id}/add-money`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ amount: addMoneyData.amount }),
-    });
+    const response = await fetch(
+      `${API_URL}/${addMoneyData.id}?addMoney=true`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ amount: addMoneyData.amount }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Failed to add money: ${await response.text()}`);
@@ -112,11 +115,10 @@ export const addMoneyAction = async (token, addMoneyData) => {
     throw error;
   }
 };
-
 export const withdrawAction = async (token, withdrawData) => {
   try {
     const response = await fetch(
-      `${API_URL}/${withdrawData.id}/withdraw-money`,
+      `${API_URL}/${withdrawData.id}?withdrawMoney=true`,
       {
         method: "PUT",
         headers: {

@@ -24,17 +24,37 @@ export default async function handler(req, res) {
 
     if (method === "PUT") {
       const { amount } = req.body;
-      if (amount === undefined) {
-        return res.status(400).json({ message: "Amount is required" });
+      const { addMoney, withdrawMoney } = req.query;
+
+      if (addMoney) {
+        if (amount === undefined) {
+          return res.status(400).json({ message: "Amount is required" });
+        }
+
+        const pot = await Pot.findById(id);
+        if (!pot) return res.status(404).json({ message: "Pot not found" });
+
+        pot.total += amount;
+        await pot.save();
+
+        return res.status(200).json(pot);
       }
 
-      const pot = await Pot.findById(id);
-      if (!pot) return res.status(404).json({ message: "Pot not found" });
+      if (withdrawMoney) {
+        if (amount === undefined) {
+          return res.status(400).json({ message: "Amount is required" });
+        }
 
-      pot.total += amount;
-      await pot.save();
+        const pot = await Pot.findById(id);
+        if (!pot) return res.status(404).json({ message: "Pot not found" });
 
-      return res.status(200).json(pot);
+        pot.total -= amount;
+        await pot.save();
+
+        return res.status(200).json(pot);
+      }
+
+      return res.status(400).json({ message: "Invalid action specified" });
     }
 
     if (method === "DELETE") {
