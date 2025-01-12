@@ -60,3 +60,22 @@ export const deletePotAction = async (potId, token) => {
 
   return response.json();
 };
+export const addMoneyAction = async (token, addMoneyData) => {
+  if (!token) throw new Error("Authorization token is required");
+
+  const response = await fetch(`${API_URL}/${addMoneyData.id}/add-money`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ amount: addMoneyData.amount }),
+  });
+
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(`Failed to update pot: ${errorMessage}`);
+  }
+
+  return response.json();
+};
