@@ -1,6 +1,7 @@
 import { connectToDatabase } from "../../db.js";
 import mongoose from "mongoose";
 import Pot from "../../models/Pot.js";
+
 export default async function handler(req, res) {
   await connectToDatabase();
 
@@ -24,15 +25,6 @@ export default async function handler(req, res) {
   );
 
   if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET, POST, OPTIONS, PUT, DELETE"
-    );
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
-    );
     return res.status(200).end();
   }
 
