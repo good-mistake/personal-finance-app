@@ -26,13 +26,13 @@ export const fetchPots = async (token) => {
 export const addMoneyAction = async (token, addMoneyData) => {
   if (!token) throw new Error("Authorization token is required");
 
-  const response = await fetch(`${API_URL}/${addMoneyData.id}`, {
+  const response = await fetch(API_URL, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ amount: addMoneyData.amount }),
+    body: JSON.stringify({ id: addMoneyData.id, amount: addMoneyData.amount }),
   });
 
   if (!response.ok) {
@@ -52,13 +52,16 @@ export const addMoneyAction = async (token, addMoneyData) => {
 export const withdrawAction = async (token, withdrawalData) => {
   if (!token) throw new Error("Authorization token is required");
 
-  const response = await fetch(`${API_URL}/${withdrawalData.id}`, {
+  const response = await fetch(API_URL, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ amount: -withdrawalData.amount }),
+    body: JSON.stringify({
+      id: withdrawalData.id,
+      amount: -withdrawalData.amount,
+    }),
   });
 
   if (!response.ok) {
@@ -78,7 +81,7 @@ export const withdrawAction = async (token, withdrawalData) => {
 export const editPotAction = async (token, updatedPot) => {
   if (!token) throw new Error("Authorization token is required");
 
-  const response = await fetch(`${API_URL}/${updatedPot.id}`, {
+  const response = await fetch(API_URL, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -99,12 +102,13 @@ export const editPotAction = async (token, updatedPot) => {
  * @returns {Promise<void>}
  */
 export const deletePotAction = async (potId, token) => {
-  const response = await fetch(`${API_URL}/${potId}`, {
+  const response = await fetch(API_URL, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
+    body: JSON.stringify({ id: potId }),
   });
 
   if (!response.ok) {

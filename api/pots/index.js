@@ -31,7 +31,9 @@ export default async function handler(req, res) {
           return res.status(400).json({ message: "Invalid pot data" });
         }
 
-        const newPot = await Pot.create({ name, target, total });
+        const newPot = new Pot({ name, target, total });
+        await newPot.save();
+
         return res.status(201).json(newPot);
       }
 

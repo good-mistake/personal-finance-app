@@ -8,20 +8,17 @@ export default async function handler(req, res) {
   const { method } = req;
   const { id } = req.query;
 
-  // Set CORS headers
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "https://personal-finance-app-nu.vercel.app" // Frontend domain
+    "https://personal-finance-app-nu.vercel.app"
   );
   res.setHeader("Access-Control-Allow-Methods", "GET, PUT, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  // Handle preflight requests
   if (method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  // Validate ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid pot ID" });
   }
@@ -39,18 +36,17 @@ export default async function handler(req, res) {
       }
 
       case "PUT": {
-        const { total, ...rest } = req.body;
+        const { name, target, total } = req.body;
 
         if (total !== undefined && typeof total !== "number") {
           return res.status(400).json({ message: "Total must be a number" });
         }
 
-        const updateData =
-          total !== undefined ? { total, ...rest } : { ...rest };
-        const updatedPot = await Pot.findByIdAndUpdate(id, updateData, {
-          new: true,
-          runValidators: true,
-        });
+        const updatedPot = await Pot.findByIdAndUpdate(
+          id,
+          { name, target, total },
+          { new: true, runValidators: true }
+        );
 
         if (!updatedPot) {
           return res.status(404).json({ message: "Pot not found" });
