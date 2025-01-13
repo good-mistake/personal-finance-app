@@ -45,17 +45,15 @@ export default async function handler(req, res) {
     }
 
     if (method === "PUT") {
-      const { amount, category } = req.body;
+      const { amount } = req.body;
 
-      if (amount === undefined || !category) {
-        return res
-          .status(400)
-          .json({ message: "Amount and category are required" });
+      if (amount === undefined) {
+        return res.status(400).json({ message: "Amount is required" });
       }
 
       const updatedPot = await Pot.findByIdAndUpdate(
         id,
-        { amount, category },
+        { $inc: { amount } }, // Increment the pot's amount
         { new: true, runValidators: true }
       );
 
