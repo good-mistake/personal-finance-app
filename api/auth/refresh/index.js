@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import User from "../../../models/models.js";
 import { connectToDatabase } from "../../../db.js";
 
 export default async function handler(req, res) {
@@ -21,32 +22,30 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET, POST, OPTIONS, PUT, DELETE"
-    );
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
-    );
     return res.status(200).end();
   }
 
   if (req.method === "POST") {
     const { refreshToken } = req.body;
+
     if (!refreshToken) {
       return res.status(403).json({ message: "No refresh token provided" });
     }
 
     try {
       const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+      // Check if the refresh token exists in the database
+      const user = await User.findById(decoded.id);
+      if (!user || user.refreshToken !== refreshToken) {
+        return res.status(403).json({ message: "Invalid refresh token" });
+      }
+
+      // Generate a new access token
       const newAccessToken = jwt.sign(
-        { id: decoded.id },
+        { id: user._id, email: user.email },
         process.env.JWT_SECRET,
-        {
-          expiresIn: process.env.JWT_EXPIRES_IN,
-        }
+        { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
       );
 
       return res.status(200).json({ token: newAccessToken });

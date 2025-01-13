@@ -1,9 +1,6 @@
 import jwt from "jsonwebtoken";
 import { connectToDatabase } from "../../../db.js";
 import User from "../../../models/models.js";
-import Pot from "../../../models/Pot.js";
-import Budget from "../../../models/budgets.js";
-import Transaction from "../../../models/transaction.js";
 
 export default async function handler(req, res) {
   await connectToDatabase();
@@ -17,14 +14,16 @@ export default async function handler(req, res) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      const user = await User.findById(decoded.id).select("-password");
+      // Find the user and populate related data
+      const user = await User.findById(decoded.id)
+        .select("-password") // Exclude password field
+        .populate("transactions")
+        .populate("budgets")
+        .populate("pots");
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-
-      const pots = await Pot.find({ userId: user._id });
-      const budgets = await Budget.find({ userId: user._id });
-      const transactions = await Transaction.find({ userId: user._id });
 
       return res.status(200).json({
         valid: true,
@@ -32,9 +31,10 @@ export default async function handler(req, res) {
           id: user._id,
           name: user.name,
           email: user.email,
-          pots,
-          budgets,
-          transactions,
+          balance: user.balance,
+          transactions: user.transactions || [],
+          budgets: user.budgets || [],
+          pots: user.pots || [],
         },
       });
     } catch (error) {

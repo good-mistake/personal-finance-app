@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../../../models/models.js";
 import { connectToDatabase } from "../../../db.js";
+
 export default async function loginHandler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
@@ -26,7 +27,7 @@ export default async function loginHandler(req, res) {
     const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
     );
 
     const refreshToken = jwt.sign(
@@ -35,8 +36,13 @@ export default async function loginHandler(req, res) {
       { expiresIn: "7d" }
     );
 
+    // Save refresh token to the database
+    user.refreshToken = refreshToken;
+    await user.save();
+
     res.status(200).json({
       result: {
+        id: user._id,
         name: user.name,
         email: user.email,
         pots: user.pots,
