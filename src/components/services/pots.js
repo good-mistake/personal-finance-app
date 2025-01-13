@@ -1,10 +1,5 @@
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/pots`;
 
-/**
- * Fetch all pots
- * @param {string | null} token
- * @returns {Promise<Array>}
- */
 export const fetchPots = async (token) => {
   const response = await fetch(API_URL, {
     headers: { Authorization: `Bearer ${token}` },
