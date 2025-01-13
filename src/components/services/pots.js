@@ -49,6 +49,32 @@ export const addMoneyAction = async (token, addMoneyData) => {
 };
 
 /**
+ * Withdraw money from a pot
+ * @param {string | null} token
+ * @param {Object} withdrawalData
+ * @returns {Promise<Object>}
+ */
+export const withdrawAction = async (token, withdrawalData) => {
+  if (!token) throw new Error("Authorization token is required");
+
+  const response = await fetch(`${API_URL}/${withdrawalData.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ amount: -withdrawalData.amount }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to withdraw money from pot");
+  }
+
+  return response.json();
+};
+
+/**
  * Edit a pot
  * @param {string | null} token
  * @param {Object} updatedPot
