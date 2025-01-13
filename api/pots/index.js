@@ -50,23 +50,21 @@ export default async function handler(req, res) {
       }
 
       case "PUT": {
-        const { id, total } = body;
+        const { id, amount } = body;
 
-        if (!id || typeof total !== "number") {
+        if (!id || typeof amount !== "number") {
           return res.status(400).json({ message: "Invalid data for update" });
         }
 
-        const updatedPot = await Pot.findByIdAndUpdate(
-          id,
-          { total },
-          { new: true, runValidators: true }
-        );
-
-        if (!updatedPot) {
+        const pot = await Pot.findById(id);
+        if (!pot) {
           return res.status(404).json({ message: "Pot not found" });
         }
 
-        return res.status(200).json(updatedPot);
+        pot.total += amount;
+        await pot.save();
+
+        return res.status(200).json(pot);
       }
 
       case "DELETE": {

@@ -81,13 +81,15 @@ export const withdrawAction = async (token, withdrawalData) => {
 export const editPotAction = async (token, updatedPot) => {
   if (!token) throw new Error("Authorization token is required");
 
+  const { id, ...updates } = updatedPot;
+
   const response = await fetch(API_URL, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(updatedPot),
+    body: JSON.stringify({ id, ...updates }),
   });
 
   if (!response.ok) throw new Error("Failed to update pot");
