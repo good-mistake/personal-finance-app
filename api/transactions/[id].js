@@ -1,10 +1,30 @@
-import Pot from "../../models/Pot.js";
+import Transaction from "../../models/transaction.js";
 import { connectToDatabase } from "../../db.js";
 import mongoose from "mongoose";
 
 export default async function handler(req, res) {
   await connectToDatabase();
+  const allowedOrigins = [
+    "https://personal-finance-app-nu.vercel.app",
+    "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
+    "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
+  ];
 
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
+  res.setHeader("Access-Control-Allow-Methods", "GET, PUT, DELETE, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Requested-With"
+  );
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
   const { method } = req;
   const { id } = req.query;
 
@@ -14,7 +34,7 @@ export default async function handler(req, res) {
 
   try {
     if (method === "GET") {
-      const pot = await Pot.findById(id);
+      const pot = await Transaction.findById(id);
 
       if (!pot) {
         return res.status(404).json({ message: "Pot not found" });
@@ -30,7 +50,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: "Total must be a number" });
       }
 
-      const updatedPot = await Pot.findByIdAndUpdate(
+      const updatedPot = await Transaction.findByIdAndUpdate(
         id,
         { total },
         { new: true, runValidators: true }
@@ -44,7 +64,7 @@ export default async function handler(req, res) {
     }
 
     if (method === "DELETE") {
-      const deletedPot = await Pot.findByIdAndDelete(id);
+      const deletedPot = await Transaction.findByIdAndDelete(id);
 
       if (!deletedPot) {
         return res.status(404).json({ message: "Pot not found" });

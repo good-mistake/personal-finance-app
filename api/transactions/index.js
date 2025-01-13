@@ -1,4 +1,4 @@
-import Pot from "../../models/Pot.js";
+import Transaction from "../../models/transaction.js";
 import { connectToDatabase } from "../../db.js";
 
 export default async function handler(req, res) {
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
 
   try {
     if (method === "GET") {
-      const pots = await Pot.find();
+      const pots = await Transaction.find();
       return res.status(200).json(pots);
     }
 
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
           .json({ message: "Amount, category, and total are required" });
       }
 
-      const newPot = new Pot({ amount, category, total });
+      const newPot = new Transaction({ amount, category, total });
       await newPot.save();
       return res.status(201).json(newPot);
     }
@@ -54,7 +54,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: "Pot ID is required" });
       }
 
-      const deletedPot = await Pot.findByIdAndDelete(id);
+      const deletedPot = await Transaction.findByIdAndDelete(id);
 
       if (!deletedPot) {
         return res.status(404).json({ message: "Pot not found" });
