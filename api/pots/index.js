@@ -54,10 +54,9 @@ export default async function handler(req, res) {
     }
 
     if (method === "PUT") {
-      const { id } = req.query; // Assuming you're passing the pot ID in the query
-      const { amount } = req.body;
+      const { id, ...updateFields } = req.query; // Assuming you're passing the pot ID in the query
 
-      if (!id || amount === undefined) {
+      if (!id) {
         return res
           .status(400)
           .json({ message: "Pot ID and amount are required" });
@@ -69,9 +68,13 @@ export default async function handler(req, res) {
         return res.status(404).json({ message: "Pot not found" });
       }
 
-      pot.amount += amount;
-      await pot.save();
-
+      const updatedpots = await Pot.findByIdAndUpdate(id, updateFields, {
+        new: true,
+        runValidators: true,
+      });
+      if (!updatedpots) {
+        return res.status(404).json({ message: "Pot not found" });
+      }
       return res.status(200).json(pot);
     }
 
