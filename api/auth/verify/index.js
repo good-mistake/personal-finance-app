@@ -5,6 +5,27 @@ import User from "../../../models/models.js";
 export default async function handler(req, res) {
   await connectToDatabase();
 
+  const allowedOrigins = [
+    "https://personal-finance-app-nu.vercel.app",
+    "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
+    "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
+  ];
+
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else {
+    res.setHeader("Access-Control-Allow-Origin", "*"); // Temporary wildcard for testing
+  }
+
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end(); // Handle preflight request
+  }
+
   if (req.method === "GET") {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
