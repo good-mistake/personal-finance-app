@@ -45,7 +45,7 @@ export default async function handler(req, res) {
           }
 
           const newPot = new Pot({ name, target, total: 0, theme });
-
+          await newPot.save();
           return res.status(201).json(newPot);
         } catch (error) {
           return res.status(500).json({ message: "Error creating pot", error });

@@ -41,7 +41,6 @@ export default async function handler(req, res) {
       }
 
       case "POST": {
-        // Handle POST request to create a new pot
         const { name, target, total, theme } = req.body;
 
         if (
@@ -60,7 +59,6 @@ export default async function handler(req, res) {
       }
 
       case "PUT": {
-        // Handle PUT request to update an existing pot
         const { name, target, total } = req.body;
 
         if (
@@ -86,7 +84,6 @@ export default async function handler(req, res) {
       }
 
       case "DELETE": {
-        // Handle DELETE request to remove a pot
         const deletedPot = await Pot.findByIdAndDelete(id);
 
         if (!deletedPot) {
