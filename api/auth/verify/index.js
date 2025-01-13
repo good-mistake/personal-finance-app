@@ -10,39 +10,46 @@ export default async function handler(req, res) {
     "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
     "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
   ];
-
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   } else {
-    res.setHeader("Access-Control-Allow-Origin", "*"); // Temporary wildcard for testing
+    res.setHeader("Access-Control-Allow-Origin", "*");
   }
 
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
-    return res.status(200).end(); // Handle preflight request
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, OPTIONS, PUT, DELETE"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization"
+    );
+    return res.status(200).end();
   }
 
   if (req.method === "GET") {
+    console.log("Request Headers:", req.headers);
+
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
+      console.warn("No token provided in the request");
       return res.status(403).json({ message: "No token provided" });
     }
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log("Decoded Token:", decoded);
 
-      // Find the user and populate related data
-      const user = await User.findById(decoded.id)
-        .select("-password") // Exclude password field
-        .populate("transactions")
-        .populate("budgets")
-        .populate("pots");
-
+      const user = await User.findById(decoded.id).select("-password");
       if (!user) {
+        console.warn("User not found for ID:", decoded.id);
         return res.status(404).json({ message: "User not found" });
       }
 
@@ -52,10 +59,9 @@ export default async function handler(req, res) {
           id: user._id,
           name: user.name,
           email: user.email,
-          balance: user.balance,
-          transactions: user.transactions || [],
-          budgets: user.budgets || [],
           pots: user.pots || [],
+          budgets: user.budgets || [],
+          transactions: user.transactions || [],
         },
       });
     } catch (error) {
@@ -64,5 +70,6 @@ export default async function handler(req, res) {
     }
   }
 
+  console.warn(`Method ${req.method} not allowed`);
   return res.status(405).json({ message: `Method ${req.method} not allowed` });
 }
