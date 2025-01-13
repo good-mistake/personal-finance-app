@@ -36,7 +36,6 @@ export default async function loginHandler(req, res) {
       { expiresIn: "7d" }
     );
 
-    // Save refresh token to the database
     user.refreshToken = refreshToken;
     await user.save();
 

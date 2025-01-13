@@ -39,11 +39,11 @@ const App = () => {
         const data = response.data;
         dispatch(
           login({
-            name: data.users.name,
-            email: data.users.email,
-            pots: data.users.pots || [],
-            budgets: data.users.budgets || [],
-            transactions: data.users.transactions || [],
+            name: data.user.name,
+            email: data.user.email,
+            pots: data.user.pots || [],
+            budgets: data.user.budgets || [],
+            transactions: data.user.transactions || [],
           })
         );
       } catch (err) {
