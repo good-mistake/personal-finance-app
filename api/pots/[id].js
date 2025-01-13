@@ -37,6 +37,18 @@ export default async function handler(req, res) {
 
         return res.status(200).json(pot);
       }
+      case "POST": {
+        const { name, target, total } = req.body;
+
+        if (!name || typeof target !== "number" || typeof total !== "number") {
+          return res.status(400).json({ message: "Invalid pot data" });
+        }
+
+        const newPot = new Pot({ name, target, total });
+        await newPot.save();
+
+        return res.status(201).json(newPot);
+      }
 
       case "PUT": {
         const { name, target, total } = req.body;
