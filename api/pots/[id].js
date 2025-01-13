@@ -12,7 +12,10 @@ export default async function handler(req, res) {
     "Access-Control-Allow-Origin",
     "https://personal-finance-app-nu.vercel.app"
   );
-  res.setHeader("Access-Control-Allow-Methods", "GET, PUT, DELETE, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (method === "OPTIONS") {
