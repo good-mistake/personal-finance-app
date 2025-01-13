@@ -8,10 +8,25 @@ export default async function handler(req, res) {
   const { method, query, body } = req;
   const { id } = query;
 
+  // Set CORS headers
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://personal-finance-app-nu.vercel.app"
+  ); // Change to the frontend URL
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // Handle preflight requests
+  if (method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   try {
     if (method === "GET") {
       if (id) {
-        // Fetch a specific pot by ID
         if (!mongoose.Types.ObjectId.isValid(id)) {
           return res.status(400).json({ message: "Invalid pot ID" });
         }
@@ -21,14 +36,12 @@ export default async function handler(req, res) {
         }
         return res.status(200).json(pot);
       } else {
-        // Fetch all pots
         const pots = await Pot.find({});
         return res.status(200).json(pots);
       }
     }
 
     if (method === "POST") {
-      // Create a new pot
       const { name, target, total } = body;
 
       if (!name || typeof target !== "number" || typeof total !== "number") {
@@ -82,7 +95,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ message: "Pot deleted successfully" });
     }
 
-    res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
+    res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE", "OPTIONS"]);
     return res.status(405).json({ message: `Method ${method} Not Allowed` });
   } catch (error) {
     console.error("Error handling pots:", error);
