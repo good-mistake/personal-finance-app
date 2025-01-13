@@ -1,6 +1,6 @@
-import { connectToDatabase } from "../../db.js";
 import mongoose from "mongoose";
 import Pot from "../../models/Pot.js";
+import { connectToDatabase } from "../../db.js";
 
 export default async function handler(req, res) {
   await connectToDatabase();
@@ -25,13 +25,15 @@ export default async function handler(req, res) {
   );
 
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
   const { method } = req;
   const { id } = req.query;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  // Validate MongoDB ObjectId
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid Pot ID" });
   }
 
@@ -69,7 +71,7 @@ export default async function handler(req, res) {
       if (!deletedPot) {
         return res.status(404).json({ message: "Pot not found" });
       }
-      return res.status(200).json({ message: "Pot deleted" });
+      return res.status(200).json({ message: "Pot deleted successfully" });
     }
 
     res.setHeader("Allow", ["GET", "PUT", "DELETE"]);
