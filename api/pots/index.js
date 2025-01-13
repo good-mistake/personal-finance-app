@@ -4,7 +4,7 @@ import { connectToDatabase } from "../../db.js";
 export default async function handler(req, res) {
   await connectToDatabase();
 
-  const { method, body } = req;
+  const { method, body, query } = req;
   const allowedOrigins = [
     "https://personal-finance-app-nu.vercel.app",
     "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
@@ -49,8 +49,46 @@ export default async function handler(req, res) {
         return res.status(201).json(newPot);
       }
 
+      case "PUT": {
+        const { id, total } = body;
+
+        if (!id || typeof total !== "number") {
+          return res.status(400).json({ message: "Invalid data for update" });
+        }
+
+        const updatedPot = await Pot.findByIdAndUpdate(
+          id,
+          { total },
+          { new: true, runValidators: true }
+        );
+
+        if (!updatedPot) {
+          return res.status(404).json({ message: "Pot not found" });
+        }
+
+        return res.status(200).json(updatedPot);
+      }
+
+      case "DELETE": {
+        const { id } = body;
+
+        if (!id) {
+          return res
+            .status(400)
+            .json({ message: "Pot ID is required for deletion" });
+        }
+
+        const deletedPot = await Pot.findByIdAndDelete(id);
+
+        if (!deletedPot) {
+          return res.status(404).json({ message: "Pot not found" });
+        }
+
+        return res.status(200).json({ message: "Pot deleted successfully" });
+      }
+
       default:
-        res.setHeader("Allow", ["GET", "POST", "OPTIONS"]);
+        res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE", "OPTIONS"]);
         return res
           .status(405)
           .json({ message: `Method ${method} Not Allowed` });
