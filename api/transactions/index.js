@@ -1,4 +1,4 @@
-import Transaction from "../../models/transaction.js";
+import Pot from "../../models/Pot.js";
 import { connectToDatabase } from "../../db.js";
 
 export default async function handler(req, res) {
@@ -13,14 +13,9 @@ export default async function handler(req, res) {
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
-  } else {
-    res.setHeader("Access-Control-Allow-Origin", "*");
   }
 
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization, X-Requested-With"
@@ -30,85 +25,48 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const { method } = req;
+  const { method, query } = req;
 
   try {
     if (method === "GET") {
-      const transactions = await Transaction.find();
-      return res.status(200).json(transactions);
+      const pots = await Pot.find();
+      return res.status(200).json(pots);
     }
 
     if (method === "POST") {
-      const { amount, category, name, date, recurring, theme } = req.body;
+      const { amount, category, total } = req.body;
 
-      if (amount === undefined || !category) {
+      if (!amount || !category || typeof total !== "number") {
         return res
           .status(400)
-          .json({ message: "Amount and category are required" });
+          .json({ message: "Amount, category, and total are required" });
       }
 
-      const newTransaction = new Transaction({
-        amount,
-        category,
-        name,
-        date,
-        recurring,
-        theme,
-      });
-
-      await newTransaction.save();
-
-      return res.status(201).json(newTransaction);
-    }
-
-    if (method === "PUT") {
-      const { id, ...updateFields } = req.body;
-
-      if (!id) {
-        return res
-          .status(400)
-          .json({ message: "Transaction ID is required for updating" });
-      }
-
-      const updatedTransaction = await Transaction.findByIdAndUpdate(
-        id,
-        updateFields,
-        { new: true, runValidators: true }
-      );
-
-      if (!updatedTransaction) {
-        return res.status(404).json({ message: "Transaction not found" });
-      }
-
-      return res.status(200).json(updatedTransaction);
+      const newPot = new Pot({ amount, category, total });
+      await newPot.save();
+      return res.status(201).json(newPot);
     }
 
     if (method === "DELETE") {
-      const { id } = req.body;
+      const { id } = query;
 
       if (!id) {
-        return res
-          .status(400)
-          .json({ message: "Transaction ID is required for deletion" });
+        return res.status(400).json({ message: "Pot ID is required" });
       }
 
-      const deletedTransaction = await Transaction.findByIdAndDelete(id);
+      const deletedPot = await Pot.findByIdAndDelete(id);
 
-      if (!deletedTransaction) {
-        return res.status(404).json({ message: "Transaction not found" });
+      if (!deletedPot) {
+        return res.status(404).json({ message: "Pot not found" });
       }
 
-      return res
-        .status(200)
-        .json({ message: "Transaction deleted successfully" });
+      return res.status(200).json({ message: "Pot deleted successfully" });
     }
 
-    res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
+    res.setHeader("Allow", ["GET", "POST", "DELETE"]);
     return res.status(405).json({ message: `Method ${method} Not Allowed` });
   } catch (error) {
-    console.error("Server error:", error);
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    console.error("Error handling pots:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 }
