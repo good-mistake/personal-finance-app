@@ -8,7 +8,6 @@ export default async function handler(req, res) {
   const { method } = req;
   const { id } = req.query;
 
-  // Validate ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid pot ID" });
   }
