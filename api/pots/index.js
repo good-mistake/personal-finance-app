@@ -37,34 +37,43 @@ export default async function handler(req, res) {
       }
 
       case "POST": {
-        const { name, target, total } = body;
+        try {
+          const { name, target, theme } = body;
 
-        if (!name || typeof target !== "number" || typeof total !== "number") {
-          return res.status(400).json({ message: "Invalid pot data" });
+          if (!name || !theme || typeof target !== "number" || target <= 0) {
+            return res.status(400).json({ message: "Invalid input data" });
+          }
+
+          const newPot = new Pot({ name, target, total: 0, theme });
+
+          return res.status(201).json(newPot);
+        } catch (error) {
+          return res.status(500).json({ message: "Error creating pot", error });
         }
-
-        const newPot = new Pot({ name, target, total });
-        await newPot.save();
-
-        return res.status(201).json(newPot);
       }
 
       case "PUT": {
-        const { id, amount } = body;
+        try {
+          const { id, name, target, total } = body;
 
-        if (!id || typeof amount !== "number") {
-          return res.status(400).json({ message: "Invalid data for update" });
+          if (!id || (total !== undefined && typeof total !== "number")) {
+            return res.status(400).json({ message: "Invalid data for update" });
+          }
+
+          const updatedPot = await Pot.findByIdAndUpdate(
+            id,
+            { name, target, total },
+            { new: true, runValidators: true }
+          );
+
+          if (!updatedPot) {
+            return res.status(404).json({ message: "Pot not found" });
+          }
+
+          return res.status(200).json(updatedPot);
+        } catch (error) {
+          return res.status(500).json({ message: "Error updating pot", error });
         }
-
-        const pot = await Pot.findById(id);
-        if (!pot) {
-          return res.status(404).json({ message: "Pot not found" });
-        }
-
-        pot.total += amount;
-        await pot.save();
-
-        return res.status(200).json(pot);
       }
 
       case "DELETE": {
