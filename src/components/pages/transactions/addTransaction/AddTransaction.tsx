@@ -13,9 +13,16 @@ const AddTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const API_URL = `https://personal-finance-app-git-main-goodmistakes-projects.vercel.app/api/transactions`;
 
   const handleSave = async (newTransaction) => {
-    const { name, amount, category, date, theme } = newTransaction;
+    const { name, amount, category, date, theme, recurring } = newTransaction;
 
-    if (!name || !amount || !category || !date || !theme) {
+    if (
+      !name ||
+      !amount ||
+      !category ||
+      !date ||
+      !theme ||
+      recurring === undefined
+    ) {
       console.error("Missing required fields");
       return;
     }
