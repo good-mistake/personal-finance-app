@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import User from "../../../models/models.js";
 import { connectToDatabase } from "../../../db.js";
+import User from "../../../models/models.js";
 
 export default async function handler(req, res) {
   await connectToDatabase();
@@ -18,42 +18,41 @@ export default async function handler(req, res) {
     res.setHeader("Access-Control-Allow-Origin", "*");
   }
 
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
+  // Handle preflight OPTIONS request
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  if (req.method === "POST") {
-    const { refreshToken } = req.body;
-
-    if (!refreshToken) {
-      return res.status(403).json({ message: "No refresh token provided" });
+  if (req.method === "GET") {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(403).json({ message: "No token provided" });
     }
 
     try {
-      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).select("-password");
 
-      // Check if the refresh token exists in the database
-      const user = await User.findById(decoded.id);
-      if (!user || user.refreshToken !== refreshToken) {
-        return res.status(403).json({ message: "Invalid refresh token" });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
       }
 
-      // Generate a new access token
-      const newAccessToken = jwt.sign(
-        { id: user._id, email: user.email },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
-      );
-
-      return res.status(200).json({ token: newAccessToken });
+      return res.status(200).json({
+        valid: true,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          pots: user.pots || [],
+          budgets: user.budgets || [],
+          transactions: user.transactions || [],
+        },
+      });
     } catch (error) {
-      console.error("Error verifying refresh token:", error);
-      return res
-        .status(401)
-        .json({ message: "Invalid or expired refresh token" });
+      return res.status(401).json({ message: "Token is invalid or expired" });
     }
   }
 

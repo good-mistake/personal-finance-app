@@ -1,5 +1,6 @@
 import { connectToDatabase } from "../../db.js";
 import loginHandler from "./login/index.js";
+
 const allowedOrigins = [
   "https://personal-finance-app-nu.vercel.app",
   "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
@@ -12,6 +13,9 @@ const setCorsHeaders = (res, origin) => {
   } else {
     res.setHeader("Access-Control-Allow-Origin", "*");
   }
+
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
   res.setHeader(
     "Access-Control-Allow-Methods",
     "POST, OPTIONS, GET, PUT, DELETE"

@@ -3,40 +3,42 @@ import { connectToDatabase } from "../../../db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-export default async function handler(req, res) {
-  await connectToDatabase();
+const allowedOrigins = [
+  "https://personal-finance-app-nu.vercel.app",
+  "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
+  "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
+];
 
-  const allowedOrigins = [
-    "https://personal-finance-app-nu.vercel.app",
-
-    "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
-    "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
-  ];
-  const origin = req.headers.origin;
-
+const setCorsHeaders = (res, origin) => {
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   } else {
     res.setHeader("Access-Control-Allow-Origin", "*");
   }
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "POST, OPTIONS, GET, PUT, DELETE"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Requested-With"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true"); // Added for handling cookies/tokens
+};
 
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+export default async function handler(req, res) {
+  await connectToDatabase();
 
-  if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET, POST, OPTIONS, PUT, DELETE"
-    );
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
-    );
+  const { method, headers } = req;
+  const origin = headers.origin;
+
+  setCorsHeaders(res, origin);
+
+  if (method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  if (req.method === "POST") {
+  if (method === "POST") {
     const { name, email, password } = req.body;
 
     try {
