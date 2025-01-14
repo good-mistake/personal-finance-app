@@ -1,16 +1,9 @@
 import Transaction from "../../models/transaction.js";
 import { connectToDatabase } from "../../db.js";
 import User from "../../models/models.js";
-import { authenticateToken } from "../../src/utils/middleware.js";
 
 export default async function handler(req, res) {
   await connectToDatabase();
-
-  try {
-    authenticateToken(req, res, () => {});
-  } catch (error) {
-    return res.status(401).json({ message: "Authentication failed" });
-  }
 
   const allowedOrigins = [
     "https://personal-finance-app-nu.vercel.app",
