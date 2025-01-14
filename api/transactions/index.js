@@ -47,21 +47,27 @@ export default async function handler(req, res) {
     }
 
     if (method === "POST") {
-      const { name, amount, category, date, recurring } = body;
+      const { name, amount, category, date, recurring, theme } = body;
 
-      if (!name || !amount || !category || !date) {
+      if (!name || !amount || !category || !date || !theme) {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      const newTransaction = new Transaction({
-        name,
-        amount,
-        category,
-        date,
-        recurring,
-      });
-      await newTransaction.save();
-      return res.status(201).json(newTransaction);
+      try {
+        const newTransaction = new Transaction({
+          name,
+          amount,
+          category,
+          date,
+          recurring,
+          theme,
+        });
+        await newTransaction.save();
+        return res.status(201).json(newTransaction);
+      } catch (error) {
+        console.error("Error saving transaction:", error);
+        return res.status(500).json({ message: "Failed to save transaction" });
+      }
     }
 
     if (method === "PUT") {
