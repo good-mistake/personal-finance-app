@@ -75,6 +75,10 @@ const Transactions: React.FC = () => {
       try {
         if (isAuthenticated) {
           const token = localStorage.getItem("token");
+          if (!token) {
+            console.error("Token is missing from localStorage");
+            throw new Error("User token not found.");
+          }
           const fetchedTransactions = await fetchTransaction(token);
           const normalizedTransactions = fetchedTransactions.map(
             (transaction) => ({

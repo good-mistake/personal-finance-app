@@ -59,7 +59,7 @@ export default async function handler(req, res) {
           amount,
           category,
           date,
-          recurring,
+          recurring: recurring || false,
           theme,
         });
         await newTransaction.save();

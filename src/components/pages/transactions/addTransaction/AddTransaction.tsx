@@ -13,6 +13,12 @@ const AddTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/transactions`;
 
   const handleSave = async (newTransaction) => {
+    const { name, amount, category, date, theme } = newTransaction;
+
+    if (!name || !amount || !category || !date || !theme) {
+      console.error("Missing required fields");
+      return;
+    }
     if (isAuthenticated) {
       try {
         const token = localStorage.getItem("token");
@@ -28,7 +34,7 @@ const AddTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             theme: newTransaction.theme,
             name: newTransaction.name,
             date: newTransaction.date,
-            recurring: newTransaction.recurring,
+            recurring: newTransaction.recurring || false,
           }),
         });
 

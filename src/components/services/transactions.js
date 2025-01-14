@@ -24,7 +24,6 @@ export const fetchTransaction = async (token) => {
       throw new Error("Invalid data format received from API");
     }
 
-    // Map and clean transaction data
     return transactionData.map((transaction) => ({
       id: transaction._id,
       category: transaction.category,
