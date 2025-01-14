@@ -10,7 +10,7 @@ const AddTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.user.isAuthenticated
   );
-  const API_URL = `${process.env.REACT_APP_API_BASE_URL}/apitransactions`;
+  const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/transactions`;
 
   const handleSave = async (newTransaction) => {
     if (isAuthenticated) {
