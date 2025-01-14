@@ -7,6 +7,7 @@ export default async function handler(req, res) {
   const allowedOrigins = [
     "https://personal-finance-app-nu.vercel.app",
     "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
+    "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
   ];
   const origin = req.headers.origin;
 
@@ -18,10 +19,13 @@ export default async function handler(req, res) {
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS"
   );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Requested-With"
+  );
 
   if (req.method === "OPTIONS") {
-    return res.status(200).end(); // Preflight response for CORS
+    return res.status(200).end();
   }
 
   const { method, query, body } = req;
