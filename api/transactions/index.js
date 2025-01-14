@@ -1,8 +1,7 @@
-import { authenticateToken } from "../../middleware/authenticateToken";
 import Transaction from "../../models/transaction.js";
 import { connectToDatabase } from "../../db.js";
 import User from "../../models/models.js";
-
+import { authenticateToken } from "../../src/utils/middleware.js";
 export default async function handler(req, res) {
   await connectToDatabase();
 
