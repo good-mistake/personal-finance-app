@@ -44,7 +44,14 @@ const AddTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             recurring: newTransaction.recurring,
           }),
         });
-
+        console.log("Payload:", {
+          category: newTransaction.category,
+          amount: newTransaction.amount,
+          theme: newTransaction.theme,
+          name: newTransaction.name,
+          date: newTransaction.date,
+          recurring: newTransaction.recurring,
+        });
         if (!response.ok) {
           throw new Error("Failed to save Transaction");
         }
@@ -53,6 +60,14 @@ const AddTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         dispatch(addTransaction(savedTransaction));
       } catch (error) {
         console.error("Error adding Transaction:", error);
+        console.log("Payload:", {
+          category: newTransaction.category,
+          amount: newTransaction.amount,
+          theme: newTransaction.theme,
+          name: newTransaction.name,
+          date: newTransaction.date,
+          recurring: newTransaction.recurring,
+        });
       }
     } else {
       dispatch(addTransaction(newTransaction));
