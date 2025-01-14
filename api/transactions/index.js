@@ -63,10 +63,8 @@ export default async function handler(req, res) {
           theme,
         });
         await newTransaction.save();
-        console.log("Transaction saved:", newTransaction);
         return res.status(201).json(newTransaction);
       } catch (error) {
-        console.log(name, amount, category, date, recurring, theme);
         console.error("Error saving transaction:", error);
         return res.status(500).json({ message: "Failed to save transaction" });
       }

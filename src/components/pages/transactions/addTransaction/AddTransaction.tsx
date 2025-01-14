@@ -10,7 +10,7 @@ const AddTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.user.isAuthenticated
   );
-  const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/transactions`;
+  const API_URL = `https://personal-finance-app-git-main-goodmistakes-projects.vercel.app/api/transactions`;
 
   const handleSave = async (newTransaction) => {
     const { name, amount, category, date, theme } = newTransaction;
@@ -34,7 +34,7 @@ const AddTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             theme: newTransaction.theme,
             name: newTransaction.name,
             date: newTransaction.date,
-            recurring: newTransaction.recurring || false,
+            recurring: newTransaction.recurring,
           }),
         });
 
