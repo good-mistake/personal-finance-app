@@ -1,9 +1,17 @@
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/transactions`;
 
+/**
+ * Fetches all transactions from the API.
+ * @param {string} token - The authorization token for the API.
+ * @returns {Promise<Array>} - An array of formatted transactions.
+ */
 export const fetchTransaction = async (token) => {
   try {
     const response = await fetch(API_URL, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     if (!response.ok) {
@@ -16,9 +24,9 @@ export const fetchTransaction = async (token) => {
       throw new Error("Invalid data format received from API");
     }
 
+    // Map and clean transaction data
     return transactionData.map((transaction) => ({
       id: transaction._id,
-      _id: undefined,
       category: transaction.category,
       amount: transaction.amount,
       name: transaction.name,
@@ -32,19 +40,31 @@ export const fetchTransaction = async (token) => {
   }
 };
 
+/**
+ * Updates a transaction by ID.
+ * @param {string} token - The authorization token for the API.
+ * @param {Object} updatedTransaction - The updated transaction data.
+ * @returns {Promise<Object>} - The updated transaction.
+ */
 export const editTransactionAction = async (token, updatedTransaction) => {
   try {
     if (!token) {
       throw new Error("Authorization token is required");
     }
 
-    const response = await fetch(API_URL, {
+    const { id, ...updateFields } = updatedTransaction;
+
+    if (!id) {
+      throw new Error("Transaction ID is required for editing");
+    }
+
+    const response = await fetch(`${API_URL}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(updatedTransaction),
+      body: JSON.stringify(updateFields),
     });
 
     if (!response.ok) {
@@ -58,19 +78,28 @@ export const editTransactionAction = async (token, updatedTransaction) => {
   }
 };
 
+/**
+ * Deletes a transaction by ID.
+ * @param {string} transactionId - The ID of the transaction to delete.
+ * @param {string} token - The authorization token for the API.
+ * @returns {Promise<Object>} - A success message or the deleted transaction.
+ */
 export const deleteTransactionAction = async (transactionId, token) => {
   try {
     if (!token) {
       throw new Error("Authorization token is required");
     }
 
-    const response = await fetch(API_URL, {
+    if (!transactionId) {
+      throw new Error("Transaction ID is required for deletion");
+    }
+
+    const response = await fetch(`${API_URL}/${transactionId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id: transactionId }),
     });
 
     if (!response.ok) {
