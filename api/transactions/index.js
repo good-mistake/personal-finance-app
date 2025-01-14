@@ -7,7 +7,6 @@ export default async function handler(req, res) {
   const allowedOrigins = [
     "https://personal-finance-app-nu.vercel.app",
     "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
-    "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
   ];
   const origin = req.headers.origin;
 
@@ -15,58 +14,88 @@ export default async function handler(req, res) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
 
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE");
   res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Requested-With"
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
   );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    return res.status(200).end(); // Preflight response for CORS
   }
 
-  const { method, query } = req;
+  const { method, query, body } = req;
 
   try {
     if (method === "GET") {
-      const pots = await Transaction.find();
-      return res.status(200).json(pots);
+      const { id } = query;
+
+      if (id) {
+        const transaction = await Transaction.findById(id);
+        if (!transaction) {
+          return res.status(404).json({ message: "Transaction not found" });
+        }
+        return res.status(200).json(transaction);
+      }
+
+      const transactions = await Transaction.find();
+      return res.status(200).json(transactions);
     }
 
     if (method === "POST") {
-      const { amount, category, total } = req.body;
+      const { name, amount, category, date, recurring } = body;
 
-      if (!amount || !category || typeof total !== "number") {
-        return res
-          .status(400)
-          .json({ message: "Amount, category, and total are required" });
+      if (!name || !amount || !category || !date) {
+        return res.status(400).json({ message: "Missing required fields" });
       }
 
-      const newPot = new Transaction({ amount, category, total });
-      await newPot.save();
-      return res.status(201).json(newPot);
+      const newTransaction = new Transaction({
+        name,
+        amount,
+        category,
+        date,
+        recurring,
+      });
+      await newTransaction.save();
+      return res.status(201).json(newTransaction);
+    }
+
+    if (method === "PUT") {
+      const { id } = query;
+      if (!id) {
+        return res.status(400).json({ message: "Transaction ID is required" });
+      }
+
+      const updatedTransaction = await Transaction.findByIdAndUpdate(id, body, {
+        new: true,
+      });
+      if (!updatedTransaction) {
+        return res.status(404).json({ message: "Transaction not found" });
+      }
+
+      return res.status(200).json(updatedTransaction);
     }
 
     if (method === "DELETE") {
       const { id } = query;
-
       if (!id) {
-        return res.status(400).json({ message: "Pot ID is required" });
+        return res.status(400).json({ message: "Transaction ID is required" });
       }
 
-      const deletedPot = await Transaction.findByIdAndDelete(id);
-
-      if (!deletedPot) {
-        return res.status(404).json({ message: "Pot not found" });
+      const deletedTransaction = await Transaction.findByIdAndDelete(id);
+      if (!deletedTransaction) {
+        return res.status(404).json({ message: "Transaction not found" });
       }
 
-      return res.status(200).json({ message: "Pot deleted successfully" });
+      return res
+        .status(200)
+        .json({ message: "Transaction deleted successfully" });
     }
 
-    res.setHeader("Allow", ["GET", "POST", "DELETE"]);
+    res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
     return res.status(405).json({ message: `Method ${method} Not Allowed` });
   } catch (error) {
-    console.error("Error handling pots:", error);
+    console.error("Error handling transactions:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 }
