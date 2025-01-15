@@ -6,16 +6,6 @@ import { authenticateToken } from "../../src/utils/middleware.js";
 export default async function handler(req, res) {
   await connectToDatabase();
 
-  if (req.method !== "OPTIONS") {
-    try {
-      console.log("Authenticating token...");
-      await authenticateToken(req, res);
-    } catch (error) {
-      console.error("Authentication failed:", error);
-      return res.status(401).json({ message: "Authentication failed" });
-    }
-  }
-
   const allowedOrigins = [
     "https://personal-finance-app-nu.vercel.app",
     "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
@@ -38,6 +28,16 @@ export default async function handler(req, res) {
 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
+  }
+
+  if (req.method !== "OPTIONS") {
+    try {
+      console.log("Authenticating token...");
+      await authenticateToken(req, res);
+    } catch (error) {
+      console.error("Authentication failed:", error);
+      return res.status(401).json({ message: "Authentication failed" });
+    }
   }
 
   const { method, query, body } = req;
@@ -72,6 +72,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
+      // Create a new transaction
       const newTransaction = { name, amount, category, date, recurring, theme };
 
       const userId = req.user.id;
