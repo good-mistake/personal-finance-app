@@ -5,6 +5,14 @@ import { authenticateToken } from "../../src/utils/middleware.js";
 
 export default async function handler(req, res) {
   await connectToDatabase();
+  console.log(req.headers.authorization);
+  if (req.method !== "OPTIONS") {
+    try {
+      await authenticateToken(req, res);
+    } catch (error) {
+      return res.status(401).json({ message: "Authentication failed" });
+    }
+  }
 
   const allowedOrigins = [
     "https://personal-finance-app-nu.vercel.app",
@@ -30,32 +38,22 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  if (req.method !== "OPTIONS") {
-    try {
-      console.log("Authenticating token...");
-      await authenticateToken(req, res);
-    } catch (error) {
-      console.error("Authentication failed:", error);
-      return res.status(401).json({ message: "Authentication failed" });
-    }
-  }
-
   const { method, query, body } = req;
-  console.log(req.headers.authorization);
+
   try {
-    if (req.method === "GET") {
-      console.log(req.headers.authorization);
-      authenticateToken(req, res, async () => {
-        try {
-          const transactions = await Transaction.find({ user: req.user.id });
-          res.status(200).json(transactions);
-        } catch (error) {
-          console.error("Error fetching transactions:", error);
-          res.status(500).json({ message: "Error fetching transactions" });
+    if (method === "GET") {
+      const { id } = query;
+
+      if (id) {
+        const transaction = await Transaction.findById(id);
+        if (!transaction) {
+          return res.status(404).json({ message: "Transaction not found" });
         }
-      });
-    } else {
-      res.status(405).json({ message: "Method not allowed" });
+        return res.status(200).json(transaction);
+      }
+
+      const transactions = await Transaction.find();
+      return res.status(200).json(transactions);
     }
 
     if (method === "POST") {
@@ -72,20 +70,33 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      // Create a new transaction
-      const newTransaction = { name, amount, category, date, recurring, theme };
+      try {
+        const newTransaction = {
+          name,
+          amount,
+          category,
+          date,
+          recurring,
+          theme,
+        };
 
-      const userId = req.user.id;
-      const user = await User.findById(userId);
+        const userId = req.user.id;
+        const user = await User.findById(userId);
 
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        user.transactions.push(newTransaction);
+        await user.save();
+
+        return res.status(201).json(newTransaction);
+      } catch (error) {
+        console.error("Error saving transaction:", error);
+        return res
+          .status(500)
+          .json({ message: "Failed to save transaction", error });
       }
-
-      user.transactions.push(newTransaction);
-      await user.save();
-
-      return res.status(201).json(newTransaction);
     }
 
     if (method === "PUT") {
