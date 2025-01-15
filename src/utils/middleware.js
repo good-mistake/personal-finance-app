@@ -4,6 +4,7 @@ import User from "../../models/models.js";
 export const authenticateToken = async (req, res, next) => {
   let token = req.headers.authorization?.split(" ")[1];
   console.log(token);
+
   if (!token) {
     if (req.user?.id) {
       try {

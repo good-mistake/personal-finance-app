@@ -41,21 +41,21 @@ export default async function handler(req, res) {
   }
 
   const { method, query, body } = req;
-
+  console.log(req.headers.authorization);
   try {
-    if (method === "GET") {
-      const { id } = query;
-
-      if (id) {
-        const transaction = await Transaction.findById(id);
-        if (!transaction) {
-          return res.status(404).json({ message: "Transaction not found" });
+    if (req.method === "GET") {
+      console.log(req.headers.authorization);
+      authenticateToken(req, res, async () => {
+        try {
+          const transactions = await Transaction.find({ user: req.user.id });
+          res.status(200).json(transactions);
+        } catch (error) {
+          console.error("Error fetching transactions:", error);
+          res.status(500).json({ message: "Error fetching transactions" });
         }
-        return res.status(200).json(transaction);
-      }
-
-      const transactions = await Transaction.find();
-      return res.status(200).json(transactions);
+      });
+    } else {
+      res.status(405).json({ message: "Method not allowed" });
     }
 
     if (method === "POST") {

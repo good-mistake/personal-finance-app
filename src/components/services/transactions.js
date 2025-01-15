@@ -13,7 +13,8 @@ export const fetchTransaction = async (token) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(token);
+    console.log("Token being sent:", token); // Debug token
+
     if (!response.ok) {
       throw new Error(`Failed to fetch transactions: ${response.statusText}`);
     }

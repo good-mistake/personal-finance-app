@@ -32,7 +32,7 @@
   "env": {
     "MONGO_URI": "mongodb+srv://admin:5TTbUJAysMWcdzSn@cluster0.yv9sg.mongodb.net/personalFinanceApp?retryWrites=true&w=majority&appName=Cluster0",
     "JWT_SECRET": "1s3qdg4t312cas1h5fqws3421",
-    "JWT_REFRESH_SECRET": "your_jwt_refresh_secret_here",
+    "JWT_REFRESH_SECRET": "1s3qdg4t312cas1h5fqws3421",
     "JWT_EXPIRES_IN": "1h"
   }
 }
