@@ -24,11 +24,12 @@ export default async function loginHandler(req, res) {
       return res.status(400).json({ message: "Incorrect password" });
     }
 
-    const accessToken = jwt.sign(
+    const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: "15m" }
+      { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
     );
+
     const refreshToken = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_REFRESH_SECRET,
@@ -37,11 +38,6 @@ export default async function loginHandler(req, res) {
 
     user.refreshToken = refreshToken;
     await user.save();
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    });
 
     res.status(200).json({
       result: {
@@ -52,7 +48,8 @@ export default async function loginHandler(req, res) {
         budgets: user.budgets,
         transactions: user.transactions,
       },
-      token: accessToken,
+      token,
+      refreshToken,
     });
   } catch (error) {
     console.error(error);
