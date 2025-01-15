@@ -69,6 +69,11 @@ export default async function handler(req, res) {
       ) {
         return res.status(400).json({ message: "Missing required fields" });
       }
+      if (!req.user || !req.user.id) {
+        return res
+          .status(401)
+          .json({ message: "Unauthorized: User not identified" });
+      }
 
       try {
         const newTransaction = {
