@@ -5,14 +5,16 @@ export const authenticateToken = async (req, res, next) => {
   let token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
-    try {
-      const user = await User.findById(req.user.id);
-      if (user && user.refreshToken) {
-        token = user.refreshToken;
+    if (req.user?.id) {
+      try {
+        const user = await User.findById(req.user.id);
+        if (user && user.refreshToken) {
+          token = user.refreshToken;
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        return res.status(401).json({ message: "Authentication failed" });
       }
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      return res.status(401).json({ message: "Authentication failed" });
     }
   }
 
