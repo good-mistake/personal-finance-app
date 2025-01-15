@@ -1,60 +1,28 @@
 import jwt from "jsonwebtoken";
-import { connectToDatabase } from "../../../db.js";
 import User from "../../../models/models.js";
 
-export default async function handler(req, res) {
-  await connectToDatabase();
+export const refreshToken = async (req, res) => {
+  const { refreshToken } = req.body;
 
-  const allowedOrigins = [
-    "https://personal-finance-app-nu.vercel.app",
-    "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
-    "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
-  ];
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  } else {
-    res.setHeader("Access-Control-Allow-Origin", "*");
+  if (!refreshToken) {
+    return res.status(400).json({ message: "Refresh token is required" });
   }
 
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
 
-  // Handle preflight OPTIONS request
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
-  if (req.method === "GET") {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-      return res.status(403).json({ message: "No token provided" });
+    if (!user || user.refreshToken !== refreshToken) {
+      return res.status(403).json({ message: "Invalid refresh token" });
     }
 
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findById(decoded.id).select("-password");
+    const newAccessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      return res.status(200).json({
-        valid: true,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          pots: user.pots || [],
-          budgets: user.budgets || [],
-          transactions: user.transactions || [],
-        },
-      });
-    } catch (error) {
-      return res.status(401).json({ message: "Token is invalid or expired" });
-    }
+    res.json({ accessToken: newAccessToken });
+  } catch (error) {
+    console.error("Error refreshing token:", error);
+    return res.status(403).json({ message: "Invalid refresh token" });
   }
-
-  return res.status(405).json({ message: `Method ${req.method} not allowed` });
-}
+};
