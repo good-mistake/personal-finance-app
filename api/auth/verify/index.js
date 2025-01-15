@@ -10,8 +10,10 @@ export default async function handler(req, res) {
     "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
     "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
   ];
+
   const origin = req.headers.origin;
 
+  // Set CORS headers
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   } else {

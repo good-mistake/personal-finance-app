@@ -10,7 +10,7 @@ const allowedOrigins = [
 ];
 
 const setCorsHeaders = (res, origin) => {
-  if (allowedOrigins.includes(origin)) {
+  if (origin && allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   } else {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -23,7 +23,7 @@ const setCorsHeaders = (res, origin) => {
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization, X-Requested-With"
   );
-  res.setHeader("Access-Control-Allow-Credentials", "true"); // Added for handling cookies/tokens
+  res.setHeader("Access-Control-Allow-Credentials", "true");
 };
 
 export default async function handler(req, res) {
@@ -40,6 +40,10 @@ export default async function handler(req, res) {
 
   if (method === "POST") {
     const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
     try {
       const existingUser = await User.findOne({ email });
@@ -61,9 +65,19 @@ export default async function handler(req, res) {
         expiresIn: process.env.JWT_EXPIRES_IN || "1h",
       });
 
+      const refreshToken = jwt.sign(
+        { id: newUser._id },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      newUser.refreshToken = refreshToken;
+      await newUser.save();
+
       return res.status(201).json({
         message: "User registered successfully",
         token,
+        refreshToken,
       });
     } catch (error) {
       console.error("Server error:", error);

@@ -9,7 +9,7 @@ export const refreshToken = async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     const user = await User.findById(decoded.id);
 
     if (!user || user.refreshToken !== refreshToken) {
@@ -20,9 +20,23 @@ export const refreshToken = async (req, res) => {
       expiresIn: "1h",
     });
 
-    res.json({ accessToken: newAccessToken });
+    const newRefreshToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    user.refreshToken = newRefreshToken;
+    await user.save();
+
+    res.json({
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    });
   } catch (error) {
     console.error("Error refreshing token:", error);
-    return res.status(403).json({ message: "Invalid refresh token" });
+    return res
+      .status(403)
+      .json({ message: "Invalid or expired refresh token" });
   }
 };
