@@ -2,8 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../../models/models.js";
 
 export const authenticateToken = async (req, res, next) => {
-  let token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ODVhMTI3ZWY2NjRjMGM3NmZiMzMzNSIsImVtYWlsIjoid2FzZDEyM0BnbWFpbC5jb20iLCJpYXQiOjE3MzY5NTk1NTAsImV4cCI6MTczNjk2MzE1MH0.G3M0djHNejTwQVo7D92tlisdfDu7T4cPbvLO1LvqZ2c";
+  let token = req.headers.authorization?.split(" ")[1];
   console.log(token);
 
   if (!token) {

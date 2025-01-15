@@ -13,7 +13,7 @@ export default async function handler(req, res) {
       return res.status(401).json({ message: "Authentication failed" });
     }
   }
-
+  console.log("dwqdwqdwqdwq");
   const allowedOrigins = [
     "https://personal-finance-app-nu.vercel.app",
     "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
