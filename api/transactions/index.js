@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     try {
       await authenticateToken(req, res);
     } catch (error) {
-      return res.status(401).json({ message: "Authentication failed" });
+      return res.status(401).json({ message: "Authentication failed", error });
     }
   }
 
