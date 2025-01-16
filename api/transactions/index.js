@@ -1,12 +1,12 @@
-import Transaction from "../../models/transaction.js";
 import { connectToDatabase } from "../../db.js";
 import User from "../../models/models.js";
+import jwt from "jsonwebtoken";
 
 export default async function handler(req, res) {
   await connectToDatabase();
-  console.log(req.headers.authorization);
+  console.log("Authorization header:", req.headers.authorization);
+  console.log("Request body:", req.body);
 
-  console.log("dwqdwqdwqdwq");
   const allowedOrigins = [
     "https://personal-finance-app-nu.vercel.app",
     "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
@@ -31,27 +31,15 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const { method, query, body } = req;
+  const { method, body } = req;
 
   try {
-    if (method === "GET") {
-      const { id } = query;
-
-      if (id) {
-        const transaction = await Transaction.findById(id);
-        if (!transaction) {
-          return res.status(404).json({ message: "Transaction not found" });
-        }
-        return res.status(200).json(transaction);
-      }
-
-      const transactions = await Transaction.find();
-      return res.status(200).json(transactions);
-    }
-
     if (method === "POST") {
       const { name, amount, category, date, recurring, theme } = body;
 
+      console.log("POST request received with payload:", body);
+
+      // Check for missing fields
       if (
         !name ||
         !amount ||
@@ -60,10 +48,36 @@ export default async function handler(req, res) {
         recurring === undefined ||
         !theme
       ) {
+        console.error("Missing required fields:", {
+          name,
+          amount,
+          category,
+          date,
+          recurring,
+          theme,
+        });
         return res.status(400).json({ message: "Missing required fields" });
       }
 
+      // Validate token
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) {
+        console.error("Authorization token missing");
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
       try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("Decoded token:", decoded);
+
+        const userId = decoded.id;
+        const user = await User.findById(userId);
+
+        if (!user) {
+          console.error("User not found for ID:", userId);
+          return res.status(404).json({ message: "User not found" });
+        }
+
         const newTransaction = {
           name,
           amount,
@@ -73,61 +87,26 @@ export default async function handler(req, res) {
           theme,
         };
 
-        const userId = req.user.id;
-        const user = await User.findById(userId);
-
-        if (!user) {
-          return res.status(404).json({ message: "User not found" });
-        }
-
+        console.log("User found. Adding transaction:", newTransaction);
         user.transactions.push(newTransaction);
+
         await user.save();
+        console.log("Transaction saved successfully");
 
         return res.status(201).json(newTransaction);
       } catch (error) {
-        console.error("Error saving transaction:", error);
+        console.error("Error verifying token or saving transaction:", error);
         return res
           .status(500)
           .json({ message: "Failed to save transaction", error });
       }
     }
 
-    if (method === "PUT") {
-      const { id } = query;
-      if (!id) {
-        return res.status(400).json({ message: "Transaction ID is required" });
-      }
-
-      const updatedTransaction = await Transaction.findByIdAndUpdate(id, body, {
-        new: true,
-      });
-      if (!updatedTransaction) {
-        return res.status(404).json({ message: "Transaction not found" });
-      }
-
-      return res.status(200).json(updatedTransaction);
-    }
-
-    if (method === "DELETE") {
-      const { id } = query;
-      if (!id) {
-        return res.status(400).json({ message: "Transaction ID is required" });
-      }
-
-      const deletedTransaction = await Transaction.findByIdAndDelete(id);
-      if (!deletedTransaction) {
-        return res.status(404).json({ message: "Transaction not found" });
-      }
-
-      return res
-        .status(200)
-        .json({ message: "Transaction deleted successfully" });
-    }
-
-    res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
+    // Other methods not implemented in this example
+    res.setHeader("Allow", ["POST"]);
     return res.status(405).json({ message: `Method ${method} Not Allowed` });
   } catch (error) {
-    console.error("Error handling transactions:", error);
+    console.error("Unhandled error in transactions API:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 }
