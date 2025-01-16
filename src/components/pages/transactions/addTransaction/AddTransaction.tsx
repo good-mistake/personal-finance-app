@@ -29,6 +29,8 @@ const AddTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     if (isAuthenticated) {
       try {
         const token = localStorage.getItem("token");
+        console.log("Token being sent:", token);
+
         const response = await fetch(API_URL, {
           method: "POST",
           headers: {
