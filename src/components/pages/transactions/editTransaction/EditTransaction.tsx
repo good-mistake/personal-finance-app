@@ -70,10 +70,20 @@ const EditTransaction: React.FC = () => {
           token,
           normalizedTransaction
         );
+
+        // Update the Redux state with the updated transaction
         dispatch(updateTransaction(updatedResponse));
       } else {
-        dispatch(updateTransaction({ ...selectedTransaction, ...updatedData }));
+        // Locally update the transaction in Redux
+        dispatch(
+          updateTransaction({
+            ...selectedTransaction,
+            ...updatedData,
+          })
+        );
       }
+
+      // Close the modal after saving
       dispatch(closeModal());
     } catch (error) {
       console.error("Error updating transaction:", error);
