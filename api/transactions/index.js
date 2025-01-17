@@ -93,20 +93,10 @@ export default async function handler(req, res) {
     }
 
     if (method === "PUT") {
-      const { transactionId, name, amount, category, date, recurring, theme } =
-        req.body;
+      const { transactionId, ...fieldsToUpdate } = req.body;
 
-      // Validate required fields
-      if (
-        !transactionId ||
-        !name ||
-        !amount ||
-        !category ||
-        !date ||
-        recurring === undefined ||
-        !theme
-      ) {
-        return res.status(400).json({ message: "Missing required fields" });
+      if (!transactionId) {
+        return res.status(400).json({ message: "Transaction ID is required" });
       }
 
       const token = req.headers.authorization?.split(" ")[1];
@@ -115,50 +105,35 @@ export default async function handler(req, res) {
       }
 
       try {
-        // Verify JWT token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.id;
 
-        // Find user
         const user = await User.findById(userId);
         if (!user) {
           return res.status(404).json({ message: "User not found" });
         }
 
-        // Find the transaction
         const transaction = await Transaction.findById(transactionId);
         if (!transaction) {
           return res.status(404).json({ message: "Transaction not found" });
         }
 
-        // Check if the transaction belongs to the user
         if (!transaction.user.equals(user._id)) {
-          return res.status(403).json({
-            message: "Forbidden: Transaction does not belong to the user",
-          });
+          return res.status(403).json({ message: "Forbidden" });
         }
 
-        // Update transaction fields
-        transaction.name = name;
-        transaction.amount = amount;
-        transaction.category = category;
-        transaction.date = date;
-        transaction.recurring = recurring;
-        transaction.theme = theme;
+        // Update only provided fields
+        Object.keys(fieldsToUpdate).forEach((field) => {
+          if (fieldsToUpdate[field] !== undefined) {
+            transaction[field] = fieldsToUpdate[field];
+          }
+        });
 
         await transaction.save();
 
         return res.status(200).json({
           message: "Transaction updated successfully",
-          transaction: {
-            id: transaction._id,
-            name: transaction.name,
-            amount: transaction.amount,
-            category: transaction.category,
-            date: transaction.date,
-            recurring: transaction.recurring,
-            theme: transaction.theme,
-          },
+          transaction,
         });
       } catch (error) {
         console.error("Error updating transaction:", error);

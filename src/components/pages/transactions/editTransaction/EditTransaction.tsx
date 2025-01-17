@@ -60,9 +60,8 @@ const EditTransaction: React.FC = () => {
 
     const token = isAuthenticated ? localStorage.getItem("token") : null;
     const normalizedTransaction = {
-      ...selectedTransaction,
+      transactionId: selectedTransaction.id, // Include only ID and changed fields
       ...updatedData,
-      theme: updatedData.theme || selectedTransaction.theme || "default-color",
     };
 
     try {
@@ -71,14 +70,9 @@ const EditTransaction: React.FC = () => {
           token,
           normalizedTransaction
         );
-        const normalizedResponse = {
-          ...updatedResponse,
-          id: updatedResponse._id,
-          _id: undefined,
-        };
-        dispatch(updateTransaction(normalizedResponse));
+        dispatch(updateTransaction(updatedResponse));
       } else {
-        dispatch(updateTransaction(normalizedTransaction));
+        dispatch(updateTransaction({ ...selectedTransaction, ...updatedData }));
       }
       dispatch(closeModal());
     } catch (error) {
