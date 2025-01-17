@@ -1,5 +1,6 @@
 import { connectToDatabase } from "../../db.js";
 import User from "../../models/models.js";
+import Transaction from "../../models/Transaction.js";
 import jwt from "jsonwebtoken";
 
 export default async function handler(req, res) {
@@ -34,7 +35,6 @@ export default async function handler(req, res) {
   const { method } = req;
 
   try {
-    // Handle GET requests
     if (method === "GET") {
       console.log("GET request received");
 
@@ -48,7 +48,7 @@ export default async function handler(req, res) {
         console.log("Decoded token:", decoded);
 
         const userId = decoded.id;
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).populate("transactions");
 
         if (!user) {
           return res.status(404).json({ message: "User not found" });
@@ -64,7 +64,6 @@ export default async function handler(req, res) {
       }
     }
 
-    // Handle POST requests
     if (method === "POST") {
       const { name, amount, category, date, recurring, theme } = req.body;
 
@@ -97,20 +96,24 @@ export default async function handler(req, res) {
           return res.status(404).json({ message: "User not found" });
         }
 
-        const newTransaction = {
+        const newTransaction = await Transaction.create({
           name,
           amount,
           category,
           date,
           recurring,
           theme,
-        };
+          user: user._id,
+        });
 
-        user.transactions.push(newTransaction);
+        user.transactions.push(newTransaction._id);
         await user.save();
 
         console.log("Transaction saved successfully");
-        return res.status(201).json(newTransaction);
+        return res.status(201).json({
+          message: "Transaction saved successfully",
+          transaction: newTransaction,
+        });
       } catch (error) {
         console.error("Error saving transaction:", error);
         return res
@@ -119,7 +122,6 @@ export default async function handler(req, res) {
       }
     }
 
-    // If method is not allowed
     res.setHeader("Allow", ["GET", "POST"]);
     return res.status(405).json({ message: `Method ${method} Not Allowed` });
   } catch (error) {
