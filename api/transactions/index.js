@@ -179,38 +179,48 @@ export default async function handler(req, res) {
     }
 
     if (method === "DELETE") {
-      const { transactionId } = req.body;
+      try {
+        const { transactionId } = req.body;
 
-      if (!transactionId) {
-        return res.status(400).json({ message: "Transaction ID is required" });
+        if (!transactionId) {
+          return res
+            .status(400)
+            .json({ message: "Transaction ID is required" });
+        }
+
+        const token = req.headers.authorization?.split(" ")[1];
+        if (!token) {
+          return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        const user = await User.findById(userId);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        const transaction = await Transaction.findById(transactionId);
+        if (!transaction) {
+          return res.status(404).json({ message: "Transaction not found" });
+        }
+
+        if (!transaction.user.equals(user._id)) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+
+        user.transactions.pull(transactionId);
+        await user.save();
+        await transaction.remove();
+
+        return res
+          .status(200)
+          .json({ message: "Transaction deleted successfully" });
+      } catch (error) {
+        console.error("Error deleting transaction:", error);
+        return res.status(500).json({ message: "Internal server error" });
       }
-
-      const token = req.headers.authorization?.split(" ")[1];
-      if (!token) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const userId = decoded.id;
-      const user = await User.findById(userId);
-
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      const transaction = await Transaction.findById(transactionId);
-      if (!transaction) {
-        return res.status(404).json({ message: "Transaction not found" });
-      }
-
-      user.transactions.pull(transactionId);
-      await user.save();
-
-      await transaction.remove();
-
-      return res
-        .status(200)
-        .json({ message: "Transaction deleted successfully" });
     }
 
     res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);

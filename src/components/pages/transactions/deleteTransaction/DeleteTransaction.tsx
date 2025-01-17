@@ -19,23 +19,22 @@ const DeleteTransaction: React.FC = () => {
 
   const handleDelete = async () => {
     if (!selectedTransaction || !selectedTransaction.id) {
-      console.error("No selected pot or pot ID");
+      console.error("No selected transaction or transaction ID");
       return;
     }
     const token = isAuthenticated ? localStorage.getItem("token") : null;
 
     try {
-      dispatch(deleteTransaction(selectedTransaction.id));
-
       if (isAuthenticated && token) {
         await deleteTransactionAction(selectedTransaction.id, token);
       }
+      dispatch(deleteTransaction(selectedTransaction.id));
+      dispatch(closeModal());
     } catch (error) {
-      console.error("Error deleting pot:", error);
+      console.error("Error deleting transaction:", error);
     }
-
-    dispatch(closeModal());
   };
+
   return (
     <DeleteModal
       itemName={selectedTransaction?.name || "this pot"}

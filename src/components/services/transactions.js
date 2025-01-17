@@ -8,12 +8,12 @@ const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/transactions`;
 export const fetchTransaction = async (token) => {
   try {
     const response = await fetch(API_URL, {
-      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log("Token being sent:", token); // Debug token
 
     if (!response.ok) {
       throw new Error(`Failed to fetch transactions: ${response.statusText}`);
@@ -41,35 +41,7 @@ export const fetchTransaction = async (token) => {
 };
 
 /**
- * Creates a new transaction.
- * @param {string} token - The authorization token for the API.
- * @param {Object} newTransaction - The new transaction data.
- * @returns {Promise<Object>} - The created transaction.
- */
-export const createTransactionAction = async (token, newTransaction) => {
-  try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(newTransaction),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to create transaction: ${response.statusText}`);
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error("Error creating transaction:", error);
-    throw error;
-  }
-};
-
-/**
- * Updates a transaction.
+ * Updates a transaction by ID.
  * @param {string} token - The authorization token for the API.
  * @param {Object} updatedTransaction - The updated transaction data.
  * @returns {Promise<Object>} - The updated transaction.
@@ -95,7 +67,6 @@ export const editTransactionAction = async (token, updatedTransaction) => {
     throw error;
   }
 };
-
 /**
  * Deletes a transaction by ID.
  * @param {string} transactionId - The ID of the transaction to delete.
@@ -104,6 +75,7 @@ export const editTransactionAction = async (token, updatedTransaction) => {
  */
 export const deleteTransactionAction = async (transactionId, token) => {
   try {
+    console.log("Deleting transaction with ID:", transactionId);
     const response = await fetch(API_URL, {
       method: "DELETE",
       headers: {

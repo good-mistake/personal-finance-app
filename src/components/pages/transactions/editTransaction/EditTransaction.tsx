@@ -53,36 +53,39 @@ const EditTransaction: React.FC = () => {
   }
 
   const handleSave = async (updatedData: UpdatedData) => {
+    if (!updatedData.date || isNaN(new Date(updatedData.date).getTime())) {
+      console.error("Invalid date format");
+      return;
+    }
+
     const token = isAuthenticated ? localStorage.getItem("token") : null;
+    const normalizedTransaction = {
+      ...selectedTransaction,
+      ...updatedData,
+      theme: updatedData.theme || selectedTransaction.theme || "default-color",
+    };
+
     try {
-      const updatedTransaction = {
-        ...selectedTransaction,
-        ...updatedData,
-        theme:
-          updatedData.theme || selectedTransaction.theme || "default-color",
-      };
       if (isAuthenticated && token) {
         const updatedResponse = await editTransactionAction(
           token,
-          updatedTransaction
+          normalizedTransaction
         );
-
         const normalizedResponse = {
           ...updatedResponse,
           id: updatedResponse._id,
           _id: undefined,
         };
-
         dispatch(updateTransaction(normalizedResponse));
       } else {
-        dispatch(updateTransaction(updatedTransaction));
+        dispatch(updateTransaction(normalizedTransaction));
       }
-
       dispatch(closeModal());
     } catch (error) {
       console.error("Error updating transaction:", error);
     }
   };
+
   const hasTheme = Boolean(selectedTransaction.theme);
   const handleCancel = () => {
     dispatch(resetSelectedTransaction());
