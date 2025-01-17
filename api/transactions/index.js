@@ -15,8 +15,6 @@ export default async function handler(req, res) {
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
-  } else {
-    res.setHeader("Access-Control-Allow-Origin", "*");
   }
 
   res.setHeader(
@@ -96,77 +94,6 @@ export default async function handler(req, res) {
       return res.status(201).json({
         message: "Transaction saved successfully",
         transaction: newTransaction,
-      });
-    }
-
-    if (method === "PUT") {
-      const { id, name, amount, category, date, recurring, theme } = req.body;
-
-      if (
-        !id ||
-        !name ||
-        !amount ||
-        !category ||
-        !date ||
-        recurring === undefined ||
-        !theme
-      ) {
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-
-      const token = req.headers.authorization?.split(" ")[1];
-      if (!token) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const userId = decoded.id;
-
-      const transaction = await Transaction.findOneAndUpdate(
-        { _id: id, user: userId },
-        { name, amount, category, date, recurring, theme },
-        { new: true }
-      );
-
-      if (!transaction) {
-        return res.status(404).json({ message: "Transaction not found" });
-      }
-
-      return res.status(200).json({
-        message: "Transaction updated successfully",
-        transaction,
-      });
-    }
-
-    if (method === "DELETE") {
-      const { id } = req.body;
-
-      if (!id) {
-        return res.status(400).json({ message: "Missing transaction ID" });
-      }
-
-      const token = req.headers.authorization?.split(" ")[1];
-      if (!token) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const userId = decoded.id;
-
-      const transaction = await Transaction.findOneAndDelete({
-        _id: id,
-        user: userId,
-      });
-
-      if (!transaction) {
-        return res.status(404).json({ message: "Transaction not found" });
-      }
-
-      await User.updateOne({ _id: userId }, { $pull: { transactions: id } });
-
-      return res.status(200).json({
-        message: "Transaction deleted successfully",
-        transaction,
       });
     }
 
