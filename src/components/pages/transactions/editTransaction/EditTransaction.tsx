@@ -52,7 +52,7 @@ const EditTransaction: React.FC = () => {
     return null;
   }
 
-  const handleSave = async (updatedData: UpdatedData) => {
+  const handleSave = async (updatedData) => {
     if (!updatedData.date || isNaN(new Date(updatedData.date).getTime())) {
       console.error("Invalid date format");
       return;
@@ -60,8 +60,9 @@ const EditTransaction: React.FC = () => {
 
     const token = isAuthenticated ? localStorage.getItem("token") : null;
     const normalizedTransaction = {
-      transactionId: selectedTransaction.id, // Include only ID and changed fields
+      ...selectedTransaction,
       ...updatedData,
+      theme: updatedData.theme || selectedTransaction.theme || "default-color",
     };
 
     try {
@@ -70,20 +71,10 @@ const EditTransaction: React.FC = () => {
           token,
           normalizedTransaction
         );
-
-        // Update the Redux state with the updated transaction
         dispatch(updateTransaction(updatedResponse));
       } else {
-        // Locally update the transaction in Redux
-        dispatch(
-          updateTransaction({
-            ...selectedTransaction,
-            ...updatedData,
-          })
-        );
+        dispatch(updateTransaction(normalizedTransaction));
       }
-
-      // Close the modal after saving
       dispatch(closeModal());
     } catch (error) {
       console.error("Error updating transaction:", error);
