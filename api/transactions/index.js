@@ -122,15 +122,19 @@ export default async function handler(req, res) {
           return res.status(403).json({ message: "Forbidden" });
         }
 
+        // Update only provided fields
         Object.keys(fieldsToUpdate).forEach((field) => {
           if (fieldsToUpdate[field] !== undefined) {
             transaction[field] = fieldsToUpdate[field];
           }
         });
 
-        const updatedTransaction = await transaction.save();
+        await transaction.save();
 
-        return res.status(200).json(updatedTransaction);
+        return res.status(200).json({
+          message: "Transaction updated successfully",
+          transaction,
+        });
       } catch (error) {
         console.error("Error updating transaction:", error);
         return res.status(500).json({ message: "Internal server error" });
