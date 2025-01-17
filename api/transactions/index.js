@@ -4,10 +4,8 @@ import Transaction from "../../models/transaction.js";
 import jwt from "jsonwebtoken";
 
 export default async function handler(req, res) {
-  // Connect to the database
   await connectToDatabase();
 
-  // Define allowed origins for CORS
   const allowedOrigins = [
     "https://personal-finance-app-nu.vercel.app",
     "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
@@ -16,7 +14,6 @@ export default async function handler(req, res) {
 
   const origin = req.headers.origin;
 
-  // Set CORS headers
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
@@ -27,16 +24,14 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.setHeader("Access-Control-Allow-Credentials", "true");
 
-  // Handle preflight (OPTIONS) requests
   if (req.method === "OPTIONS") {
-    return res.status(200).end(); // Terminate preflight requests successfully
+    return res.status(200).end();
   }
 
   try {
     const { method } = req;
 
     if (method === "GET") {
-      // Handle GET requests
       const token = req.headers.authorization?.split(" ")[1];
       if (!token) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -54,7 +49,6 @@ export default async function handler(req, res) {
     }
 
     if (method === "POST") {
-      // Handle POST requests
       const { name, amount, category, date, recurring, theme } = req.body;
 
       if (
@@ -98,17 +92,33 @@ export default async function handler(req, res) {
 
       return res.status(201).json({
         message: "Transaction saved successfully",
-        transaction: newTransaction,
+        transaction: {
+          id: newTransaction._id,
+          name: newTransaction.name,
+          amount: newTransaction.amount,
+          category: newTransaction.category,
+          date: newTransaction.date,
+          recurring: newTransaction.recurring,
+          theme: newTransaction.theme,
+        },
       });
     }
 
     if (method === "PUT") {
-      // Handle PUT requests
       const { transactionId, name, amount, category, date, recurring, theme } =
         req.body;
 
-      if (!transactionId) {
-        return res.status(400).json({ message: "Transaction ID is required" });
+      // Validate required fields
+      if (
+        !transactionId ||
+        !name ||
+        !amount ||
+        !category ||
+        !date ||
+        recurring === undefined ||
+        !theme
+      ) {
+        return res.status(400).json({ message: "Missing required fields" });
       }
 
       const token = req.headers.authorization?.split(" ")[1];
@@ -116,36 +126,59 @@ export default async function handler(req, res) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const userId = decoded.id;
-      const user = await User.findById(userId);
+      try {
+        // Verify JWT token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
 
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        // Find user
+        const user = await User.findById(userId);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        // Find the transaction
+        const transaction = await Transaction.findById(transactionId);
+        if (!transaction) {
+          return res.status(404).json({ message: "Transaction not found" });
+        }
+
+        // Check if the transaction belongs to the user
+        if (!transaction.user.equals(user._id)) {
+          return res.status(403).json({
+            message: "Forbidden: Transaction does not belong to the user",
+          });
+        }
+
+        // Update transaction fields
+        transaction.name = name;
+        transaction.amount = amount;
+        transaction.category = category;
+        transaction.date = date;
+        transaction.recurring = recurring;
+        transaction.theme = theme;
+
+        await transaction.save();
+
+        return res.status(200).json({
+          message: "Transaction updated successfully",
+          transaction: {
+            id: transaction._id,
+            name: transaction.name,
+            amount: transaction.amount,
+            category: transaction.category,
+            date: transaction.date,
+            recurring: transaction.recurring,
+            theme: transaction.theme,
+          },
+        });
+      } catch (error) {
+        console.error("Error updating transaction:", error);
+        return res.status(500).json({ message: "Internal server error" });
       }
-
-      const transaction = await Transaction.findById(transactionId);
-      if (!transaction) {
-        return res.status(404).json({ message: "Transaction not found" });
-      }
-
-      transaction.name = name || transaction.name;
-      transaction.amount = amount || transaction.amount;
-      transaction.category = category || transaction.category;
-      transaction.date = date || transaction.date;
-      transaction.recurring =
-        recurring !== undefined ? recurring : transaction.recurring;
-      transaction.theme = theme || transaction.theme;
-
-      await transaction.save();
-
-      return res
-        .status(200)
-        .json({ message: "Transaction updated successfully", transaction });
     }
 
     if (method === "DELETE") {
-      // Handle DELETE requests
       const { transactionId } = req.body;
 
       if (!transactionId) {
@@ -180,7 +213,6 @@ export default async function handler(req, res) {
         .json({ message: "Transaction deleted successfully" });
     }
 
-    // If method not allowed
     res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
     return res.status(405).json({ message: `Method ${method} Not Allowed` });
   } catch (error) {
