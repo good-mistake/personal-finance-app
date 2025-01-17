@@ -1,6 +1,6 @@
 import { connectToDatabase } from "../../db.js";
 import User from "../../models/models.js";
-import Transaction from "../../models/Transaction.js";
+import Transaction from "../../models/transaction.js";
 import jwt from "jsonwebtoken";
 
 export default async function handler(req, res) {
