@@ -129,12 +129,9 @@ export default async function handler(req, res) {
           }
         });
 
-        await transaction.save();
+        const updatedTransaction = await transaction.save();
 
-        return res.status(200).json({
-          message: "Transaction updated successfully",
-          transaction,
-        });
+        return res.status(200).json(updatedTransaction);
       } catch (error) {
         console.error("Error updating transaction:", error);
         return res.status(500).json({ message: "Internal server error" });

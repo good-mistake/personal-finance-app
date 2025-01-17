@@ -52,7 +52,7 @@ const EditTransaction: React.FC = () => {
     return null;
   }
 
-  const handleSave = async (updatedData) => {
+  const handleSave = async (updatedData: UpdatedData) => {
     if (!updatedData.date || isNaN(new Date(updatedData.date).getTime())) {
       console.error("Invalid date format");
       return;
@@ -60,9 +60,8 @@ const EditTransaction: React.FC = () => {
 
     const token = isAuthenticated ? localStorage.getItem("token") : null;
     const normalizedTransaction = {
-      ...selectedTransaction,
+      transactionId: selectedTransaction.id,
       ...updatedData,
-      theme: updatedData.theme || selectedTransaction.theme || "default-color",
     };
 
     try {
@@ -71,10 +70,17 @@ const EditTransaction: React.FC = () => {
           token,
           normalizedTransaction
         );
+
         dispatch(updateTransaction(updatedResponse));
       } else {
-        dispatch(updateTransaction(normalizedTransaction));
+        dispatch(
+          updateTransaction({
+            ...selectedTransaction,
+            ...updatedData,
+          })
+        );
       }
+
       dispatch(closeModal());
     } catch (error) {
       console.error("Error updating transaction:", error);
