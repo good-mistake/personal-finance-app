@@ -201,20 +201,19 @@ export default async function handler(req, res) {
           return res.status(404).json({ message: "User not found" });
         }
 
-        const transaction = await Transaction.findById(transactionId).populate(
-          "user"
-        );
+        const transaction = await Transaction.findById(transactionId);
         if (!transaction) {
           return res.status(404).json({ message: "Transaction not found" });
         }
 
-        if (!transaction.user._id.equals(user._id)) {
+        if (!transaction.user.equals(user._id)) {
           return res.status(403).json({ message: "Forbidden" });
         }
 
+        // Remove transaction ID from user's list and delete transaction
         user.transactions.pull(transactionId);
         await user.save();
-        await transaction.remove();
+        await transaction.deleteOne();
 
         return res
           .status(200)
