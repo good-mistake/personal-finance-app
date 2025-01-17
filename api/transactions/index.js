@@ -85,23 +85,11 @@ export default async function handler(req, res) {
         user: user._id,
       });
 
-      await newTransaction.save();
-
-      user.transactions.push(newTransaction._id);
+      const savedTransaction = await newTransaction.save();
+      user.transactions.push(savedTransaction._id);
       await user.save();
 
-      return res.status(201).json({
-        message: "Transaction saved successfully",
-        transaction: {
-          id: newTransaction._id,
-          name: newTransaction.name,
-          amount: newTransaction.amount,
-          category: newTransaction.category,
-          date: newTransaction.date,
-          recurring: newTransaction.recurring,
-          theme: newTransaction.theme,
-        },
-      });
+      return res.status(201).json(savedTransaction);
     }
 
     if (method === "PUT") {
