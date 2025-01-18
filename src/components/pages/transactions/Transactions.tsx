@@ -83,7 +83,7 @@ const Transactions: React.FC = () => {
           const normalizedTransactions = fetchedTransactions.map(
             (transaction) => ({
               ...transaction,
-              id: transaction.id || transaction._id || uuidv4(),
+              id: transaction.id || transaction._id,
               recurring: transaction.recurring || false,
             })
           );
@@ -276,7 +276,7 @@ const Transactions: React.FC = () => {
                     )}
 
                     {paginatedTransactions.map((transaction) => (
-                      <li key={transaction.id}>
+                      <li key={transaction._id || transaction.id}>
                         <div
                           className="nameAndImg"
                           onClick={() =>
