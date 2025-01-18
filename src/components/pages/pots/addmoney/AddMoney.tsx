@@ -11,11 +11,11 @@ const AddMoney = ({ onClose }) => {
   const [amount, setAmount] = useState<string | number>("");
   const selectedPot = useSelector((state: RootState) => state.pots.selectedPot);
   const { isAuthenticated } = useSelector((state: RootState) => state.user);
-
+  const [error, setError] = useState("");
   const handleConfirmAddition = async () => {
     const token = isAuthenticated ? localStorage.getItem("token") : null;
     if (!selectedPot || !selectedPot.id) {
-      alert("Pot is not selected or ID is missing.");
+      setError("Pot is not selected or ID is missing.");
       return;
     }
     if (selectedPot && typeof amount === "number" && amount > 0) {
@@ -82,6 +82,7 @@ const AddMoney = ({ onClose }) => {
       <Buttons disabled={false} onClick={handleConfirmAddition}>
         Confirm Addition
       </Buttons>
+      <p>{error}</p>
     </>
   );
 };

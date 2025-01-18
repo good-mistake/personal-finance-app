@@ -27,7 +27,7 @@ export const fetchPots = async (token) => {
     }
 
     return potsData.map((pot) => ({
-      id: pot._id || pot.id || uuidv4(),
+      id: pot._id || uuidv4(),
       name: pot.name,
       target: pot.target,
       total: pot.total || 0,
@@ -54,7 +54,7 @@ export const addMoneyAction = async (token, addMoneyData) => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        id: addMoneyData.id,
+        potId: addMoneyData.id,
         amount: addMoneyData.amount,
       }),
     });
@@ -67,7 +67,7 @@ export const addMoneyAction = async (token, addMoneyData) => {
     const updatedPot = await response.json();
 
     return {
-      id: updatedPot._id || updatedPot.id || uuidv4(),
+      id: updatedPot._id || uuidv4(),
       ...updatedPot,
     };
   } catch (error) {
@@ -91,7 +91,7 @@ export const withdrawAction = async (token, withdrawalData) => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        id: withdrawalData.id,
+        potId: withdrawalData.id,
         amount: -withdrawalData.amount,
       }),
     });
@@ -104,7 +104,7 @@ export const withdrawAction = async (token, withdrawalData) => {
     const updatedPot = await response.json();
 
     return {
-      id: updatedPot._id || updatedPot.id || uuidv4(),
+      id: updatedPot._id || uuidv4(),
       ...updatedPot,
     };
   } catch (error) {
@@ -129,7 +129,7 @@ export const editPotAction = async (token, updatedPot) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ id, ...updates }),
+      body: JSON.stringify({ potId: id, ...updates }),
     });
 
     if (!response.ok) {
@@ -139,7 +139,7 @@ export const editPotAction = async (token, updatedPot) => {
     const updatedData = await response.json();
 
     return {
-      id: updatedData._id || updatedData.id || uuidv4(),
+      id: updatedData._id || uuidv4(),
       ...updatedData,
     };
   } catch (error) {
@@ -156,15 +156,13 @@ export const editPotAction = async (token, updatedPot) => {
  */
 export const deletePotAction = async (potId, token) => {
   try {
-    console.log("Deleting pot with ID:", potId);
-
     const response = await fetch(API_URL, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ id: potId }),
+      body: JSON.stringify({ potId }),
     });
 
     if (!response.ok) {

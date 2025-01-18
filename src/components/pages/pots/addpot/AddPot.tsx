@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import AddModal from "../../../reusable/AddModal/AddModal.tsx";
 import { useDispatch, useSelector } from "react-redux";
 import { addPot } from "../../../redux/potsSlice";
@@ -10,9 +10,17 @@ const AddPot: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.user.isAuthenticated
   );
-  const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/pots`;
+  const [error, setError] = useState<string | null>(null);
+  const API_URL = `https://personal-finance-app-git-main-goodmistakes-projects.vercel.app/api/pots`;
 
   const handleSave = async (newPot) => {
+    if (!newPot?.id) {
+      setError("Pot ID is missing.");
+      return;
+    }
+
+    setError(null); // Reset error if everything is fine
+
     if (isAuthenticated) {
       try {
         const token = localStorage.getItem("token");
@@ -38,6 +46,7 @@ const AddPot: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       dispatch(addPot(newPot));
     }
   };
+
   return (
     <AddModal
       title="Add New Pot"
@@ -46,6 +55,7 @@ const AddPot: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       onClose={onClose}
       existingItems={pots || []}
       type="pot"
+      error={error}
     />
   );
 };

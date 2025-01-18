@@ -13,6 +13,7 @@ interface AddModalProps {
   generateId?: () => string;
   maxNameLength?: number;
   categoryOptions?: string[];
+  error?: string | null;
 }
 
 const AddModal: React.FC<AddModalProps> = ({
@@ -25,6 +26,7 @@ const AddModal: React.FC<AddModalProps> = ({
   generateId = () => Date.now().toString(),
   maxNameLength = 30,
   categoryOptions = [],
+  error = "",
 }) => {
   const [itemName, setItemName] = useState("");
   const [target, setTarget] = useState(0);
@@ -41,6 +43,7 @@ const AddModal: React.FC<AddModalProps> = ({
   const [dateError, setDateError] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [openSelect, setOpenSelect] = useState<string | null>(null);
+  const [errors, setErrors] = useState<string>("");
   const existingColors = useMemo(
     () => existingItems.map((item) => item.theme),
     [existingItems]
@@ -122,6 +125,9 @@ const AddModal: React.FC<AddModalProps> = ({
       onSave(newTransaction);
     } else {
       console.error(
+        "Invalid input: Ensure all fields are filled and color is valid."
+      );
+      setErrors(
         "Invalid input: Ensure all fields are filled and color is valid."
       );
       return;
@@ -354,6 +360,7 @@ const AddModal: React.FC<AddModalProps> = ({
       >
         Save
       </Buttons>
+      <p>{errors || error}</p>
     </>
   );
 };
