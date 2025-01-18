@@ -83,7 +83,7 @@ const Transactions: React.FC = () => {
           const normalizedTransactions = fetchedTransactions.map(
             (transaction) => ({
               ...transaction,
-              id: transaction.id || transaction._id,
+              id: transaction.id,
               recurring: transaction.recurring || false,
             })
           );
