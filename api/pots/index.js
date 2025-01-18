@@ -1,15 +1,17 @@
-import Pot from "../../models/Pot.js";
 import { connectToDatabase } from "../../db.js";
+import User from "../../models/models.js";
+import Pot from "../../models/Pot.js";
+import jwt from "jsonwebtoken";
 
 export default async function handler(req, res) {
   await connectToDatabase();
 
-  const { method, body } = req;
   const allowedOrigins = [
     "https://personal-finance-app-nu.vercel.app",
     "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
     "https://personal-finance-axn5n3ht9-goodmistakes-projects.vercel.app",
   ];
+
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
@@ -24,80 +26,139 @@ export default async function handler(req, res) {
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization, X-Requested-With"
   );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
   try {
-    switch (method) {
-      case "GET": {
-        const pots = await Pot.find({});
-        return res.status(200).json(pots);
+    const { method } = req;
+
+    if (method === "GET") {
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) {
+        return res.status(401).json({ message: "Unauthorized" });
       }
 
-      case "POST": {
-        const { name, target, theme } = body;
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const userId = decoded.id;
 
-        if (!name || !theme || typeof target !== "number" || target <= 0) {
-          return res.status(400).json({ message: "Invalid input data" });
-        }
-
-        const newPot = new Pot({ name, target, total: 0, theme });
-        await newPot.save();
-        return res.status(201).json(newPot);
+      const user = await User.findById(userId).populate("pots");
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
       }
 
-      case "PUT": {
-        const { id, name, target, total, amount } = body;
-
-        if (!id) {
-          return res.status(400).json({ message: "Pot ID is required" });
-        }
-
-        const updateData =
-          amount !== undefined
-            ? { $inc: { total: amount } }
-            : { name, target, total };
-
-        const updatedPot = await Pot.findByIdAndUpdate(id, updateData, {
-          new: true,
-          runValidators: true,
-        });
-
-        if (!updatedPot) {
-          return res.status(404).json({ message: "Pot not found" });
-        }
-
-        return res.status(200).json(updatedPot);
-      }
-
-      case "DELETE": {
-        const { id } = body;
-
-        if (!id) {
-          return res
-            .status(400)
-            .json({ message: "Pot ID is required for deletion" });
-        }
-
-        const deletedPot = await Pot.findByIdAndDelete(id);
-
-        if (!deletedPot) {
-          return res.status(404).json({ message: "Pot not found" });
-        }
-
-        return res.status(200).json({ message: "Pot deleted successfully" });
-      }
-
-      default:
-        res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE", "OPTIONS"]);
-        return res
-          .status(405)
-          .json({ message: `Method ${method} Not Allowed` });
+      return res.status(200).json(user.pots);
     }
+
+    if (method === "POST") {
+      const { name, target, theme } = req.body;
+
+      if (!name || !theme || typeof target !== "number" || target <= 0) {
+        return res.status(400).json({ message: "Invalid input data" });
+      }
+
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const userId = decoded.id;
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const newPot = new Pot({ name, target, total: 0, theme, user: user._id });
+      const savedPot = await newPot.save();
+
+      user.pots.push(savedPot._id);
+      await user.save();
+
+      return res.status(201).json(savedPot);
+    }
+
+    if (method === "PUT") {
+      const { potId, ...fieldsToUpdate } = req.body;
+
+      if (!potId) {
+        return res.status(400).json({ message: "Pot ID is required" });
+      }
+
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const userId = decoded.id;
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const pot = await Pot.findById(potId);
+      if (!pot) {
+        return res.status(404).json({ message: "Pot not found" });
+      }
+
+      if (!pot.user.equals(user._id)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const updatedPot = await Pot.findByIdAndUpdate(
+        potId,
+        { $set: fieldsToUpdate },
+        { new: true, runValidators: true }
+      );
+
+      return res.status(200).json(updatedPot);
+    }
+
+    if (method === "DELETE") {
+      const { potId } = req.body;
+
+      if (!potId) {
+        return res.status(400).json({ message: "Pot ID is required" });
+      }
+
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const userId = decoded.id;
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const pot = await Pot.findById(potId);
+      if (!pot) {
+        return res.status(404).json({ message: "Pot not found" });
+      }
+
+      if (!pot.user.equals(user._id)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      user.pots.pull(potId);
+      await user.save();
+      await pot.deleteOne();
+
+      return res.status(200).json({ message: "Pot deleted successfully" });
+    }
+
+    res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE", "OPTIONS"]);
+    return res.status(405).json({ message: `Method ${method} Not Allowed` });
   } catch (error) {
-    console.error(`[${method}] Error handling pots:`, error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error(`[${req.method}] Error handling pots:`, error);
+    return res.status(500).json({ message: "Internal Server Error", error });
   }
 }

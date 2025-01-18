@@ -1,92 +1,180 @@
+import { v4 as uuidv4 } from "uuid";
+
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/pots`;
 
+/**
+ * Fetches all pots from the API.
+ * @param {string} token - The authorization token for the API.
+ * @returns {Promise<Array>} - An array of formatted pots.
+ */
 export const fetchPots = async (token) => {
-  const response = await fetch(API_URL, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  try {
+    const response = await fetch(API_URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch pots");
+    if (!response.ok) {
+      throw new Error(`Failed to fetch pots: ${response.statusText}`);
+    }
+
+    const potsData = await response.json();
+
+    if (!Array.isArray(potsData)) {
+      throw new Error("Invalid data format received from API");
+    }
+
+    return potsData.map((pot) => ({
+      id: pot._id || pot.id || uuidv4(),
+      name: pot.name,
+      target: pot.target,
+      total: pot.total || 0,
+      theme: pot.theme,
+    }));
+  } catch (error) {
+    console.error("Error fetching pots:", error);
+    throw error;
   }
-
-  const potsData = await response.json();
-  return potsData.map((pot) => ({
-    ...pot,
-    id: pot._id,
-    _id: undefined,
-  }));
 };
 
+/**
+ * Adds money to a pot.
+ * @param {string} token - The authorization token for the API.
+ * @param {Object} addMoneyData - The pot ID and amount to add.
+ * @returns {Promise<Object>} - The updated pot.
+ */
 export const addMoneyAction = async (token, addMoneyData) => {
-  const response = await fetch(API_URL, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ id: addMoneyData.id, amount: addMoneyData.amount }),
-  });
+  try {
+    const response = await fetch(API_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id: addMoneyData.id,
+        amount: addMoneyData.amount,
+      }),
+    });
 
-  if (!response.ok) {
-    const errorMessage = await response.text();
-    throw new Error(`Failed to add money to pot: ${errorMessage}`);
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Failed to add money to pot: ${errorMessage}`);
+    }
+
+    const updatedPot = await response.json();
+
+    return {
+      id: updatedPot._id || updatedPot.id || uuidv4(),
+      ...updatedPot,
+    };
+  } catch (error) {
+    console.error("Error adding money to pot:", error);
+    throw error;
   }
-
-  return response.json();
 };
 
+/**
+ * Withdraws money from a pot.
+ * @param {string} token - The authorization token for the API.
+ * @param {Object} withdrawalData - The pot ID and amount to withdraw.
+ * @returns {Promise<Object>} - The updated pot.
+ */
 export const withdrawAction = async (token, withdrawalData) => {
-  const response = await fetch(API_URL, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      id: withdrawalData.id,
-      amount: -withdrawalData.amount,
-    }),
-  });
+  try {
+    const response = await fetch(API_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id: withdrawalData.id,
+        amount: -withdrawalData.amount,
+      }),
+    });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Failed to withdraw money from pot");
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to withdraw money from pot");
+    }
+
+    const updatedPot = await response.json();
+
+    return {
+      id: updatedPot._id || updatedPot.id || uuidv4(),
+      ...updatedPot,
+    };
+  } catch (error) {
+    console.error("Error withdrawing money from pot:", error);
+    throw error;
   }
-
-  return response.json();
 };
 
+/**
+ * Updates a pot.
+ * @param {string} token - The authorization token for the API.
+ * @param {Object} updatedPot - The updated pot data.
+ * @returns {Promise<Object>} - The updated pot.
+ */
 export const editPotAction = async (token, updatedPot) => {
-  const { id, ...updates } = updatedPot;
+  try {
+    const { id, ...updates } = updatedPot;
 
-  const response = await fetch(API_URL, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ id, ...updates }),
-  });
+    const response = await fetch(API_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id, ...updates }),
+    });
 
-  if (!response.ok) {
-    throw new Error("Failed to update pot");
+    if (!response.ok) {
+      throw new Error(`Failed to update pot: ${response.statusText}`);
+    }
+
+    const updatedData = await response.json();
+
+    return {
+      id: updatedData._id || updatedData.id || uuidv4(),
+      ...updatedData,
+    };
+  } catch (error) {
+    console.error("Error updating pot:", error);
+    throw error;
   }
-
-  return response.json();
 };
 
+/**
+ * Deletes a pot by ID.
+ * @param {string} potId - The ID of the pot to delete.
+ * @param {string} token - The authorization token for the API.
+ * @returns {Promise<Object>} - A success message or the deleted pot.
+ */
 export const deletePotAction = async (potId, token) => {
-  const response = await fetch(API_URL, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ id: potId }),
-  });
+  try {
+    console.log("Deleting pot with ID:", potId);
 
-  if (!response.ok) {
-    const errorMessage = await response.text();
-    throw new Error(`Failed to delete pot: ${errorMessage}`);
+    const response = await fetch(API_URL, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id: potId }),
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Failed to delete pot: ${errorMessage}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("Error deleting pot:", error);
+    throw error;
   }
 };
