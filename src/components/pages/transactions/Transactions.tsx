@@ -325,9 +325,11 @@ const Transactions: React.FC = () => {
                               }
                             }}
                           >
-                            <DropDownTransaction
-                              transactionId={transaction.id}
-                            />
+                            {openDropdownId === transaction.id && (
+                              <DropDownTransaction
+                                transactionId={transaction.id}
+                              />
+                            )}
                           </div>
                         )}{" "}
                         {!isMobile ? (
