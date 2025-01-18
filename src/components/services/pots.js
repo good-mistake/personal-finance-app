@@ -17,15 +17,7 @@ export const fetchPots = async (token) => {
   }));
 };
 
-/**
- * Add money to a pot
- * @param {string | null} token
- * @param {Object} addMoneyData
- * @returns {Promise<Object>}
- */
 export const addMoneyAction = async (token, addMoneyData) => {
-  if (!token) throw new Error("Authorization token is required");
-
   const response = await fetch(API_URL, {
     method: "PUT",
     headers: {
@@ -43,15 +35,7 @@ export const addMoneyAction = async (token, addMoneyData) => {
   return response.json();
 };
 
-/**
- * Withdraw money from a pot
- * @param {string | null} token
- * @param {Object} withdrawalData
- * @returns {Promise<Object>}
- */
 export const withdrawAction = async (token, withdrawalData) => {
-  if (!token) throw new Error("Authorization token is required");
-
   const response = await fetch(API_URL, {
     method: "PUT",
     headers: {
@@ -72,15 +56,7 @@ export const withdrawAction = async (token, withdrawalData) => {
   return response.json();
 };
 
-/**
- * Edit a pot
- * @param {string | null} token
- * @param {Object} updatedPot
- * @returns {Promise<Object>}
- */
 export const editPotAction = async (token, updatedPot) => {
-  if (!token) throw new Error("Authorization token is required");
-
   const { id, ...updates } = updatedPot;
 
   const response = await fetch(API_URL, {
@@ -92,17 +68,13 @@ export const editPotAction = async (token, updatedPot) => {
     body: JSON.stringify({ id, ...updates }),
   });
 
-  if (!response.ok) throw new Error("Failed to update pot");
+  if (!response.ok) {
+    throw new Error("Failed to update pot");
+  }
 
   return response.json();
 };
 
-/**
- * Delete a pot
- * @param {string} potId
- * @param {string | null} token
- * @returns {Promise<void>}
- */
 export const deletePotAction = async (potId, token) => {
   const response = await fetch(API_URL, {
     method: "DELETE",
