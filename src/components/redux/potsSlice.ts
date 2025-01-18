@@ -42,7 +42,7 @@ const potsSlice = createSlice({
     updatePot: (state, action) => {
       const { potId, updatedData } = action.payload;
       state.pots = state.pots.map((pot) =>
-        pot.id === potId ? { ...pot, ...updatedData } : pot
+        pot.id === potId || pot._id === potId ? { ...pot, ...updatedData } : pot
       );
     },
     updatePotTotal: (
@@ -59,7 +59,9 @@ const potsSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; amount: number }>
     ) => {
-      const pot = state.pots.find((e) => e.id === action.payload.id);
+      const pot = state.pots.find(
+        (e) => e.id === action.payload.id || e._id === action.payload.id
+      );
       if (pot) {
         pot.target = action.payload.amount;
       }
@@ -87,12 +89,13 @@ const potsSlice = createSlice({
       state.isDummyData = !action.payload.isAuthenticated;
     },
     addPot: (state, action: PayloadAction<Pot>) => {
-      state.pots = state.pots || [];
       state.pots.push(action.payload);
     },
     setSelectedPot: (state, action: PayloadAction<string>) => {
       state.selectedPot =
-        state.pots.find((pot) => pot.id === action.payload) || null;
+        state.pots.find(
+          (pot) => pot.id === action.payload || pot._id === action.payload
+        ) || null;
     },
     editPot: (
       state,
@@ -104,7 +107,7 @@ const potsSlice = createSlice({
       }>
     ) => {
       const potIndex = state.pots.findIndex(
-        (pot) => pot.id === action.payload.id
+        (pot) => pot.id === action.payload.id || pot._id === action.payload.id
       );
       if (potIndex !== -1) {
         state.pots[potIndex] = {
@@ -116,8 +119,13 @@ const potsSlice = createSlice({
       }
     },
     deletePot: (state, action: PayloadAction<string>) => {
-      state.pots = state.pots.filter((pot) => pot.id !== action.payload);
-      if (state.selectedPot?.id === action.payload) {
+      state.pots = state.pots.filter(
+        (pot) => pot.id !== action.payload && pot._id !== action.payload
+      );
+      if (
+        state.selectedPot?.id === action.payload ||
+        state.selectedPot?._id === action.payload
+      ) {
         state.selectedPot = null;
       }
     },

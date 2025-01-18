@@ -2,6 +2,7 @@ import { connectToDatabase } from "../../db.js";
 import User from "../../models/models.js";
 import Pot from "../../models/Pot.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 export default async function handler(req, res) {
   await connectToDatabase();
@@ -72,7 +73,13 @@ export default async function handler(req, res) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const newPot = new Pot({ name, target, total: 0, theme, user: user._id });
+      const newPot = new Pot({
+        name,
+        target,
+        total: 0,
+        theme,
+        user: new mongoose.Types.ObjectId(user._id), // Fix: Use ObjectId for user
+      });
       const savedPot = await newPot.save();
 
       user.pots.push(savedPot._id);

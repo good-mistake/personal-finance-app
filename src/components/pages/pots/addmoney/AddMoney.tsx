@@ -6,12 +6,15 @@ import ProgressBar from "../progressbar/ProgressBar.tsx";
 import Buttons from "../../../reusable/button/Buttons.tsx";
 import { formatCurrency } from "../../../../utils/utils.ts";
 import { addMoneyAction } from "../../../services/pots.js";
+import { v4 as uuidv4 } from "uuid";
+
 const AddMoney = ({ onClose }) => {
   const dispatch = useDispatch();
   const [amount, setAmount] = useState<string | number>("");
   const selectedPot = useSelector((state: RootState) => state.pots.selectedPot);
   const { isAuthenticated } = useSelector((state: RootState) => state.user);
   const [error, setError] = useState("");
+
   const handleConfirmAddition = async () => {
     const token = isAuthenticated ? localStorage.getItem("token") : null;
     if (!selectedPot || !selectedPot.id) {
@@ -21,7 +24,7 @@ const AddMoney = ({ onClose }) => {
     if (selectedPot && typeof amount === "number" && amount > 0) {
       try {
         const updatedPot = {
-          id: selectedPot.id,
+          id: selectedPot.id || uuidv4(),
           amount: Number(amount),
         };
         if (isAuthenticated && token) {
@@ -34,6 +37,7 @@ const AddMoney = ({ onClose }) => {
       }
     }
   };
+
   const totalAfterAdd = (selectedPot?.total || 0) + Number(amount);
 
   return (
@@ -52,7 +56,7 @@ const AddMoney = ({ onClose }) => {
         <h2>
           {Number(amount) > 0 && selectedPot
             ? `${formatCurrency(totalAfterAdd)} `
-            : `${formatCurrency(selectedPot?.total || 0)}`}{" "}
+            : `${formatCurrency(selectedPot?.total || 0)} `}
         </h2>
       </div>
       {selectedPot && (

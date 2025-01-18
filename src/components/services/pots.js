@@ -27,7 +27,7 @@ export const fetchPots = async (token) => {
     }
 
     return potsData.map((pot) => ({
-      id: pot._id || uuidv4(),
+      id: pot._id, // Use the existing pot._id as the unique ID
       name: pot.name,
       target: pot.target,
       total: pot.total || 0,
@@ -67,7 +67,7 @@ export const addMoneyAction = async (token, addMoneyData) => {
     const updatedPot = await response.json();
 
     return {
-      id: updatedPot._id || uuidv4(),
+      id: updatedPot._id, // Use the existing pot._id as the unique ID
       ...updatedPot,
     };
   } catch (error) {
@@ -104,7 +104,7 @@ export const withdrawAction = async (token, withdrawalData) => {
     const updatedPot = await response.json();
 
     return {
-      id: updatedPot._id || uuidv4(),
+      id: updatedPot._id, // Use the existing pot._id as the unique ID
       ...updatedPot,
     };
   } catch (error) {
@@ -139,7 +139,7 @@ export const editPotAction = async (token, updatedPot) => {
     const updatedData = await response.json();
 
     return {
-      id: updatedData._id || uuidv4(),
+      id: updatedData._id, // Use the existing pot._id as the unique ID
       ...updatedData,
     };
   } catch (error) {

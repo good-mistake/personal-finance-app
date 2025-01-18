@@ -20,6 +20,7 @@ import { fetchPots } from "../../services/pots.js";
 import { setAuthLoading } from "../../redux/userSlice.ts";
 import useMediaQuery from "../../../utils/useMediaQuery.tsx";
 import { v4 as uuidv4 } from "uuid";
+
 const Pots = () => {
   const dispatch = useDispatch();
   const isMobile = useMediaQuery("mobile");
@@ -66,6 +67,16 @@ const Pots = () => {
   }, [dispatch]);
 
   const safePots = pots || [];
+
+  const handlePotAction = (potId: string, action: string) => {
+    if (potId) {
+      dispatch(setSelectedPot(potId));
+      handleOpenModal(action);
+    } else {
+      console.error("Pot is not selected or ID is missing.");
+    }
+  };
+
   return (
     <div className="potsContainer">
       <Sidebar variant={sidebarVariant} position="left">
@@ -99,7 +110,7 @@ const Pots = () => {
                         ></span>
                         {e.name}
                       </h5>
-                      <DropDownPot potId={potId || ""} />
+                      <DropDownPot potId={potId} />
                     </div>
                     <div className="potsInfoContent">
                       <div className="totalSaved">
@@ -118,32 +129,14 @@ const Pots = () => {
                         size="large"
                         disabled={!potId}
                         children="+ Add Money"
-                        onClick={() => {
-                          if (potId) {
-                            dispatch(setSelectedPot(potId));
-                            handleOpenModal("addMoney");
-                          } else {
-                            console.error(
-                              "Pot is not selected or ID is missing."
-                            );
-                          }
-                        }}
+                        onClick={() => handlePotAction(potId, "addMoney")}
                       />
                       <Buttons
                         variant="secondary"
                         size="large"
                         disabled={!potId}
                         children="Withdraw"
-                        onClick={() => {
-                          if (potId) {
-                            dispatch(setSelectedPot(potId));
-                            handleOpenModal("withDraw");
-                          } else {
-                            console.error(
-                              "Pot is not selected or ID is missing."
-                            );
-                          }
-                        }}
+                        onClick={() => handlePotAction(potId, "withDraw")}
                       />
                     </div>
                   </div>
