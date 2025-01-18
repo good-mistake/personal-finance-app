@@ -1,6 +1,6 @@
 import { connectToDatabase } from "../../db.js";
 import User from "../../models/models.js";
-import Transaction from "../../models/transaction.js";
+import Pot from "../../models/Pot.js";
 import jwt from "jsonwebtoken";
 
 export default async function handler(req, res) {
@@ -17,11 +17,15 @@ export default async function handler(req, res) {
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
+
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS"
   );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Requested-With"
+  );
   res.setHeader("Access-Control-Allow-Credentials", "true");
 
   if (req.method === "OPTIONS") {
@@ -39,27 +43,20 @@ export default async function handler(req, res) {
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const userId = decoded.id;
-      const user = await User.findById(userId).populate("transactions");
 
+      const user = await User.findById(userId).populate("pots");
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      return res.status(200).json(user.transactions || []);
+      return res.status(200).json(user.pots);
     }
 
     if (method === "POST") {
-      const { name, amount, category, date, recurring, theme } = req.body;
+      const { name, target, theme } = req.body;
 
-      if (
-        !name ||
-        !amount ||
-        !category ||
-        !date ||
-        typeof recurring !== "boolean" ||
-        !theme
-      ) {
-        return res.status(400).json({ message: "Missing required fields" });
+      if (!name || !theme || typeof target !== "number" || target <= 0) {
+        return res.status(400).json({ message: "Invalid input data" });
       }
 
       const token = req.headers.authorization?.split(" ")[1];
@@ -69,34 +66,26 @@ export default async function handler(req, res) {
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const userId = decoded.id;
-      const user = await User.findById(userId);
 
+      const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const newTransaction = new Transaction({
-        name,
-        amount,
-        category,
-        date,
-        recurring,
-        theme,
-        user: user._id,
-      });
+      const newPot = new Pot({ name, target, total: 0, theme, user: user._id });
+      const savedPot = await newPot.save();
 
-      const savedTransaction = await newTransaction.save();
-      user.transactions.push(savedTransaction._id);
+      user.pots.push(savedPot._id);
       await user.save();
 
-      return res.status(201).json(savedTransaction);
+      return res.status(201).json(savedPot);
     }
 
     if (method === "PUT") {
-      const { transactionId, ...fieldsToUpdate } = req.body;
+      const { potId, ...fieldsToUpdate } = req.body;
 
-      if (!transactionId) {
-        return res.status(400).json({ message: "Transaction ID is required" });
+      if (!potId) {
+        return res.status(400).json({ message: "Pot ID is required" });
       }
 
       const token = req.headers.authorization?.split(" ")[1];
@@ -112,35 +101,29 @@ export default async function handler(req, res) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const transaction = await Transaction.findById(transactionId);
-      if (!transaction) {
-        return res.status(404).json({ message: "Transaction not found" });
+      const pot = await Pot.findById(potId);
+      if (!pot) {
+        return res.status(404).json({ message: "Pot not found" });
       }
 
-      if (!transaction.user.equals(user._id)) {
+      if (!pot.user.equals(user._id)) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      const updatedTransaction = await Transaction.findByIdAndUpdate(
-        transactionId,
+      const updatedPot = await Pot.findByIdAndUpdate(
+        potId,
         { $set: fieldsToUpdate },
-        { new: true }
+        { new: true, runValidators: true }
       );
 
-      if (!updatedTransaction) {
-        return res
-          .status(500)
-          .json({ message: "Failed to update transaction" });
-      }
-
-      return res.status(200).json(updatedTransaction);
+      return res.status(200).json(updatedPot);
     }
 
     if (method === "DELETE") {
-      const { transactionId } = req.body;
+      const { potId } = req.body;
 
-      if (!transactionId) {
-        return res.status(400).json({ message: "Transaction ID is required" });
+      if (!potId) {
+        return res.status(400).json({ message: "Pot ID is required" });
       }
 
       const token = req.headers.authorization?.split(" ")[1];
@@ -156,28 +139,26 @@ export default async function handler(req, res) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const transaction = await Transaction.findById(transactionId);
-      if (!transaction) {
-        return res.status(404).json({ message: "Transaction not found" });
+      const pot = await Pot.findById(potId);
+      if (!pot) {
+        return res.status(404).json({ message: "Pot not found" });
       }
 
-      if (!transaction.user.equals(user._id)) {
+      if (!pot.user.equals(user._id)) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      user.transactions.pull(transactionId);
+      user.pots.pull(potId);
       await user.save();
-      await transaction.deleteOne();
+      await pot.deleteOne();
 
-      return res
-        .status(200)
-        .json({ message: "Transaction deleted successfully" });
+      return res.status(200).json({ message: "Pot deleted successfully" });
     }
 
-    res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
+    res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE", "OPTIONS"]);
     return res.status(405).json({ message: `Method ${method} Not Allowed` });
   } catch (error) {
-    console.error("Unhandled error:", error);
+    console.error(`[${req.method}] Error handling pots:`, error);
     return res.status(500).json({ message: "Internal Server Error", error });
   }
 }
