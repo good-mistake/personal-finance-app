@@ -49,7 +49,12 @@ const transactionSlice = createSlice({
       if (transactionIndex !== -1) {
         state.transaction[transactionIndex] = {
           ...state.transaction[transactionIndex],
-          ...updatedTransaction,
+          amount: updatedTransaction.amount,
+          category: updatedTransaction.category,
+          date: updatedTransaction.date,
+          recurring: updatedTransaction.recurring,
+          theme: updatedTransaction.theme,
+          // Add any other fields that you want to update
         };
       } else {
         console.error("Transaction not found in transaction array.");
@@ -62,7 +67,11 @@ const transactionSlice = createSlice({
       ) {
         state.selectedTransaction = {
           ...state.selectedTransaction,
-          ...updatedTransaction,
+          amount: updatedTransaction.amount,
+          category: updatedTransaction.category,
+          date: updatedTransaction.date,
+          recurring: updatedTransaction.recurring,
+          theme: updatedTransaction.theme,
         };
       } else {
         console.warn("Selected transaction mismatch during edit.");
