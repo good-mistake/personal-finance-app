@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/transactions`;
 
 /**
@@ -25,7 +26,7 @@ export const fetchTransaction = async (token) => {
     }
 
     return transactionData.map((transaction) => ({
-      id: transaction._id,
+      id: transaction._id || transaction.id || uuidv4(),
       category: transaction.category,
       amount: transaction.amount,
       name: transaction.name,
@@ -60,7 +61,12 @@ export const editTransactionAction = async (token, updatedTransaction) => {
       throw new Error(`Failed to update transaction: ${response.statusText}`);
     }
 
-    return response.json();
+    const updatedData = await response.json();
+
+    return {
+      id: updatedData._id || updatedData.id || uuidv4(),
+      ...updatedData,
+    };
   } catch (error) {
     console.error("Error updating transaction:", error);
     throw error;
