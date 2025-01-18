@@ -122,14 +122,17 @@ export default async function handler(req, res) {
           return res.status(403).json({ message: "Forbidden" });
         }
 
-        // Update only provided fields
-        Object.keys(fieldsToUpdate).forEach((field) => {
-          if (fieldsToUpdate[field] !== undefined) {
-            transaction[field] = fieldsToUpdate[field];
-          }
-        });
+        const updatedTransaction = await Transaction.findByIdAndUpdate(
+          transactionId,
+          { $set: fieldsToUpdate },
+          { new: true }
+        );
 
-        const updatedTransaction = await transaction.save();
+        if (!updatedTransaction) {
+          return res
+            .status(500)
+            .json({ message: "Failed to update transaction" });
+        }
 
         return res.status(200).json(updatedTransaction);
       } catch (error) {
