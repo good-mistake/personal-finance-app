@@ -276,12 +276,7 @@ const Transactions: React.FC = () => {
                     )}
 
                     {paginatedTransactions.map((transaction) => (
-                      <li
-                        key={
-                          transaction.id ||
-                          `${transaction.name}-${transaction.amount}-${transaction.date}`
-                        }
-                      >
+                      <li key={transaction.id}>
                         <div
                           className="nameAndImg"
                           onClick={() =>
