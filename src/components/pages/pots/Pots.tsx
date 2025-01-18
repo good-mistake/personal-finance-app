@@ -19,7 +19,7 @@ import PotsModalManager from "./potsModalManager/PotsModalManager.tsx";
 import { fetchPots } from "../../services/pots.js";
 import { setAuthLoading } from "../../redux/userSlice.ts";
 import useMediaQuery from "../../../utils/useMediaQuery.tsx";
-
+import { v4 as uuidv4 } from "uuid";
 const Pots = () => {
   const dispatch = useDispatch();
   const isMobile = useMediaQuery("mobile");
@@ -87,7 +87,7 @@ const Pots = () => {
             : safePots.map((e) => {
                 const total = e.total || 0;
                 const target = e.target || 0;
-                const potId = e.id || e._id;
+                const potId = e.id || e._id || uuidv4();
 
                 return (
                   <div className="potsInfo" key={potId}>

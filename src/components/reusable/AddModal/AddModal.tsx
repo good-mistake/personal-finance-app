@@ -3,6 +3,7 @@ import chroma from "chroma-js";
 import CustomSelect from "../customSelect/CustomSelect";
 import Buttons from "../button/Buttons";
 import { generateColorList } from "../../../utils/utils";
+import { v4 as uuidv4 } from "uuid";
 interface AddModalProps {
   type: "pot" | "budget" | "transaction";
   title: string;
@@ -23,7 +24,7 @@ const AddModal: React.FC<AddModalProps> = ({
   onSave,
   onClose,
   existingItems,
-  generateId = () => Date.now().toString(),
+  generateId = () => uuidv4(),
   maxNameLength = 30,
   categoryOptions = [],
   error = "",
