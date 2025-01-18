@@ -87,6 +87,8 @@ const Transactions: React.FC = () => {
               recurring: transaction.recurring || false,
             })
           );
+          console.log("Fetched Transactions:", fetchedTransactions);
+
           dispatch(
             setTransactionsSlice({
               transactions: normalizedTransactions,
@@ -132,6 +134,7 @@ const Transactions: React.FC = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [openDropdownId]);
+  console.log("Transactions from Redux:", transactionsFromRedux);
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {

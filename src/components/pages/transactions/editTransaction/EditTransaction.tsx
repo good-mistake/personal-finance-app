@@ -51,6 +51,7 @@ const EditTransaction: React.FC = () => {
   if (!selectedTransaction) {
     return null;
   }
+  console.log("selectedTransaction:", selectedTransaction);
 
   const handleSave = async (updatedData: UpdatedData) => {
     if (!updatedData.date || isNaN(new Date(updatedData.date).getTime())) {
