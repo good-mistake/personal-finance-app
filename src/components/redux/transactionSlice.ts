@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
+
 interface Transaction {
   id?: string;
   _id?: string;
@@ -36,6 +38,7 @@ const transactionSlice = createSlice({
       const newTransaction = action.payload;
       state.transaction.push({
         ...newTransaction,
+        id: newTransaction.id || newTransaction._id || uuidv4(),
         recurring: newTransaction.recurring || false,
       });
     },
@@ -49,32 +52,10 @@ const transactionSlice = createSlice({
       if (transactionIndex !== -1) {
         state.transaction[transactionIndex] = {
           ...state.transaction[transactionIndex],
-          amount: updatedTransaction.amount,
-          category: updatedTransaction.category,
-          date: updatedTransaction.date,
-          recurring: updatedTransaction.recurring,
-          theme: updatedTransaction.theme,
-          // Add any other fields that you want to update
+          ...updatedTransaction,
         };
       } else {
         console.error("Transaction not found in transaction array.");
-      }
-
-      if (
-        state.selectedTransaction &&
-        (state.selectedTransaction.id === updatedTransaction.id ||
-          state.selectedTransaction._id === updatedTransaction.id)
-      ) {
-        state.selectedTransaction = {
-          ...state.selectedTransaction,
-          amount: updatedTransaction.amount,
-          category: updatedTransaction.category,
-          date: updatedTransaction.date,
-          recurring: updatedTransaction.recurring,
-          theme: updatedTransaction.theme,
-        };
-      } else {
-        console.warn("Selected transaction mismatch during edit.");
       }
     },
 

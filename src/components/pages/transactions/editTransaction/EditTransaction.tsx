@@ -9,6 +9,8 @@ import {
 import EditModal from "../../../reusable/editModal/EditModal.tsx";
 import { generateColorList } from "../../../../utils/utils.ts";
 import { editTransactionAction } from "../../../services/transactions.js";
+import { v4 as uuidv4 } from "uuid";
+
 interface UpdatedData {
   category: string;
   name: string;
@@ -61,7 +63,8 @@ const EditTransaction: React.FC = () => {
 
     const token = isAuthenticated ? localStorage.getItem("token") : null;
     const normalizedTransaction = {
-      transactionId: selectedTransaction.id,
+      transactionId:
+        selectedTransaction.id || selectedTransaction._id || uuidv4(),
       ...updatedData,
     };
 

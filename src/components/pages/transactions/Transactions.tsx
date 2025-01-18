@@ -279,7 +279,7 @@ const Transactions: React.FC = () => {
                     )}
 
                     {paginatedTransactions.map((transaction) => (
-                      <li key={transaction._id || transaction.id}>
+                      <li key={transaction.id || transaction._id}>
                         <div
                           className="nameAndImg"
                           onClick={() =>
@@ -330,7 +330,9 @@ const Transactions: React.FC = () => {
                           >
                             {openDropdownId === transaction.id && (
                               <DropDownTransaction
-                                transactionId={transaction.id}
+                                transactionId={
+                                  transaction.id || transaction._id || uuidv4()
+                                }
                               />
                             )}
                           </div>
