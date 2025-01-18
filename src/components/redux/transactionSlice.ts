@@ -131,14 +131,21 @@ const transactionSlice = createSlice({
           item.id === updatedTransaction.id ||
           item._id === updatedTransaction.id
       );
+
       if (index === -1) {
         console.error("Transaction not found for update:", updatedTransaction);
         return;
       }
-      state.transaction[index] = {
-        ...state.transaction[index],
-        ...updatedTransaction,
-      };
+
+      state.transaction = state.transaction.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              ...updatedTransaction,
+            }
+          : item
+      );
+
       if (
         state.selectedTransaction &&
         (state.selectedTransaction.id === updatedTransaction.id ||
@@ -150,6 +157,7 @@ const transactionSlice = createSlice({
         };
       }
     },
+
     resetSelectedTransaction: (state) => {
       state.selectedTransaction = null;
     },
