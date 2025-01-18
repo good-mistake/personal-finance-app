@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 interface Pot {
-  id?: string;
+  id: string;
   _id?: string;
   name: string;
   target: number;
@@ -59,7 +60,6 @@ const potsSlice = createSlice({
       action: PayloadAction<{ id: string; amount: number }>
     ) => {
       const pot = state.pots.find((e) => e.id === action.payload.id);
-
       if (pot) {
         pot.target = action.payload.amount;
       }
@@ -94,7 +94,6 @@ const potsSlice = createSlice({
       state.selectedPot =
         state.pots.find((pot) => pot.id === action.payload) || null;
     },
-
     editPot: (
       state,
       action: PayloadAction<{
@@ -130,6 +129,7 @@ const potsSlice = createSlice({
     },
   },
 });
+
 export const {
   updatePotTotal,
   withdrawMoney,
@@ -146,4 +146,5 @@ export const {
   updatePot,
   resetSelectedPot,
 } = potsSlice.actions;
+
 export default potsSlice.reducer;

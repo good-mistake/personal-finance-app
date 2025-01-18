@@ -30,7 +30,7 @@ const Pots = () => {
     (state: RootState) => state.user
   );
 
-  const handleOpenModal = (modalType) => {
+  const handleOpenModal = (modalType: string) => {
     dispatch(openModal(modalType));
   };
 
@@ -87,8 +87,10 @@ const Pots = () => {
             : safePots.map((e) => {
                 const total = e.total || 0;
                 const target = e.target || 0;
+                const potId = e.id || e._id;
+
                 return (
-                  <div className="potsInfo" key={e.id || e._id}>
+                  <div className="potsInfo" key={potId}>
                     <div className="potsInfoHeader">
                       <h5>
                         <span
@@ -97,7 +99,7 @@ const Pots = () => {
                         ></span>
                         {e.name}
                       </h5>
-                      <DropDownPot potId={e.id || ""} />
+                      <DropDownPot potId={potId || ""} />
                     </div>
                     <div className="potsInfoContent">
                       <div className="totalSaved">
@@ -114,21 +116,33 @@ const Pots = () => {
                       <Buttons
                         variant="secondary"
                         size="large"
-                        disabled={false}
+                        disabled={!potId}
                         children="+ Add Money"
                         onClick={() => {
-                          dispatch(setSelectedPot(e.id || ""));
-                          handleOpenModal("addMoney");
+                          if (potId) {
+                            dispatch(setSelectedPot(potId));
+                            handleOpenModal("addMoney");
+                          } else {
+                            console.error(
+                              "Pot is not selected or ID is missing."
+                            );
+                          }
                         }}
                       />
                       <Buttons
                         variant="secondary"
                         size="large"
-                        disabled={false}
+                        disabled={!potId}
                         children="Withdraw"
                         onClick={() => {
-                          dispatch(setSelectedPot(e.id || ""));
-                          handleOpenModal("withDraw");
+                          if (potId) {
+                            dispatch(setSelectedPot(potId));
+                            handleOpenModal("withDraw");
+                          } else {
+                            console.error(
+                              "Pot is not selected or ID is missing."
+                            );
+                          }
                         }}
                       />
                     </div>
