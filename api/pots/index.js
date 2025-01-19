@@ -90,17 +90,16 @@ export default async function handler(req, res) {
 
     if (method === "PUT") {
       const { name, target, theme, total } = req.body;
-      const potId = req.query.id || req.body.id; // Fallback if not passed in the URL
-
+      const potId = req.query.id;
       if (
-        !potId ||
         !name ||
         !theme ||
         typeof target !== "number" ||
-        target <= 0
+        target <= 0 ||
+        typeof total !== "number"
       ) {
         return res.status(400).json({
-          message: "Pot ID, name, target, and theme are required",
+          message: "Pot ID, name, target, theme, and total are required",
         });
       }
 
@@ -121,14 +120,10 @@ export default async function handler(req, res) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      // Update only the fields that are explicitly passed
       pot.name = name;
       pot.target = target;
       pot.theme = theme;
-
-      if (typeof total === "number") {
-        pot.total = total; // Update total only if explicitly provided
-      }
+      pot.total = total;
 
       const updatedPot = await pot.save();
 

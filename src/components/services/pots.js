@@ -46,7 +46,7 @@ export const fetchPots = async (token) => {
 export const addMoneyAction = async (token, addMoneyData) => {
   try {
     const response = await fetch(`${API_URL}/${addMoneyData.id}`, {
-      // Fix URL
+      // Fix the URL to include the potId
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -83,7 +83,7 @@ export const addMoneyAction = async (token, addMoneyData) => {
 export const withdrawAction = async (token, withdrawalData) => {
   try {
     const response = await fetch(`${API_URL}/${withdrawalData.id}`, {
-      // Fix URL
+      // Fix the URL to include the potId
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -155,7 +155,7 @@ export const editPotAction = async (token, updatedPot) => {
 export const deletePotAction = async (potId, token) => {
   try {
     const response = await fetch(`${API_URL}/${potId}`, {
-      // Fix URL
+      // Fix the URL to include the potId
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
