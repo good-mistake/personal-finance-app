@@ -87,18 +87,40 @@ export default async function handler(req, res) {
 
       return res.status(201).json(savedPot);
     }
-
-    if (method === "PUT") {
+    if (method === "PUT" && req.body.potId && req.body.name) {
       const { potId, name, target, theme } = req.body;
 
-      if (
-        !potId ||
-        !name ||
-        !theme ||
-        typeof target !== "number" ||
-        target <= 0
-      ) {
-        return res.status(400).json({ message: "Invalid input data" });
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const userId = decoded.id;
+
+      const pot = await Pot.findById(potId);
+      if (!pot) {
+        return res.status(404).json({ message: "Pot not found" });
+      }
+
+      if (!pot.user.equals(userId)) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      pot.name = name || pot.name;
+      pot.target = target || pot.target;
+      pot.theme = theme || pot.theme;
+
+      const updatedPot = await pot.save();
+      return res.status(200).json(updatedPot);
+    }
+    if (method === "PUT") {
+      const { potId, amount } = req.body;
+
+      if (!potId || typeof amount !== "number") {
+        return res
+          .status(400)
+          .json({ message: "Pot ID and amount are required" });
       }
 
       const token = req.headers.authorization?.split(" ")[1];
@@ -118,9 +140,7 @@ export default async function handler(req, res) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      pot.name = name;
-      pot.target = target;
-      pot.theme = theme;
+      pot.total += amount;
 
       const updatedPot = await pot.save();
 
