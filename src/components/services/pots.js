@@ -157,13 +157,13 @@ export const editPotAction = async (token, updatedPot) => {
  */
 export const deletePotAction = async (potId, token) => {
   try {
-    const response = await fetch(`${API_URL}/${potId}`, {
-      // Fix the URL to include the potId
+    const response = await fetch(API_URL, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({ potId }), // Send potId in the body
     });
 
     if (!response.ok) {

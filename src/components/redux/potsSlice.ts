@@ -86,7 +86,7 @@ const potsSlice = createSlice({
     ) => {
       state.pots = action.payload.pots;
       state.loading = false;
-      state.isDummyData = !action.payload.isAuthenticated;
+      state.isDummyData = !action.payload.isAuthenticated; // Only set isDummyData to true if not authenticated
     },
     addPot: (state, action: PayloadAction<Pot>) => {
       state.pots.push(action.payload);
