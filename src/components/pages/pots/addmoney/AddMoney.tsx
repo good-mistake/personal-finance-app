@@ -31,7 +31,9 @@ const AddMoney = ({ onClose }) => {
             await addMoneyAction(token, updatedPot);
           }
         }
-        dispatch(updatePotTotal(updatedPot));
+        dispatch(
+          updatePotTotal({ id: selectedPot.id, amount: Number(amount) })
+        );
         onClose();
       } catch (error) {
         console.error("Failed to add money:", error);
