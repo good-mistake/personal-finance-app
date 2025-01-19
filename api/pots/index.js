@@ -89,9 +89,9 @@ export default async function handler(req, res) {
     }
 
     if (method === "PUT") {
-      const { potId, name, target, theme } = req.body;
+      const { id, name, target, theme } = req.body;
 
-      if (!potId || !name || typeof target !== "number" || !theme) {
+      if (!id || !name || typeof target !== "number" || !theme) {
         return res
           .status(400)
           .json({ message: "Pot ID, name, target, and theme are required" });
@@ -105,7 +105,7 @@ export default async function handler(req, res) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const userId = decoded.id;
 
-      const pot = await Pot.findById(potId);
+      const pot = await Pot.findById(id);
       if (!pot) {
         return res.status(404).json({ message: "Pot not found" });
       }
