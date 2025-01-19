@@ -45,14 +45,14 @@ export const fetchPots = async (token) => {
  */
 export const addMoneyAction = async (token, addMoneyData) => {
   try {
-    const response = await fetch(`${API_URL}/${addMoneyData.id}`, {
-      // Fix the URL to include the potId
+    const response = await fetch(API_URL, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
+        potId: addMoneyData.id,
         amount: addMoneyData.amount,
       }),
     });
@@ -82,14 +82,14 @@ export const addMoneyAction = async (token, addMoneyData) => {
  */
 export const withdrawAction = async (token, withdrawalData) => {
   try {
-    const response = await fetch(`${API_URL}/${withdrawalData.id}`, {
-      // Fix the URL to include the potId
+    const response = await fetch(API_URL, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
+        potId: withdrawalData.id,
         amount: -withdrawalData.amount,
       }),
     });
