@@ -119,13 +119,18 @@ export const withdrawAction = async (token, withdrawalData) => {
  */
 export const editPotAction = async (token, updatedPot) => {
   try {
-    const response = await fetch(`${API_URL}`, {
+    const potToUpdate = {
+      ...updatedPot,
+      total: updatedPot.total || 0,
+    };
+
+    const response = await fetch(`${API_URL}/${updatedPot.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(updatedPot),
+      body: JSON.stringify(potToUpdate),
     });
 
     if (!response.ok) {
