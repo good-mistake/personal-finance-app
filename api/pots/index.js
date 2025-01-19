@@ -82,7 +82,7 @@ export default async function handler(req, res) {
       });
       const savedPot = await newPot.save();
 
-      user.pots = [...user.pots, savedPot._id]; // Fix push issue
+      user.pots.push(savedPot._id); // Fix push issue
       await user.save();
 
       return res.status(201).json(savedPot);
@@ -150,7 +150,7 @@ export default async function handler(req, res) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      user.pots = user.pots.filter((id) => !id.equals(potId)); // Use filter for deletion
+      user.pots = user.pots.filter((id) => !id.equals(potId));
       await user.save();
       await pot.deleteOne();
 
