@@ -89,12 +89,16 @@ export default async function handler(req, res) {
     }
 
     if (method === "PUT") {
-      const { potId, amount } = req.body;
+      const { potId, name, target, theme } = req.body;
 
-      if (!potId || typeof amount !== "number") {
-        return res
-          .status(400)
-          .json({ message: "Pot ID and amount are required" });
+      if (
+        !potId ||
+        !name ||
+        !theme ||
+        typeof target !== "number" ||
+        target <= 0
+      ) {
+        return res.status(400).json({ message: "Invalid input data" });
       }
 
       const token = req.headers.authorization?.split(" ")[1];
@@ -114,8 +118,9 @@ export default async function handler(req, res) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      // Update the total amount based on the action (adding or withdrawing money)
-      pot.total += amount;
+      pot.name = name;
+      pot.target = target;
+      pot.theme = theme;
 
       const updatedPot = await pot.save();
 

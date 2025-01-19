@@ -121,13 +121,16 @@ export const editPotAction = async (token, updatedPot) => {
   try {
     const { id, ...updates } = updatedPot;
 
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(API_URL, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(updates),
+      body: JSON.stringify({
+        potId: id,
+        ...updates,
+      }),
     });
 
     if (!response.ok) {
@@ -154,13 +157,13 @@ export const editPotAction = async (token, updatedPot) => {
  */
 export const deletePotAction = async (potId, token) => {
   try {
-    const response = await fetch(`${API_URL}/${potId}`, {
-      // Fix the URL to include the potId
+    const response = await fetch(API_URL, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({ potId }),
     });
 
     if (!response.ok) {
