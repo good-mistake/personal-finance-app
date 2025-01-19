@@ -66,7 +66,7 @@ const Pots = () => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [dispatch]);
 
-  const safePots = pots || [];
+  const safePots = pots && pots.length > 0 ? pots : [];
 
   const handlePotAction = (potId: string, action: string) => {
     if (potId) {
