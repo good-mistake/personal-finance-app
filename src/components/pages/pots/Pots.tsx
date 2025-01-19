@@ -49,8 +49,12 @@ const Pots = () => {
           dispatch(setLoading(false));
         });
     } else {
-      dispatch(setAuthLoading(false));
-      dispatch(setPots({ pots: data.pots, isAuthenticated: false }));
+      const potsWithIds = data.pots.map((pot) => ({
+        ...pot,
+        id: pot.id || uuidv4(),
+      }));
+
+      dispatch(setPots({ pots: potsWithIds, isAuthenticated: false }));
       dispatch(setLoading(false));
     }
   }, [dispatch, isAuthenticated]);
