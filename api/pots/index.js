@@ -89,10 +89,12 @@ export default async function handler(req, res) {
     }
 
     if (method === "PUT") {
-      const { potId, ...fieldsToUpdate } = req.body;
+      const { potId, amount } = req.body;
 
-      if (!potId) {
-        return res.status(400).json({ message: "Pot ID is required" });
+      if (!potId || typeof amount !== "number") {
+        return res
+          .status(400)
+          .json({ message: "Pot ID and amount are required" });
       }
 
       const token = req.headers.authorization?.split(" ")[1];
@@ -112,11 +114,9 @@ export default async function handler(req, res) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      const updatedPot = await Pot.findByIdAndUpdate(
-        potId,
-        { $set: fieldsToUpdate },
-        { new: true, runValidators: true }
-      );
+      pot.total += amount;
+
+      const updatedPot = await pot.save();
 
       return res.status(200).json(updatedPot);
     }

@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
-
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/pots`;
 
 /**
@@ -67,7 +65,7 @@ export const addMoneyAction = async (token, addMoneyData) => {
     const updatedPot = await response.json();
 
     return {
-      id: updatedPot._id, // Use the existing pot._id as the unique ID
+      id: updatedPot._id,
       ...updatedPot,
     };
   } catch (error) {
@@ -104,7 +102,7 @@ export const withdrawAction = async (token, withdrawalData) => {
     const updatedPot = await response.json();
 
     return {
-      id: updatedPot._id, // Use the existing pot._id as the unique ID
+      id: updatedPot._id,
       ...updatedPot,
     };
   } catch (error) {
