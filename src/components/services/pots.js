@@ -120,13 +120,17 @@ export const editPotAction = async (token, updatedPot) => {
   try {
     const { id, ...updates } = updatedPot;
 
-    const response = await fetch(`${API_URL}/edit`, {
+    const response = await fetch(`${API_URL}`, {
+      // Change to API_URL
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(updates),
+      body: JSON.stringify({
+        potId: id,
+        ...updates,
+      }),
     });
 
     if (!response.ok) {

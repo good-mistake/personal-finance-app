@@ -114,6 +114,7 @@ export default async function handler(req, res) {
       const updatedPot = await pot.save();
       return res.status(200).json(updatedPot);
     }
+
     if (method === "PUT") {
       const { potId, amount } = req.body;
 
