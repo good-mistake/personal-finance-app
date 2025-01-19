@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
 
 interface Pot {
   id: string;
@@ -84,10 +85,14 @@ const potsSlice = createSlice({
       state,
       action: PayloadAction<{ pots: Pot[]; isAuthenticated: boolean }>
     ) => {
-      state.pots = action.payload.pots;
+      state.pots = action.payload.pots.map((pot) => ({
+        ...pot,
+        id: pot.id || pot._id || uuidv4(),
+      }));
       state.loading = false;
-      state.isDummyData = !action.payload.isAuthenticated; // Only set isDummyData to true if not authenticated
+      state.isDummyData = !action.payload.isAuthenticated;
     },
+
     addPot: (state, action: PayloadAction<Pot>) => {
       state.pots.push(action.payload);
     },

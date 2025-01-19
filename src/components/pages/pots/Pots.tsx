@@ -49,8 +49,12 @@ const Pots = () => {
           dispatch(setLoading(false));
         });
     } else {
+      const dummyPots = data.pots.map((pot) => ({
+        ...pot,
+        id: pot.id || uuidv4(),
+      }));
       dispatch(setAuthLoading(false));
-      dispatch(setPots({ pots: data.pots, isAuthenticated: false }));
+      dispatch(setPots({ pots: dummyPots, isAuthenticated: false }));
       dispatch(setLoading(false));
     }
   }, [dispatch, isAuthenticated]);
@@ -98,7 +102,7 @@ const Pots = () => {
             : safePots.map((e) => {
                 const total = e.total || 0;
                 const target = e.target || 0;
-                const potId = e.id || e._id || uuidv4();
+                const potId = e.id || uuidv4();
 
                 return (
                   <div className="potsInfo" key={potId}>
