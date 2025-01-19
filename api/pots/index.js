@@ -78,7 +78,7 @@ export default async function handler(req, res) {
         target,
         total: 0,
         theme,
-        user: new mongoose.Types.ObjectId(user._id), // Fix: Use ObjectId for user
+        user: new mongoose.Types.ObjectId(user._id),
       });
       const savedPot = await newPot.save();
 
