@@ -5,6 +5,7 @@ import { editPot, closeModal } from "../../../redux/potsSlice.ts";
 import EditModal from "../../../reusable/editModal/EditModal.tsx";
 import { generateColorList } from "../../../../utils/utils.ts";
 import { editPotAction } from "../../../services/pots.js";
+
 const EditPotModal: React.FC = () => {
   const dispatch = useDispatch();
   const selectedPot = useSelector((state: RootState) => state.pots.selectedPot);
@@ -20,15 +21,22 @@ const EditPotModal: React.FC = () => {
     target: number;
     theme: string;
   }) => {
-    if (!selectedPot || !selectedPot.id) {
-      console.error("No selected pot or pot ID");
+    if (!selectedPot) {
+      console.error("No selected pot");
       return;
     }
+
     const token = isAuthenticated ? localStorage.getItem("token") : null;
+    const potId = selectedPot.id || selectedPot._id;
+
+    if (!potId) {
+      console.error("Pot ID is missing");
+      return;
+    }
 
     try {
       const updatedPot = {
-        id: selectedPot.id,
+        id: potId,
         ...updatedData,
       };
       dispatch(editPot(updatedPot));

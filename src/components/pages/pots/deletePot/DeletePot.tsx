@@ -4,6 +4,7 @@ import { RootState } from "../../../redux/store.ts";
 import { deletePot, closeModal } from "../../../redux/potsSlice.ts";
 import DeleteModal from "../../../reusable/deleteModal/DeleteModal.tsx";
 import { deletePotAction } from "../../../services/pots.js";
+
 const DeletePot: React.FC = () => {
   const dispatch = useDispatch();
   const selectedPot = useSelector((state: RootState) => state.pots.selectedPot);
@@ -12,17 +13,20 @@ const DeletePot: React.FC = () => {
   );
 
   const handleDelete = async () => {
-    if (!selectedPot || !selectedPot.id) {
+    const potId = selectedPot?.id || selectedPot?._id;
+
+    if (!potId) {
       console.error("No selected pot or pot ID");
       return;
     }
+
     const token = isAuthenticated ? localStorage.getItem("token") : null;
 
     try {
-      dispatch(deletePot(selectedPot.id));
+      dispatch(deletePot(potId as string));
 
       if (isAuthenticated && token) {
-        await deletePotAction(selectedPot.id, token);
+        await deletePotAction(potId, token);
       }
     } catch (error) {
       console.error("Error deleting pot:", error);

@@ -6,7 +6,6 @@ import ProgressBar from "../progressbar/ProgressBar.tsx";
 import Buttons from "../../../reusable/button/Buttons.tsx";
 import { formatCurrency } from "../../../../utils/utils.ts";
 import { addMoneyAction } from "../../../services/pots.js";
-import { v4 as uuidv4 } from "uuid";
 
 const AddMoney = ({ onClose }) => {
   const dispatch = useDispatch();
@@ -16,25 +15,29 @@ const AddMoney = ({ onClose }) => {
   const [error, setError] = useState("");
 
   const handleConfirmAddition = async () => {
-    const token = isAuthenticated ? localStorage.getItem("token") : null;
     if (!selectedPot || !selectedPot.id) {
       setError("Pot is not selected or ID is missing.");
       return;
     }
-    if (selectedPot && typeof amount === "number" && amount > 0) {
+    if (typeof amount === "number" && amount > 0) {
+      const updatedPot = {
+        id: selectedPot.id,
+        amount: Number(amount),
+      };
       try {
-        const updatedPot = {
-          id: selectedPot.id || uuidv4(),
-          amount: Number(amount),
-        };
-        if (isAuthenticated && token) {
-          await addMoneyAction(token, updatedPot);
+        if (isAuthenticated) {
+          const token = localStorage.getItem("token");
+          if (token) {
+            await addMoneyAction(token, updatedPot);
+          }
         }
         dispatch(updatePotTotal(updatedPot));
         onClose();
       } catch (error) {
         console.error("Failed to add money:", error);
       }
+    } else {
+      setError("Amount must be a valid positive number.");
     }
   };
 
@@ -83,7 +86,10 @@ const AddMoney = ({ onClose }) => {
           }
         />
       </div>
-      <Buttons disabled={false} onClick={handleConfirmAddition}>
+      <Buttons
+        disabled={!amount || Number(amount) <= 0}
+        onClick={handleConfirmAddition}
+      >
         Confirm Addition
       </Buttons>
       <p>{error}</p>

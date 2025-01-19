@@ -23,7 +23,7 @@ const WithDraw = ({ onClose }) => {
   const handleWithdraw = async () => {
     const token = isAuthenticated ? localStorage.getItem("token") : null;
 
-    if (!amount || !selectedPot || !selectedPot.id) {
+    if (!amount || !selectedPot || !(selectedPot.id || selectedPot._id)) {
       setError("Please provide a valid amount and select a pot.");
       return;
     }
@@ -36,10 +36,16 @@ const WithDraw = ({ onClose }) => {
     }
 
     try {
+      const potId = selectedPot.id || selectedPot._id;
+      if (!potId) {
+        setError("No valid pot ID found.");
+        return;
+      }
       const updatedPot = {
-        id: selectedPot.id,
+        id: potId,
         amount: withdrawAmount,
       };
+
       if (isAuthenticated && token) {
         await withdrawAction(token, updatedPot);
       }
@@ -70,7 +76,7 @@ const WithDraw = ({ onClose }) => {
         <h2>
           {Number(amount) > 0 && selectedPot
             ? `${formatCurrency(totalAfterWithdraw)} `
-            : `${formatCurrency(selectedPot?.total || 0)}`}{" "}
+            : `${formatCurrency(selectedPot?.total || 0)} `}{" "}
         </h2>
       </div>
       <ProgressBar
