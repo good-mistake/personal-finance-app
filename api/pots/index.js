@@ -82,7 +82,7 @@ export default async function handler(req, res) {
       });
       const savedPot = await newPot.save();
 
-      user.pots.push(savedPot._id);
+      user.pots = [...user.pots, savedPot._id]; // Fix push issue
       await user.save();
 
       return res.status(201).json(savedPot);
@@ -103,17 +103,12 @@ export default async function handler(req, res) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const userId = decoded.id;
 
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
       const pot = await Pot.findById(potId);
       if (!pot) {
         return res.status(404).json({ message: "Pot not found" });
       }
 
-      if (!pot.user.equals(user._id)) {
+      if (!pot.user.equals(userId)) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
@@ -155,7 +150,7 @@ export default async function handler(req, res) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      user.pots.pull(potId);
+      user.pots = user.pots.filter((id) => !id.equals(potId)); // Use filter for deletion
       await user.save();
       await pot.deleteOne();
 
