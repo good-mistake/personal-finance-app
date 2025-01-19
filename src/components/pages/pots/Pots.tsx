@@ -49,13 +49,8 @@ const Pots = () => {
           dispatch(setLoading(false));
         });
     } else {
-      // For unauthenticated users, load dummy data with generated IDs if necessary
-      const dummyPots = data.pots.map((pot) => ({
-        ...pot,
-        id: pot.id || uuidv4(),
-      }));
       dispatch(setAuthLoading(false));
-      dispatch(setPots({ pots: dummyPots, isAuthenticated: false }));
+      dispatch(setPots({ pots: data.pots, isAuthenticated: false }));
       dispatch(setLoading(false));
     }
   }, [dispatch, isAuthenticated]);
@@ -71,7 +66,7 @@ const Pots = () => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [dispatch]);
 
-  const safePots = pots && pots.length > 0 ? pots : [];
+  const safePots = pots || [];
 
   const handlePotAction = (potId: string, action: string) => {
     if (potId) {
@@ -103,9 +98,10 @@ const Pots = () => {
             : safePots.map((e) => {
                 const total = e.total || 0;
                 const target = e.target || 0;
+                const potId = e.id || e._id || uuidv4();
 
                 return (
-                  <div className="potsInfo" key={e.id}>
+                  <div className="potsInfo" key={potId}>
                     <div className="potsInfoHeader">
                       <h5>
                         <span
@@ -114,7 +110,7 @@ const Pots = () => {
                         ></span>
                         {e.name}
                       </h5>
-                      <DropDownPot potId={e.id} />
+                      <DropDownPot potId={potId} />
                     </div>
                     <div className="potsInfoContent">
                       <div className="totalSaved">
@@ -131,16 +127,16 @@ const Pots = () => {
                       <Buttons
                         variant="secondary"
                         size="large"
-                        disabled={!e.id}
+                        disabled={!potId}
                         children="+ Add Money"
-                        onClick={() => handlePotAction(e.id, "addMoney")}
+                        onClick={() => handlePotAction(potId, "addMoney")}
                       />
                       <Buttons
                         variant="secondary"
                         size="large"
-                        disabled={!e.id}
+                        disabled={!potId}
                         children="Withdraw"
-                        onClick={() => handlePotAction(e.id, "withdraw")}
+                        onClick={() => handlePotAction(potId, "withDraw")}
                       />
                     </div>
                   </div>
