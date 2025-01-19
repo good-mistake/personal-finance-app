@@ -82,19 +82,19 @@ export default async function handler(req, res) {
       });
       const savedPot = await newPot.save();
 
-      user.pots.push(savedPot._id); // Fix push issue
+      user.pots.push(savedPot._id);
       await user.save();
 
       return res.status(201).json(savedPot);
     }
 
     if (method === "PUT") {
-      const { potId, amount } = req.body;
+      const { potId, name, target, theme } = req.body;
 
-      if (!potId || typeof amount !== "number") {
+      if (!potId || !name || typeof target !== "number" || !theme) {
         return res
           .status(400)
-          .json({ message: "Pot ID and amount are required" });
+          .json({ message: "Pot ID, name, target, and theme are required" });
       }
 
       const token = req.headers.authorization?.split(" ")[1];
@@ -114,7 +114,9 @@ export default async function handler(req, res) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      pot.total += amount;
+      pot.name = name;
+      pot.target = target;
+      pot.theme = theme;
 
       const updatedPot = await pot.save();
 
