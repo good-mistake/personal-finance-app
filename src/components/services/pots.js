@@ -25,7 +25,7 @@ export const fetchPots = async (token) => {
     }
 
     return potsData.map((pot) => ({
-      id: pot._id, // Use the existing pot._id as the unique ID
+      id: pot._id,
       name: pot.name,
       target: pot.target,
       total: pot.total || 0,
@@ -46,7 +46,7 @@ export const fetchPots = async (token) => {
 export const addMoneyAction = async (token, addMoneyData) => {
   try {
     const response = await fetch(`${API_URL}/${addMoneyData.id}`, {
-      // Fix the URL to include the potId
+      // Fix URL
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -83,7 +83,7 @@ export const addMoneyAction = async (token, addMoneyData) => {
 export const withdrawAction = async (token, withdrawalData) => {
   try {
     const response = await fetch(`${API_URL}/${withdrawalData.id}`, {
-      // Fix the URL to include the potId
+      // Fix URL
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -122,6 +122,7 @@ export const editPotAction = async (token, updatedPot) => {
     const { id, ...updates } = updatedPot;
 
     const response = await fetch(`${API_URL}/${id}`, {
+      // Fix URL
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -155,7 +156,7 @@ export const editPotAction = async (token, updatedPot) => {
 export const deletePotAction = async (potId, token) => {
   try {
     const response = await fetch(`${API_URL}/${potId}`, {
-      // Fix the URL to include the potId
+      // Fix URL
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
