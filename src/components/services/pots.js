@@ -121,13 +121,13 @@ export const editPotAction = async (token, updatedPot) => {
   try {
     const { id, ...updates } = updatedPot;
 
-    const response = await fetch(API_URL, {
+    const response = await fetch(`${API_URL}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ potId: id, ...updates }),
+      body: JSON.stringify(updates),
     });
 
     if (!response.ok) {
@@ -137,7 +137,7 @@ export const editPotAction = async (token, updatedPot) => {
     const updatedData = await response.json();
 
     return {
-      id: updatedData._id, // Use the existing pot._id as the unique ID
+      id: updatedData._id,
       ...updatedData,
     };
   } catch (error) {
