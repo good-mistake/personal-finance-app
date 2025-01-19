@@ -173,7 +173,6 @@ export default async function handler(req, res) {
           return res.status(403).json({ message: "Forbidden" });
         }
 
-        // Remove transaction ID from user's list and delete transaction
         user.transactions.pull(transactionId);
         await user.save();
         await transaction.deleteOne();

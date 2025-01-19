@@ -119,16 +119,13 @@ export const withdrawAction = async (token, withdrawalData) => {
  */
 export const editPotAction = async (token, updatedPot) => {
   try {
-    const { id, ...updates } = updatedPot;
-
-    const response = await fetch(`${API_URL}/${id}`, {
-      // Fix URL
+    const response = await fetch(`${API_URL}/${updatedPot.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(updates),
+      body: JSON.stringify(updatedPot),
     });
 
     if (!response.ok) {
@@ -138,7 +135,7 @@ export const editPotAction = async (token, updatedPot) => {
     const updatedData = await response.json();
 
     return {
-      id: updatedData._id,
+      id: updatedData._id || updatedData.id,
       ...updatedData,
     };
   } catch (error) {
