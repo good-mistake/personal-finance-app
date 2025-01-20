@@ -51,10 +51,11 @@ const potsSlice = createSlice({
     ) => {
       state.pots = state.pots.map((pot) =>
         pot.id === action.payload.id || pot._id === action.payload.id
-          ? { ...pot, total: pot.total + action.payload.amount }
+          ? { ...pot, total: (pot.total || 0) + action.payload.amount }
           : pot
       );
     },
+
     updatePotTarget: (
       state,
       action: PayloadAction<{ id: string; amount: number }>
@@ -97,6 +98,7 @@ const potsSlice = createSlice({
           (pot) => pot.id === action.payload || pot._id === action.payload
         ) || null;
     },
+
     editPot: (
       state,
       action: PayloadAction<{
