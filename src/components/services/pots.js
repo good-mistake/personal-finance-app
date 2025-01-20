@@ -52,7 +52,7 @@ export const addMoneyAction = async (token, addMoneyData) => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        potId: addMoneyData.id,
+        potId: addMoneyData.id || addMoneyData._id,
         amount: addMoneyData.amount,
       }),
     });
@@ -121,7 +121,6 @@ export const editPotAction = async (token, updatedPot) => {
     const { id, ...updates } = updatedPot;
 
     const response = await fetch(`${API_URL}`, {
-      // Change to API_URL
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
