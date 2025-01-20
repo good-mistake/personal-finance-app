@@ -19,7 +19,7 @@ const AddPot: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       return;
     }
 
-    setError(null); // Reset error if everything is fine
+    setError(null);
 
     if (isAuthenticated) {
       try {
