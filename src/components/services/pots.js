@@ -65,6 +65,7 @@ export const addMoneyAction = async (token, addMoneyData) => {
     const updatedPot = await response.json();
 
     return {
+      id: updatedPot._id || updatedPot.id,
       ...updatedPot,
     };
   } catch (error) {
