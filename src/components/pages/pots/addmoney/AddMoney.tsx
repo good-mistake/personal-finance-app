@@ -21,7 +21,7 @@ const AddMoney = ({ onClose }) => {
     }
     if (typeof amount === "number" && amount > 0) {
       const updatedPot = {
-        id: selectedPot.id,
+        id: selectedPot.id || selectedPot._id,
         amount: Number(amount),
       };
       try {
