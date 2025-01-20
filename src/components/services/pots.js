@@ -45,19 +45,17 @@ export const fetchPots = async (token) => {
  */
 export const addMoneyAction = async (token, addMoneyData) => {
   try {
-    const response = await fetch(
-      `${API_URL}/${addMoneyData.id || addMoneyData._id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          amount: addMoneyData.amount,
-        }),
-      }
-    );
+    const response = await fetch(API_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        potId: addMoneyData.id || addMoneyData._id,
+        amount: addMoneyData.amount,
+      }),
+    });
 
     if (!response.ok) {
       const errorMessage = await response.text();
