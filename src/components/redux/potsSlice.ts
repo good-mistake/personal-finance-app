@@ -50,11 +50,12 @@ const potsSlice = createSlice({
       action: PayloadAction<{ id: string; amount: number }>
     ) => {
       state.pots = state.pots.map((pot) =>
-        pot.id === action.payload.id || pot._id === action.payload.id
-          ? { ...pot, total: pot.total + action.payload.amount }
+        pot.id === action.payload.id
+          ? { ...pot, total: (pot.total || 0) + action.payload.amount }
           : pot
       );
     },
+
     updatePotTarget: (
       state,
       action: PayloadAction<{ id: string; amount: number }>
@@ -93,10 +94,9 @@ const potsSlice = createSlice({
     },
     setSelectedPot: (state, action: PayloadAction<string>) => {
       state.selectedPot =
-        state.pots.find(
-          (pot) => pot.id === action.payload || pot._id === action.payload
-        ) || null;
+        state.pots.find((pot) => pot.id === action.payload) || null;
     },
+
     editPot: (
       state,
       action: PayloadAction<{
