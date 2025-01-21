@@ -1,3 +1,4 @@
+// Backend: api/budgets/index.js
 import Budget from "../../models/budgets.js";
 import { connectToDatabase } from "../../db.js";
 
