@@ -77,35 +77,25 @@ export const addBudgetAction = async (token, newBudget) => {
  * @returns {Promise<Object>} - The updated budget.
  */
 export const editBudgetAction = async (token, updatedBudget) => {
-  try {
-    const { id, ...updates } = updatedBudget;
+  const { id, ...updates } = updatedBudget;
 
-    const response = await fetch(`${API_URL}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        id, // Send ID in the body
-        ...updates,
-      }),
-    });
+  const response = await fetch(`${API_URL}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      id, // Always include the ID
+      ...updates, // Only include fields that need updating
+    }),
+  });
 
-    if (!response.ok) {
-      throw new Error(`Failed to update budget: ${response.statusText}`);
-    }
-
-    const updatedData = await response.json();
-
-    return {
-      id: updatedData._id,
-      ...updatedData,
-    };
-  } catch (error) {
-    console.error("Error updating budget:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Failed to update budget: ${response.statusText}`);
   }
+
+  return response.json();
 };
 
 /**

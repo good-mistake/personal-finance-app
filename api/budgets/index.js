@@ -76,9 +76,9 @@ export default async function handler(req, res) {
     if (method === "PUT") {
       const { id, category, maxAmount, themeColor } = req.body;
 
-      if (!id || !category || maxAmount === undefined || !themeColor) {
+      if (!id) {
         return res.status(400).json({
-          message: "ID, category, maxAmount, and themeColor are required.",
+          message: "ID is required for updating a budget.",
         });
       }
 
@@ -87,9 +87,10 @@ export default async function handler(req, res) {
         return res.status(404).json({ message: "Budget not found" });
       }
 
-      budget.category = category;
-      budget.maxAmount = maxAmount;
-      budget.themeColor = themeColor;
+      // Dynamically update fields if they are provided
+      if (category !== undefined) budget.category = category;
+      if (maxAmount !== undefined) budget.maxAmount = maxAmount;
+      if (themeColor !== undefined) budget.themeColor = themeColor;
 
       const updatedBudget = await budget.save();
       return res.status(200).json(updatedBudget);
