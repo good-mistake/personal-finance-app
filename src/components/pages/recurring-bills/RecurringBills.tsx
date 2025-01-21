@@ -37,7 +37,8 @@ const RecurringBills = () => {
     isAuthenticated && user && user.transactions
       ? user.transactions
       : datas.transactions || [];
-
+  console.log(transactions);
+  console.log("user", user?.transactions);
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
