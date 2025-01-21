@@ -82,13 +82,14 @@ export const addMoneyAction = async (token, addMoneyData) => {
  */
 export const withdrawAction = async (token, withdrawalData) => {
   try {
-    const response = await fetch(`${API_URL}/${withdrawalData.id}`, {
+    const response = await fetch(API_URL, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
+        potId: withdrawalData.id,
         amount: -withdrawalData.amount,
       }),
     });
