@@ -185,6 +185,7 @@ const Budgets: React.FC = () => {
   };
 
   const safeBudgets = budgets || [];
+
   return (
     <div className="budgetContainer">
       <Sidebar variant={sidebarVariant} position="left">
@@ -274,8 +275,7 @@ const Budgets: React.FC = () => {
 
                       <div className="categorySpent">
                         <div className="max">
-                          Maximum of{" "}
-                          {formatCurrency(budget.maximum ? budget.maximum : 0)}
+                          Maximum of {formatCurrency(budget.maximum)}
                         </div>
                         <div className="line">
                           <div
@@ -310,9 +310,7 @@ const Budgets: React.FC = () => {
                             <div>
                               <p className="title">Remaining</p>
                               <p className="amount">
-                                {formatCurrency(
-                                  budget.maximum ? budget.maximum - spent : 0
-                                )}
+                                {formatCurrency(budget.maximum)}
                               </p>
                             </div>
                           </div>
