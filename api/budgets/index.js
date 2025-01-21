@@ -73,31 +73,18 @@ export default async function handler(req, res) {
       const savedBudget = await newBudget.save();
       return res.status(201).json(savedBudget);
     }
-
     if (method === "PUT") {
-      const { id } = req.query;
-      const { category, maxAmount, themeColor } = req.body;
+      const { id, category, maxAmount, themeColor } = req.body;
+
       if (!id || !category || maxAmount === undefined || !themeColor) {
         return res.status(400).json({
           message: "ID, category, maxAmount, and themeColor are required.",
         });
       }
 
-      const token = req.headers.authorization?.split(" ")[1];
-      if (!token) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const userId = decoded.id;
-
       const budget = await Budget.findById(id);
       if (!budget) {
         return res.status(404).json({ message: "Budget not found" });
-      }
-
-      if (!budget.user.equals(userId)) {
-        return res.status(403).json({ message: "Forbidden" });
       }
 
       budget.category = category;
@@ -109,7 +96,7 @@ export default async function handler(req, res) {
     }
 
     if (method === "DELETE") {
-      const { id } = req.query;
+      const { id } = req.body;
 
       if (!id) {
         return res
@@ -117,21 +104,9 @@ export default async function handler(req, res) {
           .json({ message: "ID is required for deletion." });
       }
 
-      const token = req.headers.authorization?.split(" ")[1];
-      if (!token) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const userId = decoded.id;
-
       const budget = await Budget.findById(id);
       if (!budget) {
         return res.status(404).json({ message: "Budget not found" });
-      }
-
-      if (!budget.user.equals(userId)) {
-        return res.status(403).json({ message: "Forbidden" });
       }
 
       await budget.deleteOne();

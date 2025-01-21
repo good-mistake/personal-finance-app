@@ -71,7 +71,7 @@ export const addBudgetAction = async (token, newBudget) => {
 };
 
 /**
- * Updates an existing budget.
+ * Updates a budget.
  * @param {string} token - The authorization token for the API.
  * @param {Object} updatedBudget - The updated budget data.
  * @returns {Promise<Object>} - The updated budget.
@@ -80,13 +80,16 @@ export const editBudgetAction = async (token, updatedBudget) => {
   try {
     const { id, ...updates } = updatedBudget;
 
-    const response = await fetch(`${API_URL}?id=${id}`, {
+    const response = await fetch(`${API_URL}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(updates),
+      body: JSON.stringify({
+        id, // Send ID in the body
+        ...updates,
+      }),
     });
 
     if (!response.ok) {
@@ -107,18 +110,19 @@ export const editBudgetAction = async (token, updatedBudget) => {
 
 /**
  * Deletes a budget by ID.
- * @param {string} budgetId - The ID of the budget to delete.
  * @param {string} token - The authorization token for the API.
+ * @param {string} budgetId - The ID of the budget to delete.
  * @returns {Promise<Object>} - A success message or the deleted budget.
  */
 export const deleteBudgetAction = async (budgetId, token) => {
   try {
-    const response = await fetch(`${API_URL}?id=${budgetId}`, {
+    const response = await fetch(API_URL, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({ id: budgetId }), // Send ID in the body
     });
 
     if (!response.ok) {
