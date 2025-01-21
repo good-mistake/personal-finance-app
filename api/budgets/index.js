@@ -41,18 +41,20 @@ export default async function handler(req, res) {
       }
 
       case "POST": {
-        const { category, maximum, theme } = req.body;
+        const { category, maximum, theme, user } = req.body;
 
-        if (!category || maximum === undefined || !theme) {
+        if (!category || maximum === undefined || !theme || !user) {
+          // Check for user field
           return res.status(400).json({
-            message: "Category, maxAmount, and themeColor are required.",
+            message: "Category, maxAmount, themeColor, and user are required.",
           });
         }
 
         const newBudget = new Budget({
           category,
-          maxAmount: maximum,
+          maxAmount: maximum, // Map maximum to maxAmount
           themeColor: theme,
+          user, // Add user field
         });
         await newBudget.save();
         return res.status(201).json(newBudget);
