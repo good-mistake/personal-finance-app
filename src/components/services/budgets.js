@@ -27,8 +27,8 @@ export const fetchBudgets = async (token) => {
     return budgetsData.map((budget) => ({
       id: budget._id,
       category: budget.category,
-      maximum: budget.maxAmount,
-      theme: budget.themeColor,
+      maxAmount: budget.maximum,
+      themeColor: budget.theme,
     }));
   } catch (error) {
     console.error("Error fetching budgets:", error);
