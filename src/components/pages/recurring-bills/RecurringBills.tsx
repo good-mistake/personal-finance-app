@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../../reusable/sidebar/Sidebar";
 import datas from "../../../data.json";
 import Pagination from "../../reusable/pagination/Pagination";
@@ -10,7 +10,7 @@ import { RootState } from "../../redux/store.ts";
 import { useSelector } from "react-redux";
 import SkeletonRec from "../../reusable/skeleton/skeletonRec/SkeletonRec.tsx";
 import useMediaQuery from "../../../utils/useMediaQuery.tsx";
-
+import { fetchTransaction } from "../../services/transactions.js";
 type Transaction = {
   id?: string;
   _id?: string;
@@ -27,18 +27,42 @@ const RecurringBills = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState("Latest");
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [transactions, setTransactions] = useState<any>([]);
+
   const isMobile = useMediaQuery("mobile");
   const isTablet = useMediaQuery("tablet");
   const sidebarVariant = isMobile ? "mobile" : isTablet ? "tablet" : "desktop";
   const { isAuthenticated, user, authLoading } = useSelector(
     (state: RootState) => state.user
   );
-  const transactions =
-    isAuthenticated && user && user.transactions
-      ? user.transactions
-      : datas.transactions || [];
-  console.log(transactions);
-  console.log("user", user?.transactions);
+  // const transactions =
+  //   isAuthenticated && user && user.transactions
+  //     ? user.transactions
+  //     : datas.transactions || [];
+  useEffect(() => {
+    if (isAuthenticated) {
+      const fetchTransactions = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          if (!token) {
+            console.error("Token is missing from localStorage");
+            throw new Error("User token not found.");
+          }
+          const data = await fetchTransaction(token);
+          setTransactions(data);
+        } catch (error) {
+          console.error("Error fetching transactions:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchTransactions();
+    } else {
+      setTransactions(datas.transactions);
+      setLoading(false);
+    }
+  }, [isAuthenticated, user]);
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
@@ -136,7 +160,7 @@ const RecurringBills = () => {
   return (
     <div className="billContainer">
       <Sidebar variant={sidebarVariant} position="left">
-        {authLoading ? (
+        {authLoading || loading ? (
           <SkeletonRec />
         ) : (
           <>
