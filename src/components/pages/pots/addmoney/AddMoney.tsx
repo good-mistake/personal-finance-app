@@ -15,35 +15,25 @@ const AddMoney = ({ onClose }) => {
   const [error, setError] = useState("");
 
   const handleConfirmAddition = async () => {
-    console.log("Selected Pot:", selectedPot);
-    if (!selectedPot || !selectedPot.id) {
+    const potId = selectedPot?.id || selectedPot?._id;
+    console.log("Selected Pot ID:", potId);
+    if (!potId) {
       setError("Pot is not selected or ID is missing.");
       return;
     }
-    if (typeof amount === "number" && amount > 0) {
-      const updatedPot = {
-        id: selectedPot.id || selectedPot._id,
-        amount: Number(amount),
-      };
-      try {
-        if (isAuthenticated) {
-          const token = localStorage.getItem("token");
-          if (token) {
-            await addMoneyAction(token, updatedPot);
-          }
+
+    const updatedPot = { id: potId, amount: Number(amount) };
+    try {
+      if (isAuthenticated) {
+        const token = localStorage.getItem("token");
+        if (token) {
+          await addMoneyAction(token, updatedPot);
         }
-        dispatch(
-          updatePotTotal({
-            id: selectedPot.id || selectedPot._id || "",
-            amount: Number(amount),
-          })
-        );
-        onClose();
-      } catch (error) {
-        console.error("Failed to add money:", error);
       }
-    } else {
-      setError("Amount must be a valid positive number.");
+      dispatch(updatePotTotal({ id: potId, amount: Number(amount) }));
+      onClose();
+    } catch (error) {
+      console.error("Failed to add money:", error);
     }
   };
 
