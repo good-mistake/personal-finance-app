@@ -27,8 +27,8 @@ export const fetchBudgets = async (token) => {
     return budgetsData.map((budget) => ({
       id: budget._id,
       category: budget.category,
-      maxAmount: budget.maximum,
-      themeColor: budget.theme,
+      maximum: budget.maximum,
+      theme: budget.theme,
     }));
   } catch (error) {
     console.error("Error fetching budgets:", error);
@@ -156,7 +156,7 @@ export const fetchTransactionsFromBackend = async (token) => {
       name: transaction.name,
       date: transaction.date,
       recurring: transaction.recurring,
-      theme: transaction.themeColor,
+      theme: transaction.theme,
     }));
   } catch (error) {
     console.error("Error fetching transactions:", error);
