@@ -21,6 +21,7 @@ interface TransactionState {
   isDummyData: boolean;
   isAuthenticated: boolean;
 }
+
 const initialState: TransactionState = {
   transaction: [],
   selectedTransaction: null,
@@ -59,7 +60,7 @@ const transactionSlice = createSlice({
       }
     },
 
-    loadTransactions: (state, action) => {
+    loadTransactions: (state, action: PayloadAction<Transaction[]>) => {
       state.transaction = action.payload;
     },
     deleteTransaction: (state, action: PayloadAction<string>) => {
@@ -87,7 +88,7 @@ const transactionSlice = createSlice({
       state.selectedTransaction = foundTransaction || null;
     },
 
-    openModal: (state, action) => {
+    openModal: (state, action: PayloadAction<string>) => {
       state.activeModal = action.payload;
     },
     closeModal: (state) => {
