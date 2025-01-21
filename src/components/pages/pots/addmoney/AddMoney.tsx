@@ -16,7 +16,6 @@ const AddMoney = ({ onClose }) => {
 
   const handleConfirmAddition = async () => {
     const potId = selectedPot?.id || selectedPot?._id;
-    console.log("Selected Pot ID:", potId);
     if (!potId) {
       setError("Pot is not selected or ID is missing.");
       return;
