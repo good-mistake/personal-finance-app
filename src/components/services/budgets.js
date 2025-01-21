@@ -80,7 +80,7 @@ export const editBudgetAction = async (token, updatedBudget) => {
   try {
     const { id, ...updates } = updatedBudget;
 
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${API_URL}?id=${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -113,7 +113,7 @@ export const editBudgetAction = async (token, updatedBudget) => {
  */
 export const deleteBudgetAction = async (budgetId, token) => {
   try {
-    const response = await fetch(`${API_URL}/${budgetId}`, {
+    const response = await fetch(`${API_URL}?id=${budgetId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

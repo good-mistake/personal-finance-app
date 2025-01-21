@@ -75,8 +75,8 @@ export default async function handler(req, res) {
     }
 
     if (method === "PUT") {
-      const { id, category, maxAmount, themeColor } = req.body;
-
+      const { id } = req.query;
+      const { category, maxAmount, themeColor } = req.body;
       if (!id || !category || maxAmount === undefined || !themeColor) {
         return res.status(400).json({
           message: "ID, category, maxAmount, and themeColor are required.",
@@ -109,7 +109,7 @@ export default async function handler(req, res) {
     }
 
     if (method === "DELETE") {
-      const { id } = req.body;
+      const { id } = req.query;
 
       if (!id) {
         return res
