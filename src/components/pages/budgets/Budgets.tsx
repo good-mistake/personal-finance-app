@@ -185,7 +185,7 @@ const Budgets: React.FC = () => {
   };
 
   const safeBudgets = budgets || [];
-
+  console.log("safe budget", safeBudgets);
   return (
     <div className="budgetContainer">
       <Sidebar variant={sidebarVariant} position="left">
