@@ -34,7 +34,10 @@ export const addBudgetAction = async (token, newBudget) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(newBudget),
+      body: JSON.stringify({
+        ...newBudget,
+        user: "userIdHere",
+      }),
     });
     return handleResponse(response);
   } catch (error) {

@@ -44,7 +44,6 @@ export default async function handler(req, res) {
         const { category, maximum, theme, user } = req.body;
 
         if (!category || maximum === undefined || !theme || !user) {
-          // Check for user field
           return res.status(400).json({
             message: "Category, maxAmount, themeColor, and user are required.",
           });
@@ -52,9 +51,9 @@ export default async function handler(req, res) {
 
         const newBudget = new Budget({
           category,
-          maxAmount: maximum, // Map maximum to maxAmount
+          maxAmount: maximum,
           themeColor: theme,
-          user, // Add user field
+          user,
         });
         await newBudget.save();
         return res.status(201).json(newBudget);

@@ -185,13 +185,7 @@ const Budgets: React.FC = () => {
   };
 
   const safeBudgets = budgets || [];
-  console.log("authLoading:", authLoading);
-  console.log("loading:", loading);
-  console.log("currentMonthBudgets.length:", currentMonthBudgets.length);
-  console.log(
-    "currentMonthTransactions.length:",
-    currentMonthTransactions.length
-  );
+
   return (
     <div className="budgetContainer">
       <Sidebar variant={sidebarVariant} position="left">
