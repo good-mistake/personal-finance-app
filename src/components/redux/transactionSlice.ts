@@ -41,8 +41,13 @@ const transactionSlice = createSlice({
         ...newTransaction,
         id: newTransaction.id || newTransaction._id || uuidv4(),
         recurring: newTransaction.recurring || false,
+        date:
+          newTransaction.date instanceof Date
+            ? newTransaction.date.toISOString()
+            : newTransaction.date,
       });
     },
+
     editTransaction: (state, action: PayloadAction<Transaction>) => {
       const updatedTransaction = action.payload;
       const transactionIndex = state.transaction.findIndex(
@@ -61,8 +66,18 @@ const transactionSlice = createSlice({
     },
 
     loadTransactions: (state, action: PayloadAction<Transaction[]>) => {
-      state.transaction = action.payload;
+      console.log(state.transaction);
+      state.transaction = action.payload.map((transaction) => ({
+        ...transaction,
+        id: transaction.id || transaction._id || uuidv4(),
+        recurring: transaction.recurring || false,
+        date:
+          transaction.date instanceof Date
+            ? transaction.date.toISOString()
+            : transaction.date,
+      }));
     },
+
     deleteTransaction: (state, action: PayloadAction<string>) => {
       state.transaction = state.transaction.filter(
         (transaction) =>
@@ -103,15 +118,17 @@ const transactionSlice = createSlice({
     ) {
       state.transaction = action.payload.transactions.map((transaction) => ({
         ...transaction,
+        id: transaction.id || transaction._id || uuidv4(),
+        recurring: transaction.recurring || false,
         date:
           transaction.date instanceof Date
             ? transaction.date.toISOString()
             : transaction.date,
-        recurring: transaction.recurring || false,
       }));
       state.isAuthenticated = action.payload.isAuthenticated;
       state.loading = false;
     },
+
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
