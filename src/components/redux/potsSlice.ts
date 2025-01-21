@@ -97,6 +97,7 @@ const potsSlice = createSlice({
           (pot) => pot.id === action.payload || pot._id === action.payload
         ) || null;
     },
+
     editPot: (
       state,
       action: PayloadAction<{

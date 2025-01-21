@@ -32,7 +32,10 @@ const AddMoney = ({ onClose }) => {
           }
         }
         dispatch(
-          updatePotTotal({ id: selectedPot.id, amount: Number(amount) })
+          updatePotTotal({
+            id: selectedPot.id || selectedPot._id || "",
+            amount: Number(amount),
+          })
         );
         onClose();
       } catch (error) {
