@@ -15,6 +15,7 @@ const AddMoney = ({ onClose }) => {
   const [error, setError] = useState("");
 
   const handleConfirmAddition = async () => {
+    console.log("Selected Pot:", selectedPot);
     if (!selectedPot || !selectedPot.id) {
       setError("Pot is not selected or ID is missing.");
       return;
