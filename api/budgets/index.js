@@ -51,7 +51,7 @@ export default async function handler(req, res) {
     if (method === "POST") {
       const { category, maximum, theme } = req.body;
 
-      if (!category || maximum === undefined || !theme) {
+      if (!category || maximum === undefined || maximum === null) {
         return res.status(400).json({ message: "Invalid input data" });
       }
 
@@ -65,12 +65,12 @@ export default async function handler(req, res) {
 
       const newBudget = new Budget({
         category,
-        maxAmount: maximum,
-        themeColor: theme,
+        maximum,
+        theme: theme || "#FFFFFF",
         user: new mongoose.Types.ObjectId(userId),
       });
-      const savedBudget = await newBudget.save();
 
+      const savedBudget = await newBudget.save();
       return res.status(201).json(savedBudget);
     }
 
