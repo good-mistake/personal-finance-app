@@ -77,8 +77,6 @@ export const addBudgetAction = async (token, newBudget) => {
  * @returns {Promise<Object>} - The updated budget.
  */
 export const editBudgetAction = async (token, updatedBudget) => {
-  const { id, ...updates } = updatedBudget;
-
   const response = await fetch(`${API_URL}`, {
     method: "PUT",
     headers: {
@@ -86,8 +84,10 @@ export const editBudgetAction = async (token, updatedBudget) => {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
-      id, // Always include the ID
-      ...updates, // Only include fields that need updating
+      id: updatedBudget.id,
+      category: updatedBudget.category,
+      maximum: updatedBudget.maximum,
+      theme: updatedBudget.theme,
     }),
   });
 

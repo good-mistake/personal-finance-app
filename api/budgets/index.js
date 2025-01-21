@@ -66,7 +66,7 @@ export default async function handler(req, res) {
       const newBudget = new Budget({
         category,
         maximum,
-        theme: theme || "#FFFFFF",
+        theme,
         user: new mongoose.Types.ObjectId(userId),
       });
 
