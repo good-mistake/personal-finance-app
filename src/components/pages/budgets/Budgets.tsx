@@ -274,7 +274,8 @@ const Budgets: React.FC = () => {
 
                       <div className="categorySpent">
                         <div className="max">
-                          Maximum of {formatCurrency(budget.maximum)}
+                          Maximum of{" "}
+                          {formatCurrency(budget.maximum ? budget.maximum : 0)}
                         </div>
                         <div className="line">
                           <div
