@@ -33,68 +33,75 @@ export default async function handler(req, res) {
   const { method } = req;
 
   try {
-    if (method === "GET") {
-      const budgets = await Budget.find();
-      return res.status(200).json(budgets);
-    }
-
-    if (method === "POST") {
-      const { category, maxAmount, themeColor } = req.body;
-
-      if (!category || maxAmount === undefined || !themeColor) {
-        return res.status(400).json({
-          message: "Category, maxAmount, and themeColor are required.",
-        });
+    switch (method) {
+      case "GET": {
+        const budgets = await Budget.find();
+        return res.status(200).json(budgets);
       }
 
-      const newBudget = new Budget({ category, maxAmount, themeColor });
-      await newBudget.save();
-      return res.status(201).json(newBudget);
-    }
+      case "POST": {
+        const { category, maxAmount, themeColor } = req.body;
 
-    if (method === "PUT") {
-      const { id } = req.body;
-      const { category, maxAmount, themeColor } = req.body;
+        if (!category || maxAmount === undefined || !themeColor) {
+          return res.status(400).json({
+            message: "Category, maxAmount, and themeColor are required.",
+          });
+        }
 
-      if (!id || !category || maxAmount === undefined || !themeColor) {
-        return res.status(400).json({
-          message: "ID, category, maxAmount, and themeColor are required.",
-        });
+        const newBudget = new Budget({ category, maxAmount, themeColor });
+        await newBudget.save();
+        return res.status(201).json(newBudget);
       }
 
-      const updatedBudget = await Budget.findByIdAndUpdate(
-        id,
-        { category, maxAmount, themeColor },
-        { new: true, runValidators: true }
-      );
+      case "PUT": {
+        const { id, category, maxAmount, themeColor } = req.body;
 
-      if (!updatedBudget) {
-        return res.status(404).json({ message: "Budget not found" });
+        if (!id || !category || maxAmount === undefined || !themeColor) {
+          return res.status(400).json({
+            message: "ID, category, maxAmount, and themeColor are required.",
+          });
+        }
+
+        const updatedBudget = await Budget.findByIdAndUpdate(
+          id,
+          { category, maxAmount, themeColor },
+          { new: true, runValidators: true }
+        );
+
+        if (!updatedBudget) {
+          return res.status(404).json({ message: "Budget not found" });
+        }
+
+        return res.status(200).json(updatedBudget);
       }
 
-      return res.status(200).json(updatedBudget);
-    }
+      case "DELETE": {
+        const { id } = req.body;
 
-    if (method === "DELETE") {
-      const { id } = req.body;
+        if (!id) {
+          return res
+            .status(400)
+            .json({ message: "ID is required for deletion." });
+        }
 
-      if (!id) {
+        const deletedBudget = await Budget.findByIdAndDelete(id);
+
+        if (!deletedBudget) {
+          return res.status(404).json({ message: "Budget not found" });
+        }
+
         return res
-          .status(400)
-          .json({ message: "ID is required for deletion." });
+          .status(200)
+          .json({ message: "Budget deleted successfully." });
       }
 
-      const deletedBudget = await Budget.findByIdAndDelete(id);
-
-      if (!deletedBudget) {
-        return res.status(404).json({ message: "Budget not found" });
+      default: {
+        res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
+        return res
+          .status(405)
+          .json({ message: `Method ${method} Not Allowed` });
       }
-
-      return res.status(200).json({ message: "Budget deleted successfully." });
     }
-
-    res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
-    return res.status(405).json({ message: `Method ${method} Not Allowed` });
   } catch (error) {
     console.error("Server error:", error);
     return res
