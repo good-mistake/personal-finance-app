@@ -17,8 +17,8 @@ export const fetchBudgets = async (token) => {
     return budgetData.map((budget) => ({
       id: budget._id,
       category: budget.category,
-      maxAmount: budget.maxAmount,
-      themeColor: budget.themeColor,
+      maximum: budget.maxAmount,
+      theme: budget.themeColor,
     }));
   } catch (error) {
     console.error("Error fetching budgets:", error.message);
@@ -26,7 +26,7 @@ export const fetchBudgets = async (token) => {
   }
 };
 
-export const addBudget = async (token, newBudget) => {
+export const addBudgetAction = async (token, newBudget) => {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
@@ -43,7 +43,7 @@ export const addBudget = async (token, newBudget) => {
   }
 };
 
-export const updateBudget = async (token, updatedBudget) => {
+export const editBudgetAction = async (token, updatedBudget) => {
   try {
     const response = await fetch(`${API_URL}/${updatedBudget.id}`, {
       method: "PUT",
@@ -60,7 +60,7 @@ export const updateBudget = async (token, updatedBudget) => {
   }
 };
 
-export const deleteBudget = async (budgetId, token) => {
+export const deleteBudgetAction = async (budgetId, token) => {
   try {
     const response = await fetch(`${API_URL}/${budgetId}`, {
       method: "DELETE",
@@ -75,7 +75,7 @@ export const deleteBudget = async (budgetId, token) => {
   }
 };
 
-export const fetchTransactions = async (token) => {
+export const fetchTransactionsFromBackend = async (token) => {
   try {
     const response = await fetch(
       `${process.env.REACT_APP_API_BASE_URL}/api/transactions`,
@@ -92,7 +92,7 @@ export const fetchTransactions = async (token) => {
       name: transaction.name,
       date: transaction.date,
       recurring: transaction.recurring,
-      themeColor: transaction.themeColor,
+      theme: transaction.themeColor,
     }));
   } catch (error) {
     console.error("Error fetching transactions:", error.message);
