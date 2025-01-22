@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL:
-    "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
+  baseURL: `${process.env.REACT_APP_API_BASE_URL}`,
 });
 
 export const fetchBudgets = async (token: string) => {

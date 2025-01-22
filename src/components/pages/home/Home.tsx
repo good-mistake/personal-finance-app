@@ -35,7 +35,7 @@ const Home: React.FC = () => {
 
       if (isAuthenticated && user) {
         try {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("token") || "";
 
           const [potsData, budgetsData, transactionsData] = await Promise.all([
             fetchPots(token),
@@ -106,6 +106,11 @@ const Home: React.FC = () => {
     .filter((t) => t.amount < 0)
     .reduce((sum, t) => sum + Math.abs(t.amount), 0);
   const currentBalance = income - expenses;
+  console.log("Pots:", pots);
+  console.log("Budgets:", budgets);
+  console.log("Transactions:", transactions.transaction);
+  console.log("Is Authenticated:", isAuthenticated);
+
   return (
     <div className={`homeContainer `}>
       <Sidebar variant={sidebarVariant} position="right">
