@@ -154,7 +154,7 @@ const Home: React.FC = () => {
                   <TransactionSummary
                     transactions={
                       isAuthenticated
-                        ? user?.transactions || []
+                        ? transactions.transaction
                         : datas.transactions
                     }
                   />
