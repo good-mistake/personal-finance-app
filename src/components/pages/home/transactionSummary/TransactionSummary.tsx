@@ -9,8 +9,6 @@ const TransactionSummary = ({ transactions }) => {
   });
 
   const summaryTransactions = sortedTransactions.slice(0, 5);
-  console.log(summaryTransactions);
-  console.log("Transactions Prop:", transactions);
 
   return (
     <div className="summary">
