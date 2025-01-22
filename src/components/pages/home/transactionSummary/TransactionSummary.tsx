@@ -1,36 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { formatCurrency, formatDate } from "../../../../utils/utils";
 import { useNavigate } from "react-router-dom";
 import Buttons from "../../../reusable/button/Buttons";
-
-const TransactionSummary = ({ transactions: initialTransactions }) => {
-  const [transactions, setTransactions] = useState(initialTransactions || []);
+const TransactionSummary = ({ transactions }) => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchTransactionDetails = async (transactionIds) => {
-      const response = await Promise.all(
-        transactionIds.map((id) =>
-          fetch(`/api/transactions/${id}`).then((res) => res.json())
-        )
-      );
-      setTransactions(response);
-    };
-
-    if (
-      Array.isArray(transactions) &&
-      transactions.length > 0 &&
-      typeof transactions[0] === "string"
-    ) {
-      fetchTransactionDetails(transactions);
-    }
-  }, [transactions]);
-
   const sortedTransactions = [...transactions]?.sort((a, b) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 
   const summaryTransactions = sortedTransactions.slice(0, 5);
+  console.log(summaryTransactions);
+  console.log("Transactions Prop:", transactions);
 
   return (
     <div className="summary">
@@ -45,7 +25,7 @@ const TransactionSummary = ({ transactions: initialTransactions }) => {
       </div>
       <ul>
         {summaryTransactions.map((transaction) => (
-          <li key={transaction.id}>
+          <li key={`${transaction._id}`}>
             <div className="nameAndImg">
               {transaction.avatar ? (
                 <img
