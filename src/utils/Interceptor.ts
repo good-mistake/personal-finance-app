@@ -25,7 +25,7 @@ api.interceptors.response.use(
           { refreshToken }
         );
 
-        const newAccessToken = res.data.token;
+        const newAccessToken = res.data.accessToken;
 
         localStorage.setItem("token", newAccessToken);
         api.defaults.headers.common[
@@ -35,7 +35,6 @@ api.interceptors.response.use(
 
         return api(originalRequest);
       } catch (refreshError) {
-        console.error("Refresh token failed:", refreshError);
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
         if (navigate) navigate("/login");

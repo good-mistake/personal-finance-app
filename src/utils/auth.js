@@ -3,6 +3,11 @@ import bcrypt from "bcryptjs";
 import { connectToDatabase } from "../../db.js";
 import User from "../../models/models.js";
 
+const allowedOrigins = [
+  "https://personal-finance-app-nu.vercel.app",
+  "https://personal-finance-app-git-main-goodmistakes-projects.vercel.app",
+];
+
 const generateToken = (user) =>
   jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
@@ -16,22 +21,35 @@ const verifyToken = (token) =>
     err ? null : decoded
   );
 
-const setCorsHeaders = (
-  response,
-  allowedMethods = ["OPTIONS", "GET", "POST"]
-) => ({
-  ...response,
-  headers: {
-    ...response.headers,
-    "Access-Control-Allow-Origin": "https://personal-finance-app-nu.vercel.app",
-    "Access-Control-Allow-Methods": allowedMethods.join(", "),
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  },
-});
+const setCorsHeaders = (response, origin) => {
+  if (!allowedOrigins.includes(origin)) {
+    return {
+      ...response,
+      statusCode: 403,
+      body: JSON.stringify({ error: "CORS policy: Origin not allowed" }),
+    };
+  }
+
+  return {
+    ...response,
+    headers: {
+      ...response.headers,
+      "Access-Control-Allow-Origin": origin,
+      "Access-Control-Allow-Methods": "OPTIONS, GET, POST",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+  };
+};
 
 export const handler = async (event) => {
-  const headers = setCorsHeaders({}, ["OPTIONS", "POST"]);
+  const origin = event.headers.origin || "";
+  const headers = {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Methods": "OPTIONS, POST",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
 
+  // Handle preflight requests
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 200, headers, body: "Preflight Check Passed" };
   }
@@ -46,10 +64,13 @@ export const handler = async (event) => {
       const existingUser = await User.findOne({ email });
 
       if (existingUser) {
-        return setCorsHeaders({
-          statusCode: 400,
-          body: JSON.stringify({ error: "User already exists" }),
-        });
+        return setCorsHeaders(
+          {
+            statusCode: 400,
+            body: JSON.stringify({ error: "User already exists" }),
+          },
+          origin
+        );
       }
 
       const hashedPassword = await bcrypt.hash(password, 12);
@@ -59,14 +80,17 @@ export const handler = async (event) => {
         password: hashedPassword,
       }).save();
 
-      return setCorsHeaders({
-        statusCode: 201,
-        body: JSON.stringify({
-          message: "User created",
-          token: generateToken(newUser),
-          refreshToken: generateRefreshToken(newUser),
-        }),
-      });
+      return setCorsHeaders(
+        {
+          statusCode: 201,
+          body: JSON.stringify({
+            message: "User created",
+            token: generateToken(newUser),
+            refreshToken: generateRefreshToken(newUser),
+          }),
+        },
+        origin
+      );
     }
 
     if (event.path.endsWith("/auth/login")) {
@@ -74,20 +98,26 @@ export const handler = async (event) => {
       const user = await User.findOne({ email });
 
       if (!user || !(await bcrypt.compare(password, user.password))) {
-        return setCorsHeaders({
-          statusCode: 401,
-          body: JSON.stringify({ error: "Invalid credentials" }),
-        });
+        return setCorsHeaders(
+          {
+            statusCode: 401,
+            body: JSON.stringify({ error: "Invalid credentials" }),
+          },
+          origin
+        );
       }
 
-      return setCorsHeaders({
-        statusCode: 200,
-        body: JSON.stringify({
-          message: "Login successful",
-          token: generateToken(user),
-          refreshToken: generateRefreshToken(user),
-        }),
-      });
+      return setCorsHeaders(
+        {
+          statusCode: 200,
+          body: JSON.stringify({
+            message: "Login successful",
+            token: generateToken(user),
+            refreshToken: generateRefreshToken(user),
+          }),
+        },
+        origin
+      );
     }
 
     if (event.path.endsWith("/auth/verify")) {
@@ -95,28 +125,99 @@ export const handler = async (event) => {
       const decoded = verifyToken(token);
 
       if (!decoded) {
-        return setCorsHeaders({
-          statusCode: 401,
-          body: JSON.stringify({ error: "Token invalid/expired" }),
-        });
+        return setCorsHeaders(
+          {
+            statusCode: 401,
+            body: JSON.stringify({ error: "Token invalid/expired" }),
+          },
+          origin
+        );
       }
 
-      return setCorsHeaders({
-        statusCode: 200,
-        body: JSON.stringify({ message: "Token valid", decoded }),
-      });
+      return setCorsHeaders(
+        {
+          statusCode: 200,
+          body: JSON.stringify({ message: "Token valid", decoded }),
+        },
+        origin
+      );
     }
 
-    return setCorsHeaders({
-      statusCode: 404,
-      body: JSON.stringify({ error: "Route not found" }),
-    });
+    if (event.path.endsWith("/auth/refresh")) {
+      const { refreshToken } = body;
+
+      if (!refreshToken) {
+        return setCorsHeaders(
+          {
+            statusCode: 400,
+            body: JSON.stringify({ error: "Refresh token required" }),
+          },
+          origin
+        );
+      }
+
+      const decoded = jwt.verify(
+        refreshToken,
+        process.env.JWT_REFRESH_SECRET,
+        (err) => (err ? null : jwt.decode(refreshToken))
+      );
+
+      if (!decoded) {
+        return setCorsHeaders(
+          {
+            statusCode: 403,
+            body: JSON.stringify({ error: "Invalid refresh token" }),
+          },
+          origin
+        );
+      }
+
+      const user = await User.findById(decoded.id);
+
+      if (!user || user.refreshToken !== refreshToken) {
+        return setCorsHeaders(
+          {
+            statusCode: 403,
+            body: JSON.stringify({ error: "Invalid refresh token" }),
+          },
+          origin
+        );
+      }
+
+      const newAccessToken = generateToken(user);
+      const newRefreshToken = generateRefreshToken(user);
+
+      user.refreshToken = newRefreshToken;
+      await user.save();
+
+      return setCorsHeaders(
+        {
+          statusCode: 200,
+          body: JSON.stringify({
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+          }),
+        },
+        origin
+      );
+    }
+
+    return setCorsHeaders(
+      {
+        statusCode: 404,
+        body: JSON.stringify({ error: "Route not found" }),
+      },
+      origin
+    );
   } catch (error) {
     console.error("Error handling request:", error);
 
-    return setCorsHeaders({
-      statusCode: 500,
-      body: JSON.stringify({ error: "Internal Server Error" }),
-    });
+    return setCorsHeaders(
+      {
+        statusCode: 500,
+        body: JSON.stringify({ error: "Internal Server Error" }),
+      },
+      origin
+    );
   }
 };

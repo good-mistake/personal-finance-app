@@ -98,18 +98,13 @@ const Home: React.FC = () => {
       }
     });
   const income = transactions.transaction
-
     .filter((t) => t.amount > 0)
     .reduce((sum, t) => sum + t.amount, 0);
   const expenses = transactions.transaction
-
     .filter((t) => t.amount < 0)
     .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
   const currentBalance = income - expenses;
-  console.log("Pots:", pots);
-  console.log("Budgets:", budgets);
-  console.log("Transactions:", transactions.transaction);
-  console.log("Is Authenticated:", isAuthenticated);
 
   return (
     <div className={`homeContainer `}>

@@ -309,7 +309,15 @@ const Budgets: React.FC = () => {
                             <div className="themeRemain"></div>
                             <div>
                               <p className="title">Remaining</p>
-                              <p className="amount">
+                              <p
+                                className={`amount`}
+                                style={{
+                                  color:
+                                    budget.maximum - spent < 0
+                                      ? "#c94736"
+                                      : "#201f24",
+                                }}
+                              >
                                 {formatCurrency(budget.maximum - spent)}
                               </p>
                             </div>

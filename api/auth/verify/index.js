@@ -13,7 +13,6 @@ export default async function handler(req, res) {
 
   const origin = req.headers.origin;
 
-  // Set CORS headers
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   } else {
@@ -26,18 +25,17 @@ export default async function handler(req, res) {
   );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  // Handle preflight requests (OPTIONS)
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
   if (req.method === "GET") {
-    try {
-      const token = req.headers.authorization?.split(" ")[1];
-      if (!token) {
-        return res.status(403).json({ message: "No token provided" });
-      }
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(403).json({ message: "No token provided" });
+    }
 
+    try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const user = await User.findById(decoded.id).select("-password");
       if (!user) {
@@ -56,7 +54,10 @@ export default async function handler(req, res) {
         },
       });
     } catch (error) {
-      return res.status(401).json({ message: "Token is invalid or expired" });
+      if (error.name === "TokenExpiredError") {
+        return res.status(401).json({ message: "Token expired" });
+      }
+      return res.status(401).json({ message: "Invalid token" });
     }
   }
 
