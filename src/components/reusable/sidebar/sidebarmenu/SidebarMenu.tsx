@@ -74,7 +74,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             <NavLink
               to="/"
               className={({ isActive }) =>
-                isActive && window.location.pathname !== "/" ? "active" : ""
+                isActive && window.location.pathname === "/" ? "active" : ""
               }
             >
               <svg

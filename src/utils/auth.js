@@ -23,22 +23,20 @@ const verifyToken = (token) =>
 
 const setCorsHeaders = (response, origin) => {
   if (!allowedOrigins.includes(origin)) {
-    return {
-      ...response,
-      statusCode: 403,
-      body: JSON.stringify({ error: "CORS policy: Origin not allowed" }),
-    };
+    response.statusCode = 403;
+    response.body = JSON.stringify({
+      error: "CORS policy: Origin not allowed",
+    });
+    return response;
   }
 
-  return {
-    ...response,
-    headers: {
-      ...response.headers,
-      "Access-Control-Allow-Origin": origin,
-      "Access-Control-Allow-Methods": "OPTIONS, GET, POST",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    },
+  response.headers = {
+    ...response.headers,
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Methods": "OPTIONS, GET, POST",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
   };
+  return response;
 };
 
 export const handler = async (event) => {
@@ -49,9 +47,8 @@ export const handler = async (event) => {
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
   };
 
-  // Handle preflight requests
   if (event.httpMethod === "OPTIONS") {
-    return { statusCode: 200, headers, body: "Preflight Check Passed" };
+    return { statusCode: 204, headers, body: "Preflight Check Passed" };
   }
 
   await connectToDatabase();
@@ -156,50 +153,48 @@ export const handler = async (event) => {
         );
       }
 
-      const decoded = jwt.verify(
-        refreshToken,
-        process.env.JWT_REFRESH_SECRET,
-        (err) => (err ? null : jwt.decode(refreshToken))
-      );
+      try {
+        const decoded = jwt.verify(
+          refreshToken,
+          process.env.JWT_REFRESH_SECRET
+        );
+        const user = await User.findById(decoded.id);
 
-      if (!decoded) {
+        if (!user || user.refreshToken !== refreshToken) {
+          return setCorsHeaders(
+            {
+              statusCode: 403,
+              body: JSON.stringify({ error: "Invalid refresh token" }),
+            },
+            origin
+          );
+        }
+
+        const newAccessToken = generateToken(user);
+        const newRefreshToken = generateRefreshToken(user);
+
+        user.refreshToken = newRefreshToken;
+        await user.save();
+
+        return setCorsHeaders(
+          {
+            statusCode: 200,
+            body: JSON.stringify({
+              accessToken: newAccessToken,
+              refreshToken: newRefreshToken,
+            }),
+          },
+          origin
+        );
+      } catch {
         return setCorsHeaders(
           {
             statusCode: 403,
-            body: JSON.stringify({ error: "Invalid refresh token" }),
+            body: JSON.stringify({ error: "Invalid or expired refresh token" }),
           },
           origin
         );
       }
-
-      const user = await User.findById(decoded.id);
-
-      if (!user || user.refreshToken !== refreshToken) {
-        return setCorsHeaders(
-          {
-            statusCode: 403,
-            body: JSON.stringify({ error: "Invalid refresh token" }),
-          },
-          origin
-        );
-      }
-
-      const newAccessToken = generateToken(user);
-      const newRefreshToken = generateRefreshToken(user);
-
-      user.refreshToken = newRefreshToken;
-      await user.save();
-
-      return setCorsHeaders(
-        {
-          statusCode: 200,
-          body: JSON.stringify({
-            accessToken: newAccessToken,
-            refreshToken: newRefreshToken,
-          }),
-        },
-        origin
-      );
     }
 
     return setCorsHeaders(
