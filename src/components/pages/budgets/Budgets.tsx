@@ -189,9 +189,7 @@ const Budgets: React.FC = () => {
   return (
     <div className="budgetContainer">
       <Sidebar variant={sidebarVariant} position="left">
-        {authLoading ||
-        loading ||
-        (!currentMonthBudgets.length && !currentMonthTransactions.length) ? (
+        {authLoading || loading ? (
           <SkeletonBudget />
         ) : (
           <>
