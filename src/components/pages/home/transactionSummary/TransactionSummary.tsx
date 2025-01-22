@@ -9,6 +9,7 @@ const TransactionSummary = ({ transactions }) => {
   });
 
   const summaryTransactions = sortedTransactions.slice(0, 5);
+  console.log(summaryTransactions);
 
   return (
     <div className="summary">
@@ -23,7 +24,7 @@ const TransactionSummary = ({ transactions }) => {
       </div>
       <ul>
         {summaryTransactions.map((transaction) => (
-          <li key={`${transaction._id}+${transaction.name}`}>
+          <li key={`${transaction._id}`}>
             <div className="nameAndImg">
               {transaction.avatar ? (
                 <img
